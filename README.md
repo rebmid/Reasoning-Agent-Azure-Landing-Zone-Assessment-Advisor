@@ -3,15 +3,17 @@
 A comprehensive, automated Azure Landing Zone assessment tool designed for **Cloud Solution Architects (CSAs)** conducting customer engagements. It evaluates an Azure tenant against Microsoft's [Azure Landing Zone (ALZ) checklist](https://github.com/Azure/review-checklists), scores controls deterministically, then enriches the results with AI-generated advisory output — producing a ready-to-deliver **CSA workbook**, **executive HTML report**, and **target architecture** in a single command.
 
 ## Why This Matters
-Enterprise customers struggle to understand whether their Azure environment & existing landing zone is truly ready for enterprise-scale operations. This provides a reliable way to assess the maturity and enterprise-scale readiness of their Azure landing zone and identify the gaps that block transformation.
 
-This reasoning agent:
-- Uses **read-only RBAC** (safe for customer tenants)
-- Evaluates **real Azure telemetry**
-- Selects controls based on **user intent**
-- Produces a **defensible 30-60-90 roadmap**
+Enterprise customers often have a landing zone but **lack a reliable way to measure enterprise-scale readiness and identify the architectural gaps that block transformation**.
 
-The output is a **CSA-ready workbook**, not just an assessment.
+This agent:
+
+- Uses **read-only access (safe for customer environments)**
+- Evaluates **real platform signals — not questionnaires**
+- Selects controls dynamically based on **intent**
+- Produces a **defensible, risk-aligned roadmap**
+
+**Run one command → get a scored assessment, executive briefing, and a traceable 30-60-90 plan.**
 
 ---
 
@@ -25,50 +27,22 @@ The output is a **CSA-ready workbook**, not just an assessment.
 |---|---|
 | ![Roadmap Traceability](docs/demo/03_roadmap-traceability.png) | ![Executive Briefing](docs/demo/04_executive-briefing.png) |
 
----
-
-## Table of Contents
-
-- [Features](#features)
-- [Architecture Overview](#architecture-overview)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Quick Start](#quick-start)
-- [Configuration](#configuration)
-- [CLI Reference](#cli-reference)
-- [Output Artifacts](#output-artifacts)
-- [How It Works](#how-it-works)
-  - [1. Data Collection](#1-data-collection)
-  - [2. Evaluation & Scoring](#2-evaluation--scoring)
-  - [3. AI Reasoning Engine](#3-ai-reasoning-engine)
-  - [4. Grounding via Microsoft Learn MCP](#4-grounding-via-microsoft-learn-mcp)
-  - [5. Report Generation](#5-report-generation)
-- [CSA Workbook Deep Dive](#csa-workbook-deep-dive)
-- [On-Demand Evaluation Mode](#on-demand-evaluation-mode)
-- [Preflight Mode](#preflight-mode)
-- [Scoring Model](#scoring-model)
-- [Extending the Tool](#extending-the-tool)
-- [Troubleshooting](#troubleshooting)
-- [License](#license)
-
----
-
 ## Features
 
 | Capability | Description |
 |---|---|
 | **Live ALZ Checklist** | Always fetches the latest checklist from the `Azure/review-checklists` GitHub repo — never stale |
-| **Automated Evaluators** | 20+ evaluators run Azure Resource Graph, Defender, Policy, and Management Group queries to score controls as Pass / Fail / Partial |
-| **Weighted Scoring** | Domain-weighted risk scoring (Security 1.5×, Networking 1.4×, Identity 1.4×, Governance 1.3×, Platform 1.2×, Management 1.1×) with severity multipliers |
-| **7-Pass AI Advisory Pipeline** | GPT-4.1 generates a transformation roadmap, executive briefing, enterprise-scale readiness assessment, smart questions, implementation backlog, target architecture, and grounded references |
-| **Microsoft Learn MCP Grounding** | Official MCP SDK retrieves curated documentation, code samples, and full-page markdown from Microsoft Learn to ground all AI recommendations |
-| **CSA Workbook (Excel)** | 3-sheet deliverable: Executive Summary with engagement framing, 30-60-90 Roadmap mapped to controls + risks, and a full Control Details sheet with 19 data columns including "Questions to Ask" |
-| **Executive HTML Report** | Jinja2-rendered interactive report with score breakdowns, risk heatmaps, and gap tables |
-| **Target Architecture** | AI-generated JSON artifact describing recommended architecture components, connected via grounding to Microsoft Learn references |
-| **Delta Tracking** | Compares current run against previous runs to show control-level changes over time |
-| **Preflight Probes** | Validates Azure access before a full run — catches permission gaps early |
-| **On-Demand Intent Evaluation** | Workshop-style targeted assessments (e.g., `enterprise_readiness`) via an agent orchestrator |
-| **Pluggable Provider Architecture** | Swap `AOAIReasoningProvider` for any model — Phi, mock, or custom — in one line |
+| **Automated Evaluators** | Azure Resource Graph, Defender, Policy, and Management Group queries score controls as Pass / Fail / Partial |
+| **Weighted Scoring** | Domain-weighted maturity model with severity multipliers |
+| **7-Pass AI Advisory Pipeline** | Generates enterprise readiness, top risks, 30-60-90 roadmap, initiatives, backlog, and target architecture |
+| **Microsoft Learn MCP Grounding** | Official MCP SDK retrieves real guidance, code samples, and full documentation |
+| **CSA Workbook (Excel)** | Executive Summary, traceable 30-60-90 roadmap, and full Control Details sheet |
+| **Executive HTML Report** | Visual maturity score, risk heatmap, and gap analysis |
+| **Delta Tracking** | Shows control-level progress between runs |
+| **Preflight Probes** | Validates RBAC access before a full scan |
+| **Intent-Based Assessment** | Evaluates only relevant controls based on user intent |
+| **Pluggable AI Provider** | Swap AOAI for another model in one line |
+
 
 ---
 
@@ -557,7 +531,10 @@ Results are saved to `out/preflight.json` and printed to the console with pass/f
 | `az: command not found` | Install the [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) |
 | Slow execution | Large tenants take longer. Use `--tenant-wide` only when needed. AI passes add ~60-90s. |
 
----
+## Built with AI Assistance
+
+This project was developed using GitHub Copilot as an AI pair programmer for code generation, refactoring, and test scaffolding.  
+All architecture, control logic, Azure integration, and reasoning workflows were designed and implemented by the author.
 
 ## License
 
