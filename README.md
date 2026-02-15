@@ -19,13 +19,21 @@ This agent:
 
 ## Demo Screenshots
 
-| 7-Pass Reasoning Pipeline | Control Evaluation |
+| 7-Pass Reasoning Pipeline | Automated Control Evaluation |
 |---|---|
-| ![7-Pass Reasoning Pipeline](docs/demo/01_reasoning-engine.png) | ![Control Evaluation](docs/demo/02_control-evaluation.png) |
+| ![7-Pass Reasoning Pipeline](docs/demo/01_reasoning-engine.png) | ![Automated Control Evaluation](docs/demo/02_automated-control-evaluation-with-evidence.png) |
 
 | Roadmap Traceability | Executive Briefing |
 |---|---|
 | ![Roadmap Traceability](docs/demo/03_roadmap-traceability.png) | ![Executive Briefing](docs/demo/04_executive-briefing.png) |
+
+| Causal Risk Analysis | Top Risk Area Analysis |
+|---|---|
+| ![Causal Risk Analysis](docs/demo/05_causal-risk-analysis-networking.png) | ![Top Risk Area Analysis](docs/demo/06_Top_Risk_Area_Analysis.png) |
+
+| Landing Zone Assessment Report |
+|---|
+| ![Landing Zone Assessment Report](docs/demo/07_Landing%20Zone%20Assessment%20Report.png) |
 
 ## Features
 
