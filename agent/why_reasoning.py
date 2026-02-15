@@ -317,3 +317,154 @@ def explain_why(
             print("  (no AI provider — returning raw evidence)")
 
     return evidence
+
+
+# ──────────────────────────────────────────────────────────────────
+# Terminal display — judge-friendly formatted output
+# ──────────────────────────────────────────────────────────────────
+
+def _short_id(control_id: str) -> str:
+    """First 8 chars of a UUID — matches checklist short-ID convention."""
+    return control_id[:8] if len(control_id) > 8 else control_id
+
+
+def print_why_report(result: dict) -> None:
+    """Render a rich, human-readable terminal report from explain_why() output."""
+
+    if "error" in result:
+        print(f"\n  ⚠  {result['error']}")
+        if result.get("available_domains"):
+            print("  Available risks:")
+            for d in result["available_domains"]:
+                print(f"    • {d}")
+        return
+
+    domain = result.get("domain", "?").upper()
+    ai = result.get("ai_explanation", {})
+    risk = result.get("risk", {})
+    controls = result.get("failing_controls", [])
+    deps = result.get("dependency_impact", [])
+    actions = result.get("roadmap_actions", [])
+
+    W = 60  # column width
+
+    # ── Header ────────────────────────────────────────────────────
+    print()
+    print("╔" + "═" * W + "╗")
+    title = f"  {domain} IS THE TOP RISK"
+    print("║" + title.ljust(W) + "║")
+    print("╚" + "═" * W + "╝")
+
+    # ── Root cause ────────────────────────────────────────────────
+    print()
+    print("  Root cause:")
+    if ai.get("root_cause"):
+        # Split AI root cause into bullet-friendly sentences
+        for sentence in ai["root_cause"].replace(". ", ".\n").split("\n"):
+            sentence = sentence.strip()
+            if sentence:
+                print(f"    • {sentence}")
+    else:
+        cause = risk.get("technical_cause", "")
+        if cause:
+            for part in cause.split(";"):
+                part = part.strip()
+                if part:
+                    print(f"    • {part}")
+
+    # ── Failing controls ──────────────────────────────────────────
+    if controls:
+        print()
+        print("  Failing controls:")
+        for c in controls:
+            sid = _short_id(c["control_id"])
+            status_icon = "✗" if c["status"] == "Fail" else "◑"
+            print(f"    {status_icon} {sid} – {c['text']}")
+            if c.get("notes"):
+                # Truncate long notes for terminal
+                note = c["notes"][:120]
+                if len(c["notes"]) > 120:
+                    note += " …"
+                print(f"      └─ {note}")
+
+    # ── Dependency impact ─────────────────────────────────────────
+    if deps:
+        print()
+        print("  Dependency impact:")
+        print("  Blocks:")
+        # Resolve blocked control names from the knowledge graph
+        try:
+            kg = ControlKnowledgeGraph()
+        except Exception:
+            kg = None
+        for d in deps:
+            for blocked_id in d.get("blocks", []):
+                if kg:
+                    node = kg.get_node(blocked_id)
+                    name = node.name if node else blocked_id
+                else:
+                    name = blocked_id
+                print(f"    ↳ {name}")
+
+    # ── Business impact (AI only) ─────────────────────────────────
+    if ai.get("business_impact"):
+        print()
+        print("  Business impact:")
+        print(f"    {ai['business_impact']}")
+
+    # ── Fix sequence / Roadmap actions ────────────────────────────
+    fix_seq = ai.get("fix_sequence", [])
+    if fix_seq:
+        print()
+        print("  Roadmap actions:")
+        for step in fix_seq:
+            n = step.get("step", "?")
+            action = step.get("action", "")
+            url = step.get("learn_url", "")
+            phase_label = _step_to_phase(n, len(fix_seq))
+            print(f"    {phase_label} → {action}")
+            if step.get("why_this_order"):
+                print(f"      Why first: {step['why_this_order'][:120]}")
+            if url:
+                print(f"      Learn: {url}")
+    elif actions:
+        # Fallback: raw roadmap actions (no AI)
+        print()
+        print("  Roadmap actions:")
+        for a in actions:
+            phase = a.get("phase", "")
+            if phase:
+                print(f"    {phase} → {a.get('title', '?')}")
+            else:
+                print(f"    • {a.get('title', '?')}")
+            refs = a.get("learn_references", [])
+            for ref in refs:
+                url = ref.get("url", "")
+                if url:
+                    print(f"      Learn: {url}")
+
+    # ── Cascade effect (AI only) ──────────────────────────────────
+    if ai.get("cascade_effect"):
+        print()
+        print("  Cascade effect:")
+        print(f"    {ai['cascade_effect']}")
+
+    # ── Footer ────────────────────────────────────────────────────
+    print()
+    print("─" * (W + 2))
+
+
+def _step_to_phase(step_num: int, total_steps: int) -> str:
+    """Map a step number to a 30/60/90 day phase label."""
+    if total_steps <= 1:
+        return "30 days"
+    if total_steps == 2:
+        return "30 days" if step_num <= 1 else "60 days"
+    # 3+ steps: divide into thirds
+    third = total_steps / 3
+    if step_num <= third:
+        return "30 days"
+    elif step_num <= 2 * third:
+        return "60 days"
+    else:
+        return "90 days"

@@ -26,7 +26,7 @@ from signals.registry import SignalBus
 from control_packs.loader import load_pack
 from engine.assessment_runtime import AssessmentRuntime
 from agent.intent_orchestrator import IntentOrchestrator
-from agent.why_reasoning import explain_why
+from agent.why_reasoning import explain_why, print_why_report
 
 # Import evaluator modules so register_evaluator() calls fire
 import evaluators.networking   # noqa: F401
@@ -128,12 +128,16 @@ def main():
             except EnvironmentError as e:
                 print(f"  ⚠ AI disabled: {e}")
         result = explain_why(run, args.why, provider=provider, verbose=True)
-        # Save result
+
+        # Pretty terminal report
+        print_why_report(result)
+
+        # Save JSON
         os.makedirs(OUT_DIR, exist_ok=True)
         why_path = os.path.join(OUT_DIR, f"why-{args.why.lower()}.json")
         with open(why_path, "w", encoding="utf-8") as f:
             json.dump(result, f, indent=2, default=str)
-        print(f"\n✓ Saved: {why_path}")
+        print(f"  Saved: {why_path}")
         if args.pretty:
             print(json.dumps(result, indent=2, default=str))
         return
