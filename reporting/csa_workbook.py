@@ -84,6 +84,224 @@ def _auto_width(ws, min_width: int = 12, max_width: int = 55):
 
 
 # ══════════════════════════════════════════════════════════════════
+# Risk Analysis sheet builder
+# ══════════════════════════════════════════════════════════════════
+
+_SECTION_FILL = PatternFill("solid", fgColor="2F5496")
+_SECTION_FONT_WHT = Font(bold=True, size=13, color="FFFFFF")
+_SUBSECTION_FILL = PatternFill("solid", fgColor="D6E4F0")
+_SUBSECTION_FONT_BLK = Font(bold=True, size=11)
+_SEVERITY_FILLS = {
+    "High":    PatternFill("solid", fgColor="FFC7CE"),
+    "Medium":  PatternFill("solid", fgColor="FFEB9C"),
+    "Low":     PatternFill("solid", fgColor="C6EFCE"),
+}
+
+
+def _merge_section(ws, row: int, text: str, max_col: int = 7,
+                   fill=None, font=None):
+    """Write a merged section header row."""
+    ws.merge_cells(start_row=row, start_column=1,
+                   end_row=row, end_column=max_col)
+    cell = ws.cell(row=row, column=1, value=text)
+    cell.font = font or _SECTION_FONT_WHT
+    cell.fill = fill or _SECTION_FILL
+    cell.alignment = Alignment(vertical="center")
+
+
+def _merge_text(ws, row: int, text: str, max_col: int = 7):
+    """Write a merged multi-line text row."""
+    ws.merge_cells(start_row=row, start_column=1,
+                   end_row=row, end_column=max_col)
+    cell = ws.cell(row=row, column=1, value=text)
+    cell.alignment = _WRAP
+
+
+def _build_risk_analysis_sheet(wb: Workbook, payloads: list[dict]):
+    """Add the ``3_Risk_Analysis`` sheet from why-reasoning payloads."""
+    ws = wb.create_sheet("3_Risk_Analysis")
+    MAX_COL = 7   # merge width
+    row = 1
+
+    for idx, payload in enumerate(payloads):
+        if "error" in payload:
+            continue
+
+        domain = (payload.get("domain") or "Unknown").upper()
+        risk = payload.get("risk", {})
+        controls = payload.get("failing_controls", [])
+        deps = payload.get("dependency_impact", [])
+        actions = payload.get("roadmap_actions", [])
+        ai = payload.get("ai_explanation", {})
+
+        # ── Domain header ─────────────────────────────────────────
+        risk_title = risk.get("title", "")
+        _merge_section(ws, row, f"  {domain} — {risk_title}", MAX_COL)
+        row += 1
+
+        # ── Root cause ────────────────────────────────────────────
+        _merge_section(ws, row, "  Root Cause", MAX_COL,
+                       fill=_SUBSECTION_FILL, font=_SUBSECTION_FONT_BLK)
+        row += 1
+        root_cause = (
+            ai.get("root_cause")
+            or risk.get("technical_cause", "")
+            or risk.get("description", "")
+        )
+        _merge_text(ws, row, root_cause, MAX_COL)
+        row += 2   # blank separator
+
+        # ── Business impact ───────────────────────────────────────
+        biz_impact = ai.get("business_impact") or risk.get("business_impact", "")
+        if biz_impact:
+            _merge_section(ws, row, "  Business Impact", MAX_COL,
+                           fill=_SUBSECTION_FILL, font=_SUBSECTION_FONT_BLK)
+            row += 1
+            _merge_text(ws, row, biz_impact, MAX_COL)
+            row += 2
+
+        # ── Failing controls table ────────────────────────────────
+        if controls:
+            _merge_section(ws, row, "  Failing / Partial Controls", MAX_COL,
+                           fill=_SUBSECTION_FILL, font=_SUBSECTION_FONT_BLK)
+            row += 1
+            ctrl_headers = [
+                "Control ID", "Section", "Severity",
+                "Status", "Description", "Notes", "",
+            ]
+            _write_header_row(ws, ctrl_headers, row=row)
+            row += 1
+            for c in controls:
+                cid = c.get("control_id", "")
+                short_id = cid[:8] if len(cid) > 8 else cid
+                ws.cell(row=row, column=1, value=short_id)
+                ws.cell(row=row, column=2, value=c.get("section", ""))
+                sev = c.get("severity", "")
+                sev_cell = ws.cell(row=row, column=3, value=sev)
+                if sev in _SEVERITY_FILLS:
+                    sev_cell.fill = _SEVERITY_FILLS[sev]
+                status_val = c.get("status", "")
+                status_cell = ws.cell(row=row, column=4, value=status_val)
+                sfill = _status_fill(status_val)
+                if sfill:
+                    status_cell.fill = sfill
+                ws.cell(row=row, column=5,
+                        value=c.get("text", "")).alignment = _WRAP
+                ws.cell(row=row, column=6,
+                        value=c.get("notes", "")).alignment = _WRAP
+                row += 1
+            row += 1  # blank separator
+
+        # ── Dependency impact ─────────────────────────────────────
+        if deps:
+            _merge_section(ws, row, "  Dependency Impact", MAX_COL,
+                           fill=_SUBSECTION_FILL, font=_SUBSECTION_FONT_BLK)
+            row += 1
+            dep_headers = [
+                "Failing Control", "Name", "Blocks Count",
+                "Blocked Controls", "", "", "",
+            ]
+            _write_header_row(ws, dep_headers, row=row)
+            row += 1
+            for d in deps:
+                ws.cell(row=row, column=1, value=d.get("control", ""))
+                ws.cell(row=row, column=2, value=d.get("name", ""))
+                ws.cell(row=row, column=3, value=d.get("blocks_count", 0))
+                blocked_str = ", ".join(str(b) for b in d.get("blocks", []))
+                ws.cell(row=row, column=4,
+                        value=blocked_str).alignment = _WRAP
+                row += 1
+            row += 1
+
+        # ── Roadmap actions ───────────────────────────────────────
+        # Prefer AI fix_sequence when available, fall back to
+        # deterministic initiative mapping.
+        fix_seq = ai.get("fix_sequence", [])
+        if fix_seq:
+            _merge_section(ws, row, "  Remediation Roadmap (AI-Prioritized)",
+                           MAX_COL, fill=_SUBSECTION_FILL,
+                           font=_SUBSECTION_FONT_BLK)
+            row += 1
+            fix_headers = [
+                "Step", "Action", "Why This Order",
+                "Phase", "Learn URL", "", "",
+            ]
+            _write_header_row(ws, fix_headers, row=row)
+            row += 1
+            total_steps = len(fix_seq)
+            for step in fix_seq:
+                n = step.get("step", "")
+                ws.cell(row=row, column=1, value=n)
+                ws.cell(row=row, column=2,
+                        value=step.get("action", "")).alignment = _WRAP
+                ws.cell(row=row, column=3,
+                        value=step.get("why_this_order", "")).alignment = _WRAP
+                # Map step to 30/60/90 day phase
+                if isinstance(n, int) and total_steps > 0:
+                    third = total_steps / 3
+                    if n <= third:
+                        phase = "30 days"
+                    elif n <= 2 * third:
+                        phase = "60 days"
+                    else:
+                        phase = "90 days"
+                else:
+                    phase = ""
+                ws.cell(row=row, column=4, value=phase)
+                ws.cell(row=row, column=5,
+                        value=step.get("learn_url", "")).alignment = _WRAP
+                row += 1
+            row += 1
+        elif actions:
+            _merge_section(ws, row, "  Remediation Roadmap", MAX_COL,
+                           fill=_SUBSECTION_FILL, font=_SUBSECTION_FONT_BLK)
+            row += 1
+            act_headers = [
+                "Initiative", "Phase", "Priority",
+                "Controls Addressed", "Learn References", "", "",
+            ]
+            _write_header_row(ws, act_headers, row=row)
+            row += 1
+            for a in actions:
+                ws.cell(row=row, column=1,
+                        value=a.get("title", "")).alignment = _WRAP
+                ws.cell(row=row, column=2, value=a.get("phase", ""))
+                ws.cell(row=row, column=3, value=a.get("priority", ""))
+                ws.cell(row=row, column=4,
+                        value=_join_list(
+                            a.get("controls_addressed", [])
+                        )).alignment = _WRAP
+                refs = a.get("learn_references", [])
+                ref_text = "\n".join(
+                    f"{r.get('title', '')}\n{r.get('url', '')}" for r in refs
+                )
+                ws.cell(row=row, column=5,
+                        value=ref_text).alignment = _WRAP
+                row += 1
+            row += 1
+
+        # ── Cascade effect (AI) ───────────────────────────────────
+        cascade = ai.get("cascade_effect", "")
+        if cascade:
+            _merge_section(ws, row, "  Cascade Effect", MAX_COL,
+                           fill=_SUBSECTION_FILL, font=_SUBSECTION_FONT_BLK)
+            row += 1
+            _merge_text(ws, row, cascade, MAX_COL)
+            row += 2
+
+        # ── Separator between domains ─────────────────────────────
+        if idx < len(payloads) - 1:
+            row += 2   # two blank rows before next domain
+
+    # Column widths
+    for col_letter, width in [
+        ("A", 16), ("B", 24), ("C", 14), ("D", 18),
+        ("E", 55), ("F", 45), ("G", 12),
+    ]:
+        ws.column_dimensions[col_letter].width = width
+
+
+# ══════════════════════════════════════════════════════════════════
 # Main builder
 # ══════════════════════════════════════════════════════════════════
 
@@ -91,8 +309,17 @@ def build_csa_workbook(
     run_path: str = "out/run.json",
     target_path: str = "out/target_architecture.json",
     output_path: str = "out/CSA_Workbook_v1.xlsx",
+    why_payloads: list[dict] | None = None,
 ) -> str:
-    """Build the 3-sheet CSA workbook and return the output path."""
+    """Build the CSA workbook and return the output path.
+
+    Parameters
+    ----------
+    why_payloads : list[dict], optional
+        One or more why-analysis payloads (from ``build_why_payload``).
+        Each payload adds a risk-analysis section to the new
+        ``3_Risk_Analysis`` sheet in the workbook.
+    """
 
     run = _load_json(run_path)
     target = _load_json(target_path)
@@ -422,6 +649,12 @@ def build_csa_workbook(
         ("P", 45), ("Q", 45), ("R", 50), ("S", 55),
     ]:
         ws.column_dimensions[col_letter].width = width
+
+    # =============================================================
+    # 3  Risk Analysis  (from why-reasoning payloads)
+    # =============================================================
+    if why_payloads:
+        _build_risk_analysis_sheet(wb, why_payloads)
 
     # ── Save (with fallback if file is locked) ─────────────────────
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)

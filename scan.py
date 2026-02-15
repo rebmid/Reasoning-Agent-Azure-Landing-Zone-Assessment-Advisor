@@ -120,12 +120,34 @@ def main():
         # Step 3: terminal display
         print_why_report(payload)
 
-        # Step 4: save JSON
+        # Step 4: save JSON + workbook
         os.makedirs(OUT_DIR, exist_ok=True)
         why_path = os.path.join(OUT_DIR, f"why-{args.why.lower()}.json")
         with open(why_path, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2, default=str)
         print(f"  Saved: {why_path}")
+
+        # Step 5: generate CSA Workbook with risk-analysis sheet
+        # Find the run JSON path for existing workbook data
+        run_source = "demo/demo_run.json" if args.demo else None
+        if not run_source:
+            # Try the latest run file
+            from engine.run_store import get_last_run as _glr
+            run_source = _glr(OUT_DIR, run.get("execution_context", {}).get("tenant_id"))
+        if not run_source:
+            # Fall back to assessment.json
+            if os.path.exists("assessment.json"):
+                run_source = "assessment.json"
+        ta_path = os.path.join(OUT_DIR, "target_architecture.json")
+        csa_path = os.path.join(OUT_DIR, "CSA_Workbook_v1.xlsx")
+        if run_source:
+            build_csa_workbook(
+                run_path=run_source,
+                target_path=ta_path,
+                output_path=csa_path,
+                why_payloads=[payload],
+            )
+
         if args.pretty:
             print(json.dumps(payload, indent=2, default=str))
         return
@@ -335,12 +357,38 @@ def main():
         generate_report(output, out_path=report_path)
 
     # ── CSA Workbook ──────────────────────────────────────────────
+    # Auto-generate why-analysis for each top business risk
+    why_payloads: list[dict] = []
+    top_risks = output.get("executive_summary", {}).get("top_business_risks", [])
+    if top_risks:
+        print("\nBuilding risk analysis for workbook …")
+        for risk in top_risks:
+            domain = (
+                risk.get("domain")
+                or risk.get("affected_domain")
+                or risk.get("title", "")
+            )
+            if not domain:
+                continue
+            try:
+                wp = build_why_payload(output, domain, verbose=False)
+                if "error" not in wp and enable_ai:
+                    try:
+                        wp["ai_explanation"] = generate_why_explanation(provider, wp)
+                    except Exception:
+                        pass   # deterministic payload is still valuable
+                why_payloads.append(wp)
+            except Exception as e:
+                print(f"  ⚠ Why-analysis skipped for {domain}: {e}")
+        print(f"  Risk analyses built: {len(why_payloads)}")
+
     csa_path = os.path.join(OUT_DIR, "CSA_Workbook_v1.xlsx")
     ta_path = os.path.join(OUT_DIR, "target_architecture.json")
     build_csa_workbook(
         run_path=run_json_path,
         target_path=ta_path,
         output_path=csa_path,
+        why_payloads=why_payloads or None,
     )
 
     print(f"\n✓ Done.  {run_json_path}  |  {report_path}  |  {csa_path}")
