@@ -21,8 +21,11 @@ This agent:
 
 **Run one command → get a scored assessment, platform readiness briefing, and a traceable 30-60-90 plan.**
 
-🔎 **Open the interactive demo report:**  
-[View HTML report](docs/demo/Contoso-ALZ-Platform-Readiness-Report-Sample.html)
+
+> [!NOTE]
+> 🔎 **Open the interactive demo report:**  
+> **[View the HTML assessment report](docs/demo/Contoso-ALZ-Platform-Readiness-Report-Sample.html)**
+
 
 Generated from a real Azure Test/Lab "Contoso" tenant using read-only access.
 
