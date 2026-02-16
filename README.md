@@ -72,7 +72,9 @@ Root cause → cascade impact → initiative that resolves it.
 
 The assessment auto-discovers tenant scope, RBAC role, and signal availability before evaluation.
 
-![Execution Context](docs/demo/00_execution-context.png)
+![Execution Context](docs/demo/00a_execution-context.png)
+![Execution Context](docs/demo/00b_execution-context.png)
+![Execution Context](docs/demo/00c_execution-context.png)
 
 ## Features
 
