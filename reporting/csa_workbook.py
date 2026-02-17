@@ -129,7 +129,12 @@ def _write_control_detail_rows(
       A: ID  B: Design Area  C: Sub Area  D: WAF Pillar  E: Service
       F: Checklist item  G: Description  H: Severity  I: Status
       J: Comment  K: AMMP  L: More info  M: Training  N: Graph Query
-      O: GUID  P–T: (reserved)  U: Source File
+      O: GUID  P: Coverage %  Q: Subs Affected  R: Scope Level
+      S: Scope Pattern  T: (reserved)  U: Source File
+
+    Enterprise-scale columns P–S carry aggregated metadata
+    (populated by ``engine.aggregation.enrich_results_enterprise``).
+    One row per control — never per-subscription.
 
     Returns the number of rows written.
     """
@@ -171,8 +176,34 @@ def _write_control_detail_rows(
         ws.cell(row=row, column=13, value=cl.get("training", ""))   # Training
         ws.cell(row=row, column=14, value=ctrl.get("signal_used", ""))
         ws.cell(row=row, column=15, value=cid)                      # GUID
-        for c in range(16, 21):
-            ws.cell(row=row, column=c, value="")                    # P–T
+
+        # ── Enterprise-scale columns (P–S) ────────────────────────
+        # Coverage %: e.g. "85.0%" or "17/100 compliant"
+        cov_display = ctrl.get("coverage_display")
+        cov_pct = ctrl.get("coverage_pct")
+        if cov_display:
+            ws.cell(row=row, column=16, value=cov_display)
+        elif cov_pct is not None:
+            ws.cell(row=row, column=16, value=f"{cov_pct}%")
+        else:
+            ws.cell(row=row, column=16, value="")
+
+        # Subs Affected: e.g. "3/10"
+        subs_affected = ctrl.get("subscriptions_affected")
+        subs_assessed = ctrl.get("subscriptions_assessed")
+        if subs_affected is not None and subs_assessed:
+            ws.cell(row=row, column=17,
+                    value=f"{subs_affected}/{subs_assessed}")
+        else:
+            ws.cell(row=row, column=17, value="")
+
+        # Scope Level: Subscription | Management Group | Tenant
+        ws.cell(row=row, column=18, value=ctrl.get("scope_level", ""))
+
+        # Scope Pattern: Platform Governance Gap | Moderate Spread | Isolated Drift
+        ws.cell(row=row, column=19, value=ctrl.get("scope_pattern", ""))
+
+        ws.cell(row=row, column=20, value="")                       # T (reserved)
         ws.cell(row=row, column=21, value="lz-assessor")            # Source
 
         row += 1

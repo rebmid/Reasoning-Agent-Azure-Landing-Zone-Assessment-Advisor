@@ -7,6 +7,10 @@ New fields added for architectural decision support:
   - design_area_maturity    — per-ALZ-design-area maturity derived from section_scores
   - platform_scale_limits   — tenant / subscription / RBAC scope context
   - signal_confidence       — aggregated signal availability for transparency
+
+Enterprise-scale fields (require aggregation enrichment):
+  - enterprise_controls     — summarised, token-stable per-control payloads
+  - scope_summary           — L1/L2/L3 breakdown with strategic insight
 """
 from __future__ import annotations
 
@@ -90,6 +94,76 @@ def _cluster_initiative_candidates(fails: list[dict]) -> list[dict]:
         }
         for section, cids in sorted(by_section.items())
     ]
+
+
+def _build_enterprise_controls(results: list[dict]) -> list[dict]:
+    """Build summarised, token-stable per-control payloads for the AI.
+
+    Each failing/partial control becomes a compact dict with
+    coverage %, subscriptions affected, risk level, and scope classification.
+    Never includes raw per-subscription signal arrays — keeps token size
+    stable regardless of subscription count.
+
+    Uses enterprise enrichment fields if present (from
+    ``engine.aggregation.enrich_results_enterprise``), otherwise falls
+    back to basic metadata.
+    """
+    _RISK_ORDER = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3, "Info": 4}
+    controls: list[dict] = []
+    for r in results:
+        if r.get("status") not in ("Fail", "Partial"):
+            continue
+
+        sev = r.get("severity", "Medium")
+        risk_level = sev
+        # Elevate risk if scope is tenant-wide governance gap
+        if r.get("scope_pattern") == "Platform Governance Gap" and risk_level == "Medium":
+            risk_level = "High"
+
+        controls.append({
+            "control_id": r.get("control_id", ""),
+            "section": r.get("section", ""),
+            "status": r.get("status", ""),
+            "severity": sev,
+            "coverage_percent": r.get("coverage_pct"),
+            "subscriptions_affected": r.get("subscriptions_affected", 0),
+            "subscriptions_assessed": r.get("subscriptions_assessed", 0),
+            "risk_level": risk_level,
+            "scope_level": r.get("scope_level", ""),
+            "scope_pattern": r.get("scope_pattern", ""),
+        })
+
+    controls.sort(key=lambda c: (
+        _RISK_ORDER.get(c["risk_level"], 5),
+        -(c.get("subscriptions_affected") or 0),
+    ))
+    return controls[:50]
+
+
+def _build_scope_summary(results: list[dict]) -> dict:
+    """Build high-level L1/L2/L3 scope breakdown for AI context."""
+    failing = [r for r in results if r.get("status") in ("Fail", "Partial")]
+    total = len(failing)
+    if total == 0:
+        return {"total_findings": 0, "strategic_insight": "No failing controls."}
+
+    by_level: dict[str, int] = {}
+    by_pattern: dict[str, int] = {}
+    for r in failing:
+        level = r.get("scope_level", "Unknown")
+        pattern = r.get("scope_pattern", "Unknown")
+        by_level[level] = by_level.get(level, 0) + 1
+        by_pattern[pattern] = by_pattern.get(pattern, 0) + 1
+
+    gov_gap = by_pattern.get("Platform Governance Gap", 0)
+    gov_pct = round(gov_gap / total * 100, 1) if total else 0.0
+
+    return {
+        "total_findings": total,
+        "by_scope_level": by_level,
+        "by_pattern": by_pattern,
+        "governance_gap_percent": gov_pct,
+    }
 
 
 def build_advisor_payload(
@@ -179,4 +253,7 @@ def build_advisor_payload(
             execution_context or {}
         ),
         "signal_confidence": sig_conf,
+        # ── Enterprise-scale aggregation (token-stable) ───────────
+        "enterprise_controls": _build_enterprise_controls(results),
+        "scope_summary": _build_scope_summary(results),
     }

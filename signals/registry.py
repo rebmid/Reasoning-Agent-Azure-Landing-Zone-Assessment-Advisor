@@ -150,7 +150,13 @@ def _merge_raw_dicts(raw_list: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _merge_signal_results(results: list[SignalResult]) -> SignalResult:
-    """Merge SignalResults from per-subscription calls into one aggregate."""
+    """Merge SignalResults from per-subscription calls into one aggregate.
+
+    In addition to the existing merge logic, this now builds a
+    ``_per_subscription`` array in the merged raw dict so downstream
+    consumers (aggregation layer, workbook, AI) can see which
+    subscriptions contributed data and their individual status.
+    """
     if not results:
         return SignalResult(
             signal_name="",
@@ -186,6 +192,19 @@ def _merge_signal_results(results: list[SignalResult]) -> SignalResult:
     merged_raw["_subscriptions_assessed"] = len(ok_results)
     if err_results:
         merged_raw["_subscription_errors"] = len(err_results)
+
+    # ── Per-subscription breakdown (enterprise aggregation) ───────
+    per_sub: list[dict[str, Any]] = []
+    for r in results:
+        sub_id = (r.raw or {}).get("_subscription_id", "unknown")
+        sub_cov = (r.raw or {}).get("coverage", {})
+        per_sub.append({
+            "subscription_id": sub_id,
+            "status": r.status.value,
+            "item_count": len(r.items),
+            "coverage": sub_cov if isinstance(sub_cov, dict) else {},
+        })
+    merged_raw["_per_subscription"] = per_sub
 
     status = SignalStatus.OK
     error_msg = ""
@@ -371,7 +390,10 @@ def _multi_sub_provider(
                 error_msg="No subscriptions in scope",
             )
         if len(subs) == 1:
-            return fetch_fn(subs[0])
+            r = fetch_fn(subs[0])
+            r.raw = r.raw or {}
+            r.raw["_subscription_id"] = subs[0]
+            return r
 
         # ── Run across all subscriptions in parallel ──────────────
         results: list[SignalResult] = []
@@ -379,13 +401,18 @@ def _multi_sub_provider(
         with ThreadPoolExecutor(max_workers=max_workers) as pool:
             futures = {pool.submit(fetch_fn, sub): sub for sub in subs}
             for future in as_completed(futures):
+                sub_id = futures[future]
                 try:
-                    results.append(future.result())
+                    r = future.result()
+                    r.raw = r.raw or {}
+                    r.raw["_subscription_id"] = sub_id
+                    results.append(r)
                 except Exception as exc:
                     results.append(SignalResult(
                         signal_name="",
                         status=SignalStatus.ERROR,
-                        error_msg=f"{futures[future][:8]}: {exc}",
+                        error_msg=f"{sub_id[:8]}: {exc}",
+                        raw={"_subscription_id": sub_id},
                     ))
 
         return merger(results)

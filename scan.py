@@ -13,6 +13,7 @@ from collectors.resource_graph import get_subscriptions
 from engine.context import discover_execution_context
 from engine.adapter import run_evaluators_for_scoring
 from engine.scoring import compute_scoring
+from engine.aggregation import enrich_results_enterprise, build_scope_summary
 from engine.run_store import save_run, get_last_run
 from engine.delta import compute_delta
 from engine.rollup import rollup_by_section
@@ -335,6 +336,14 @@ def main():
     )
     scoring = compute_scoring(results)
 
+    # ── Enterprise-scale aggregation ──────────────────────────────
+    # Enrich each result with coverage %, subscriptions affected,
+    # scope level (L1/L2/L3), and scope pattern — NO scoring changes.
+    enrich_results_enterprise(results, execution_context)
+    scope_summary = build_scope_summary(results)
+    print(f"  Scope model: {scope_summary.get('total_findings', 0)} findings, "
+          f"{scope_summary.get('governance_gap_percent', 0)}% platform governance gaps")
+
     # Harvest signal bus telemetry
     telemetry.record_signal_events(bus.reset_events())
 
@@ -369,6 +378,7 @@ def main():
         "limitations": limitations,
         "signal_availability": sig_matrix,
         "scoring": scoring,
+        "scope_summary": scope_summary,
         "rollups": dict(rollup_by_section(results)),
         "results": results,
         "customer_questions": _build_customer_questions(results),
