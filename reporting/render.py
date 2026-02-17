@@ -290,43 +290,54 @@ def _build_report_context(output: dict) -> dict:
 
     # ── Provenance — scan telemetry for credibility ───────────────
     telemetry = output.get("telemetry", {})
+    is_live = telemetry.get("live_run", False)
     sig_avail = output.get("signal_availability", {})
 
-    rg_queries = telemetry.get("rg_query_count", 0)
-    arm_calls  = telemetry.get("arm_call_count", 0)
-    total_api  = rg_queries + arm_calls
-    signals_fetched = telemetry.get("signals_fetched", 0)
-    signals_cached  = telemetry.get("signals_cached", 0)
-    signal_errors   = telemetry.get("signal_errors", 0)
-    data_driven_count = auto_cov.get("automated_controls", auto_cov.get("data_driven", 0))
+    if is_live:
+        rg_queries      = telemetry.get("rg_query_count")
+        arm_calls       = telemetry.get("arm_call_count")
+        total_api       = (rg_queries or 0) + (arm_calls or 0) if rg_queries is not None or arm_calls is not None else None
+        signals_fetched = telemetry.get("signals_fetched")
+        signals_cached  = telemetry.get("signals_cached")
+        signal_errors   = telemetry.get("signal_errors")
+        data_driven_count = auto_cov.get("automated_controls", auto_cov.get("data_driven"))
 
-    signal_inventory: dict[str, int] = {}
-    for cat, sigs in sig_avail.items():
-        if isinstance(sigs, list):
-            signal_inventory[cat] = len(sigs)
+        signal_inventory: dict[str, int] = {}
+        for cat, sigs in sig_avail.items():
+            if isinstance(sigs, list):
+                signal_inventory[cat] = len(sigs)
 
-    provenance = {
-        "statement": (
-            "This report was generated from live platform telemetry. "
-            "No questionnaire or Excel input was used."
-        ),
-        "scan_duration_sec": telemetry.get("assessment_duration_sec", 0),
-        "api_calls_total": total_api,
-        "rg_queries": rg_queries,
-        "arm_calls": arm_calls,
-        "signals_fetched": signals_fetched,
-        "signals_cached": signals_cached,
-        "signal_errors": signal_errors,
-        "signal_inventory": signal_inventory,
-        "signal_categories": len(signal_inventory),
-        "data_driven_controls": data_driven_count,
-        "total_controls": auto_cov.get("total_controls", 0),
-        "phase_context_sec": telemetry.get("phase_context_sec", 0),
-        "phase_signals_sec": telemetry.get("phase_signals_sec", 0),
-        "phase_evaluators_sec": telemetry.get("phase_evaluators_sec", 0),
-        "phase_ai_sec": telemetry.get("phase_ai_sec", 0),
-        "phase_reporting_sec": telemetry.get("phase_reporting_sec", 0),
-    }
+        provenance = {
+            "live": True,
+            "statement": (
+                "This report was generated from live platform telemetry. "
+                "No questionnaire or Excel input was used."
+            ),
+            "scan_duration_sec": telemetry.get("assessment_duration_sec"),
+            "api_calls_total": total_api,
+            "rg_queries": rg_queries,
+            "arm_calls": arm_calls,
+            "signals_fetched": signals_fetched,
+            "signals_cached": signals_cached,
+            "signal_errors": signal_errors,
+            "signal_inventory": signal_inventory,
+            "signal_categories": len(signal_inventory),
+            "data_driven_controls": data_driven_count,
+            "total_controls": auto_cov.get("total_controls"),
+            "phase_context_sec": telemetry.get("phase_context_sec"),
+            "phase_signals_sec": telemetry.get("phase_signals_sec"),
+            "phase_evaluators_sec": telemetry.get("phase_evaluators_sec"),
+            "phase_ai_sec": telemetry.get("phase_ai_sec"),
+            "phase_reporting_sec": telemetry.get("phase_reporting_sec"),
+        }
+    else:
+        provenance = {
+            "live": False,
+            "statement": (
+                "Demo Mode \u2014 No live telemetry. "
+                "Metrics shown are from cached or sample data."
+            ),
+        }
 
     return {
         "readiness_snapshot": readiness_snapshot,

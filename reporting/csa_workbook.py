@@ -246,8 +246,9 @@ def _populate_executive_summary(ws, run: dict) -> None:
     ready = esr.get("ready_for_enterprise_scale", False)
     score = esr.get("readiness_score", "")
     ws.cell(row=9, column=2, value="Yes" if ready else f"No  (score: {score})")
+    maturity = scoring.get('overall_maturity_percent')
     ws.cell(row=10, column=2,
-            value=f"{scoring.get('overall_maturity_percent', 0)}%")
+            value=f"{maturity}%" if maturity is not None else "Unavailable")
 
     data_driven = sum(
         1 for r in results
@@ -487,14 +488,15 @@ def validate_signal_integrity(run: dict, *, allow_demo: bool = False) -> dict:
     are zero and ``allow_demo`` is False.
     """
     telemetry = run.get("telemetry", {})
+    is_live = telemetry.get("live_run", False)
     sig_avail = run.get("signal_availability", {})
     results = run.get("results", [])
 
-    # Count signals that actually returned data
-    rg_queries = telemetry.get("rg_query_count", 0)
-    arm_calls = telemetry.get("arm_call_count", 0)
-    signals_fetched = telemetry.get("signals_fetched", 0)
-    total_api_calls = rg_queries + arm_calls
+    # Count signals that actually returned data — use None when absent
+    rg_queries = telemetry.get("rg_query_count")
+    arm_calls = telemetry.get("arm_call_count")
+    signals_fetched = telemetry.get("signals_fetched")
+    total_api_calls = (rg_queries or 0) + (arm_calls or 0)
 
     # Signal inventory from availability matrix
     signal_inventory: dict[str, int] = {}
@@ -506,24 +508,28 @@ def validate_signal_integrity(run: dict, *, allow_demo: bool = False) -> dict:
     data_driven = sum(1 for r in results if r.get("signal_used"))
 
     provenance = {
+        "live": is_live,
         "statement": (
             "This report was generated from live platform telemetry. "
             "No questionnaire or Excel input was used."
+        ) if is_live else (
+            "Demo Mode \u2014 No live telemetry. "
+            "Metrics shown are from cached or sample data."
         ),
-        "scan_duration_sec": telemetry.get("assessment_duration_sec", 0),
-        "api_calls_total": total_api_calls,
+        "scan_duration_sec": telemetry.get("assessment_duration_sec"),
+        "api_calls_total": total_api_calls if is_live else None,
         "rg_queries": rg_queries,
         "arm_calls": arm_calls,
         "signals_fetched": signals_fetched,
-        "signals_cached": telemetry.get("signals_cached", 0),
-        "signal_errors": telemetry.get("signal_errors", 0),
+        "signals_cached": telemetry.get("signals_cached"),
+        "signal_errors": telemetry.get("signal_errors"),
         "signal_inventory": signal_inventory,
         "signal_categories": len(signal_inventory),
         "data_driven_controls": data_driven,
         "total_controls": len(results),
     }
 
-    # Gate: abort if no signals and not demo
+    # Gate: abort if no live signals and not demo
     if total_api_calls == 0 and data_driven == 0 and not allow_demo:
         raise SignalIntegrityError(
             "ABORT: Platform signal counts are zero. "

@@ -40,6 +40,9 @@ class RunTelemetry:
     phase_reporting_sec: float = 0.0
     assessment_duration_sec: float = 0.0
 
+    # Whether a live scan was actually executed (set by scan.py)
+    _live_run: bool = field(default=False, repr=False)
+
     # Internal timing helpers (not serialized)
     _phase_starts: dict[str, float] = field(default_factory=dict, repr=False)
 
@@ -74,10 +77,28 @@ class RunTelemetry:
             elif etype == "signal_error":
                 self.signal_errors += 1
 
+    def mark_live(self) -> None:
+        """Mark this telemetry instance as belonging to a live scan."""
+        self._live_run = True
+
+    @property
+    def is_live(self) -> bool:
+        return self._live_run
+
     def to_dict(self) -> dict[str, Any]:
-        """Serialize telemetry for inclusion in run JSON."""
+        """Serialize telemetry for inclusion in run JSON.
+
+        Only includes metric fields that were actually populated
+        during a live scan.  If no live scan ran, the dict will
+        contain only ``live_run: false`` so downstream consumers
+        can distinguish 'never collected' from 'collected zero'.
+        """
         d = asdict(self)
         d.pop("_phase_starts", None)
+        d["live_run"] = d.pop("_live_run", False)
+        if not d["live_run"]:
+            # Strip numeric fields — they are uninitialised defaults
+            return {"live_run": False}
         return d
 
     def summary_lines(self) -> list[str]:

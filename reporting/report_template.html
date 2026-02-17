@@ -646,21 +646,22 @@
     <p style="font-size:15px;font-weight:600;margin-bottom:12px;color:var(--fg);">
       {{ provenance.statement }}
     </p>
+    {% if provenance.live %}
     <div class="grid-4" style="margin-bottom:14px;">
       <div class="kpi">
-        <div class="value">{{ provenance.scan_duration_sec }}s</div>
+        <div class="value">{% if provenance.scan_duration_sec is not none %}{{ provenance.scan_duration_sec }}s{% else %}Unavailable{% endif %}</div>
         <div class="label">Scan Duration</div>
       </div>
       <div class="kpi">
-        <div class="value">{{ provenance.api_calls_total }}</div>
-        <div class="label">API Calls ({{ provenance.rg_queries }} RG + {{ provenance.arm_calls }} ARM)</div>
+        <div class="value">{% if provenance.api_calls_total is not none %}{{ provenance.api_calls_total }}{% else %}Unavailable{% endif %}</div>
+        <div class="label">API Calls{% if provenance.rg_queries is not none %} ({{ provenance.rg_queries }} RG + {{ provenance.arm_calls }} ARM){% endif %}</div>
       </div>
       <div class="kpi">
-        <div class="value">{{ provenance.signals_fetched }}</div>
-        <div class="label">Signals Fetched ({{ provenance.signals_cached }} cached)</div>
+        <div class="value">{% if provenance.signals_fetched is not none %}{{ provenance.signals_fetched }}{% else %}Unavailable{% endif %}</div>
+        <div class="label">Signals Fetched{% if provenance.signals_cached is not none %} ({{ provenance.signals_cached }} cached){% endif %}</div>
       </div>
       <div class="kpi">
-        <div class="value">{{ provenance.data_driven_controls }} / {{ provenance.total_controls }}</div>
+        <div class="value">{% if provenance.data_driven_controls is not none %}{{ provenance.data_driven_controls }}{% if provenance.total_controls is not none %} / {{ provenance.total_controls }}{% endif %}{% else %}Unavailable{% endif %}</div>
         <div class="label">Data-Driven Controls</div>
       </div>
     </div>
@@ -673,13 +674,15 @@
     </table>
     {% endif %}
     <div style="margin-top:12px;font-size:12px;color:var(--muted);">
-      Phase timing: context={{ provenance.phase_context_sec }}s
-      &middot; signals={{ provenance.phase_signals_sec }}s
-      &middot; evaluators={{ provenance.phase_evaluators_sec }}s
-      &middot; ai={{ provenance.phase_ai_sec }}s
-      &middot; reporting={{ provenance.phase_reporting_sec }}s
+      Phase timing:
+      {% if provenance.phase_context_sec is not none %}context={{ provenance.phase_context_sec }}s{% endif %}
+      {% if provenance.phase_signals_sec is not none %}&middot; signals={{ provenance.phase_signals_sec }}s{% endif %}
+      {% if provenance.phase_evaluators_sec is not none %}&middot; evaluators={{ provenance.phase_evaluators_sec }}s{% endif %}
+      {% if provenance.phase_ai_sec is not none %}&middot; ai={{ provenance.phase_ai_sec }}s{% endif %}
+      {% if provenance.phase_reporting_sec is not none %}&middot; reporting={{ provenance.phase_reporting_sec }}s{% endif %}
       {% if provenance.signal_errors %}&middot; <span style="color:#e74c3c;">{{ provenance.signal_errors }} signal error(s)</span>{% endif %}
     </div>
+    {% endif %}
   </div>
 </div>
 {% endif %}

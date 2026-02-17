@@ -197,6 +197,7 @@ def main():
     # ── Timing + paths ────────────────────────────────────────────
     scan_start = time.perf_counter()
     telemetry = RunTelemetry()
+    telemetry.mark_live()  # This is a real scan, not demo/cached data
     now = datetime.now(timezone.utc)
     run_id = now.strftime("run-%Y%m%d-%H%M")
     os.makedirs(OUT_DIR, exist_ok=True)
