@@ -684,7 +684,7 @@ def _restore_extensions(template_path: str, output_path: str) -> int:
     # ── Patch each sheet ──────────────────────────────────────────
     patched = 0
     for sheet_name, tpl_bytes in tpl_data.items():
-        if sheet_name not in out_map or sheet_name == "ARG":
+        if sheet_name not in out_map:
             continue
         out_path = out_map[sheet_name]
         if out_path not in entries:
@@ -779,13 +779,18 @@ def build_csa_workbook(
     # ── Log provenance before rendering ───────────────────────────
     ec = run.get("execution_context", {})
     telem = run.get("telemetry", {})
+    is_live = telem.get("live_run", False)
     print("  ┌─ Workbook Provenance ────────────────┐")
+    print(f"  │ mode:                   {'Live' if is_live else 'Demo / Cached'}")
     print(f"  │ tenant_id:              {ec.get('tenant_id', 'N/A')}")
     print(f"  │ subscription_count:     {ec.get('subscription_count_visible', 'N/A')}")
-    print(f"  │ rg_queries:             {telem.get('rg_query_count', 0)}")
-    print(f"  │ arm_calls:              {telem.get('arm_call_count', 0)}")
-    print(f"  │ signals_fetched:        {telem.get('signals_fetched', 0)}")
-    print(f"  │ scan_duration:          {telem.get('assessment_duration_sec', 0)}s")
+    if is_live:
+        print(f"  │ rg_queries:             {telem.get('rg_query_count', 'N/A')}")
+        print(f"  │ arm_calls:              {telem.get('arm_call_count', 'N/A')}")
+        print(f"  │ signals_fetched:        {telem.get('signals_fetched', 'N/A')}")
+        print(f"  │ scan_duration:          {telem.get('assessment_duration_sec', 'N/A')}s")
+    else:
+        print("  │ telemetry:              Not available (demo/cached run)")
     print("  └─────────────────────────────────────────┘")
 
     # ── Copy template → output (byte-for-byte) ───────────────────
