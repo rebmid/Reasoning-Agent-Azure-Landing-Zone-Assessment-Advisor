@@ -21,9 +21,9 @@ This agent:
 
 **Run one command → get a scored assessment, platform readiness briefing, and a traceable 30-60-90 plan.**
 
-> [!NOTE]
+> [!IMPORTANT] ## 🚀 Interactive Demo
 > 🔎 **Open the interactive demo report:**  
-> **[View the HTML assessment report](https://htmlpreview.github.io/?https://github.com/rebmid/Reasoning-Agent-Azure-Landing-Zone-Assessment-Advisor/blob/main/docs/demo/Contoso-ALZ-Platform-Readiness-Report-Sample.html)**
+> 👉 **[View the HTML assessment report](https://htmlpreview.github.io/?https://github.com/rebmid/Reasoning-Agent-Azure-Landing-Zone-Assessment-Advisor/blob/main/docs/demo/Contoso-ALZ-Platform-Readiness-Report-Sample.html)**
 
 Generated from a real Azure Test/Lab "Contoso" tenant using read-only access.
 
@@ -74,7 +74,7 @@ The assessment auto-discovers tenant scope, RBAC role, and signal availability b
 | Capability | Description |
 |---|---|
 | **Live ALZ Checklist** | Always fetches the latest checklist from the `Azure/review-checklists` GitHub repo — never stale |
-| **40 Automated Evaluators** | 39 signal providers across Resource Graph, Defender, Policy, Management Groups, Microsoft Graph, Cost Management, Update Manager, and Monitor — scoring controls as Pass / Fail / Partial. Automation coverage depends on signal availability and RBAC scope. |
+| **40 plus Automated Evaluators** | 40+ signal providers across Resource Graph, Defender, Policy, Management Groups, Microsoft Graph, Cost Management, Update Manager, and Monitor — scoring controls as Pass / Fail / Partial. Automation coverage depends on signal availability and RBAC scope. |
 | **Weighted Scoring** | Domain-weighted maturity model with severity multipliers across 8 design areas |
 | **9-Pass AI Advisory Pipeline** | Roadmap, executive briefing, ALZ pattern selection, sequence justification, readiness, smart questions, implementation backlog, Learn grounding, and target architecture |
 | **Microsoft Learn MCP Grounding** | Official MCP SDK retrieves real guidance, code samples, and full documentation |
