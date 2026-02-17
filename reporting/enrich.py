@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from openpyxl import load_workbook
-from openpyxl.styles import Font
+from openpyxl.styles import Font, PatternFill
 
 # ══════════════════════════════════════════════════════════════════
 # Constants
@@ -345,3 +345,94 @@ def _validate(stats: dict[str, Any]) -> None:
     if derived > 0:
         print(f"    → All derived rows have: Derived Control ID ✅, Control Source ✅")
     print(f"    → All rows have: Control Source ✅, Control Type ✅")
+
+
+# ══════════════════════════════════════════════════════════════════
+# Public API — enrich an already-open worksheet (no file I/O)
+# ══════════════════════════════════════════════════════════════════
+
+def enrich_open_worksheet(ws) -> dict[str, Any]:
+    """Apply enrichment columns (V–Y) to an already-open worksheet.
+
+    This avoids a second openpyxl load/save cycle.  Called by the main
+    workbook builder after writing Checklist data rows.
+
+    Returns a stats dict with counts.
+    """
+    # ── Write enrichment headers ──────────────────────────────────
+    header_font = Font(bold=True, color="FFFFFF")
+    header_fill = PatternFill("solid", fgColor="4472C4")
+    for col_idx, header_text in _NEW_HEADERS.items():
+        cell = ws.cell(row=_HEADER_ROW, column=col_idx, value=header_text)
+        cell.font = header_font
+        cell.fill = header_fill
+
+    last_row = ws.max_row
+    if last_row < _DATA_START:
+        return {"rows_processed": 0, "alz": 0, "derived": 0}
+
+    # ── First pass: collect ALZ rows for traceability ─────────────
+    alz_rows_for_linking: list[dict[str, str]] = []
+    for row in range(_DATA_START, last_row + 1):
+        item_id = str(ws.cell(row=row, column=_COL_ID).value or "")
+        if _ALZ_ID_RE.match(item_id):
+            alz_rows_for_linking.append({
+                "id": item_id,
+                "text": str(ws.cell(row=row, column=_COL_TEXT).value or ""),
+                "design_area": str(
+                    ws.cell(row=row, column=_COL_DESIGN_AREA).value or ""
+                ),
+            })
+
+    # ── Second pass: enrich every row ─────────────────────────────
+    stats: dict[str, Any] = {
+        "rows_processed": 0, "alz": 0, "derived": 0,
+        "design_area_filled": 0, "waf_filled": 0,
+    }
+
+    for row in range(_DATA_START, last_row + 1):
+        item_id = str(ws.cell(row=row, column=_COL_ID).value or "").strip()
+        text = str(ws.cell(row=row, column=_COL_TEXT).value or "").strip()
+        design_area = str(
+            ws.cell(row=row, column=_COL_DESIGN_AREA).value or ""
+        ).strip()
+        waf = str(ws.cell(row=row, column=_COL_WAF).value or "").strip()
+
+        if not item_id and not text:
+            continue
+
+        stats["rows_processed"] += 1
+        is_alz = bool(_ALZ_ID_RE.match(item_id))
+
+        if is_alz:
+            stats["alz"] += 1
+            ws.cell(row=row, column=_COL_CONTROL_SOURCE, value="ALZ")
+            ws.cell(row=row, column=_COL_DERIVED_CONTROL_ID, value="")
+            ws.cell(row=row, column=_COL_CONTROL_TYPE, value="Foundational")
+            ws.cell(row=row, column=_COL_RELATED_ALZ, value="")
+        else:
+            stats["derived"] += 1
+            ws.cell(row=row, column=_COL_CONTROL_SOURCE, value="Derived")
+
+            if not design_area:
+                design_area = _infer_design_area(text)
+                ws.cell(row=row, column=_COL_DESIGN_AREA, value=design_area)
+                stats["design_area_filled"] += 1
+
+            if not waf:
+                waf = _infer_waf(design_area)
+                ws.cell(row=row, column=_COL_WAF, value=waf)
+                stats["waf_filled"] += 1
+
+            ws.cell(
+                row=row, column=_COL_DERIVED_CONTROL_ID,
+                value=_make_derived_id(design_area, text),
+            )
+            ws.cell(row=row, column=_COL_CONTROL_TYPE, value="Detective")
+            ws.cell(
+                row=row, column=_COL_RELATED_ALZ,
+                value=_find_related_alz(text, alz_rows_for_linking),
+            )
+
+    _validate(stats)
+    return stats

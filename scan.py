@@ -440,7 +440,7 @@ def main():
     telemetry.end_phase("ai")
 
     # ── Delta from previous run ───────────────────────────────────
-    last_run_path = get_last_run(OUT_DIR, tenant_id)
+    last_run_path = get_last_run(OUT_DIR, tenant_id, tenant_name=tenant_name)
     if last_run_path:
         with open(last_run_path, encoding="utf-8") as f:
             previous = json.load(f)
@@ -457,7 +457,7 @@ def main():
         json.dump(output, f, indent=2)
     with open("assessment.json", "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2)
-    save_run(OUT_DIR, tenant_id, output)
+    save_run(OUT_DIR, tenant_id, output, tenant_name=tenant_name)
 
     # ── Reports ───────────────────────────────────────────────────
     if not args.no_html:

@@ -134,7 +134,7 @@
 </nav>
 
 <h1>Azure Landing Zone — Platform Readiness Report
-  <br><small>2026-02-17 · Run run-20260217-0424</small>
+  <br><small>2026-02-17 · Run run-20260217-0539</small>
 </h1>
 
 <!-- ════════════════════════════════════════════════════════════════
@@ -165,9 +165,9 @@
   
   <div class="card">
     <h3>Platform Scale Implication</h3>
-    <p>Contoso&#39;s current Azure platform maturity is critically low, with an overall maturity score below 20%. Key foundational controls across security, identity, networking, management, and governance are failing, exposing the business to significant operational, compliance, and reputational risks. The assessment reveals that essential protections—such as data encryption, privileged access management, centralized monitoring, and resilient network architecture—are either absent or not enforced, with most controls either failing or not implemented at all.
+    <p>Contoso&#39;s current Azure platform maturity is critically low, with an overall maturity score of 19.5% and significant gaps across all core landing zone design areas. Key risks include inadequate data protection, fragmented network security, weak identity governance, and insufficient operational resilience. These deficiencies expose the business to elevated risks of data breach, service disruption, and regulatory non-compliance, directly impacting revenue continuity and brand reputation. The assessment shows that foundational controls such as storage security, privileged access management, centralized monitoring, and cost governance are either missing or ineffective, leaving the environment vulnerable to both internal and external threats.
 
-The primary business risk is the high likelihood of service disruption, data loss, or security breach, as evidenced by the lack of backup coverage, missing DDoS protection, and insufficient RBAC hygiene. Without immediate investment in core landing zone controls, Contoso faces increased probability of regulatory non-compliance, financial loss from outages or breaches, and inability to scale securely. The investment thesis is clear: rapid remediation of these critical gaps will unlock operational continuity, reduce exposure to cyber threats, and establish a foundation for compliant, cost-managed cloud growth.</p>
+The investment thesis is clear: immediate action is required to establish baseline security, operational visibility, and governance controls. With only one Azure subscription in scope and management group access available, the organization has an opportunity to rapidly uplift its cloud posture before scaling workloads or onboarding additional business units. Prioritizing remediation of high-severity risks will not only protect critical assets but also enable future growth on a secure and compliant foundation.</p>
     
     <p style="margin-top:8px;color:var(--muted);font-size:13px;">Estimated max supported subscriptions in current state: <strong>1</strong></p>
     
@@ -192,51 +192,65 @@ The primary business risk is the high likelihood of service disruption, data los
       
       <tr>
         <td><strong>Governance</strong></td>
-        <td>No evidence of a management group hierarchy or policy initiatives at management group scope. Without this, platform-wide governance, policy enforcement, and scalable resource organization are impossible.</td>
+        <td>No management group hierarchy is present. Platform, Connectivity, Identity, and Landing Zones management groups are missing, preventing scalable policy assignment and resource organization.</td>
         <td><span class="tag tag-critical">Critical</span></td>
         <td>Cost Governance and Budget Enforcement</td>
       </tr>
       
       <tr>
         <td><strong>Network Topology and Connectivity</strong></td>
-        <td>No hub-spoke or Virtual WAN topology detected; no Azure Firewall or DDoS Protection present. Centralized egress, segmentation, and scalable network security are not possible in current state.</td>
+        <td>No hub-spoke or Virtual WAN topology detected. No hub VNet or Azure Firewall present, and DDoS Protection is not enabled, resulting in a flat, insecure network posture unsuitable for scaling.</td>
         <td><span class="tag tag-critical">Critical</span></td>
-        <td>Centralized Monitoring and Workspace Topology</td>
+        <td>Centralized Monitoring and Log Analytics Workspace Topology</td>
       </tr>
       
       <tr>
         <td><strong>Identity</strong></td>
-        <td>Privileged Identity Management (PIM) is not enabled and RBAC hygiene is poor (27 Owner assignments, 0% group-based). No break-glass account validation. This prevents safe scaling of access and increases risk.</td>
+        <td>Privileged Identity Management (PIM) is not enabled for privileged roles, RBAC hygiene is poor (27 Owner assignments, no group-based RBAC), and break-glass accounts are not validated or documented. These gaps create high risk and prevent safe scaling.</td>
         <td><span class="tag tag-critical">Critical</span></td>
-        <td>Policy Baseline and Resource Governance</td>
-      </tr>
-      
-      <tr>
-        <td><strong>Management</strong></td>
-        <td>No centralized Log Analytics workspace, Sentinel not enabled, and log retention is only 30 days. Platform lacks centralized monitoring, security operations, and compliance evidence.</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td>Network Segmentation and Centralized Egress Control</td>
+        <td>Baseline Governance: Policy Assignment and Resource Locks</td>
       </tr>
       
       <tr>
         <td><strong>Security</strong></td>
-        <td>Centralized security visibility is missing; Defender for Cloud coverage and Secure Score are not evidenced. Storage and private endpoint posture are non-compliant.</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td>RBAC Hygiene and Privileged Identity Management</td>
+        <td>Centralized security visibility is lacking: Defender for Cloud is not enabled across all plans, Secure Score is unavailable/low, and diagnostics coverage is only 2.1%. This blocks security monitoring and compliance at scale.</td>
+        <td><span class="tag tag-critical">Critical</span></td>
+        <td>Secure Network Topology: Hub-Spoke, DDoS, and Centralized Egress</td>
       </tr>
       
       <tr>
-        <td><strong>Cost Governance</strong></td>
-        <td>No budgets, cost alerts, or anomaly detection are in place. This exposes the platform to uncontrolled spend as it scales.</td>
+        <td><strong>Management</strong></td>
+        <td>No centralized Log Analytics workspace with Sentinel enabled and ≥90d retention. Workspace topology is fragmented (5 workspaces, only 30d retention), blocking SOC operations and log-based governance.</td>
         <td><span class="tag tag-high">High</span></td>
-        <td>Operational Management: Patching and Change Tracking</td>
+        <td>Security Baseline and Centralized Security Visibility</td>
       </tr>
       
       <tr>
         <td><strong>Platform Automation and DevOps</strong></td>
-        <td>No evidence of infrastructure-as-code (IaC) usage or policy remediation. Subscription vending is not automated or documented.</td>
+        <td>No evidence of automated subscription vending, IaC adoption, or active policy remediation. Manual processes will not scale to 50+ subscriptions.</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td>Identity Hygiene and Privileged Access Management</td>
+      </tr>
+      
+      <tr>
+        <td><strong>Governance</strong></td>
+        <td>Cost governance is missing: no budgets, notification rules, or anomaly detection are defined, risking uncontrolled spend during scale-out.</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td>Operational Management: Update, Alert, and Change Tracking</td>
+      </tr>
+      
+      <tr>
+        <td><strong>Management</strong></td>
+        <td>Patch posture is insufficient: Update Manager or equivalent is not configured, and maintenance windows are not defined, risking service instability at scale.</td>
         <td><span class="tag tag-medium">Medium</span></td>
-        <td>Data Protection and Security Visibility</td>
+        <td>Backup and Resilience Coverage</td>
+      </tr>
+      
+      <tr>
+        <td><strong>Security | Data Protection</strong></td>
+        <td>Storage account and private endpoint posture is non-compliant (0% coverage), exposing data to risk and failing to meet baseline enterprise security requirements.</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td>Data Protection: Storage Posture and Private Endpoints</td>
       </tr>
       
     </table>
@@ -270,68 +284,14 @@ The primary business risk is the high likelihood of service disruption, data los
             <span style="color:var(--muted);">—</span>
           
         </td>
-        <td><span class="tag tag-phase">30 days</span></td>
+        <td></td>
         <td style="font-size:13px;">Cost governance controls → enables FinOps visibility across landing zones</td>
       </tr>
       
       <tr>
-        <td>1</td>
-        <td><strong>Centralized Monitoring and Workspace Topology</strong></td>
+        <td>2</td>
+        <td><strong>Centralized Monitoring and Log Analytics Workspace Topology</strong></td>
         <td style="text-align:center;">1</td>
-        <td>
-          
-            <span style="color:var(--muted);">—</span>
-          
-        </td>
-        <td><span class="tag tag-phase">30 days</span></td>
-        <td style="font-size:13px;">Platform capability improvement</td>
-      </tr>
-      
-      <tr>
-        <td>1</td>
-        <td><strong>Policy Baseline and Resource Governance</strong></td>
-        <td style="text-align:center;">5</td>
-        <td>
-          
-            <span style="color:var(--muted);">—</span>
-          
-        </td>
-        <td><span class="tag tag-phase">30 days</span></td>
-        <td style="font-size:13px;">Policy-driven guardrails → enables safe self-service for landing zone teams</td>
-      </tr>
-      
-      <tr>
-        <td>2</td>
-        <td><strong>Network Segmentation and Centralized Egress Control</strong></td>
-        <td style="text-align:center;">4</td>
-        <td>
-          
-            
-              <span style="font-size:13px;">Enforce policy baseline and resource governance across the m</span>
-            
-          
-        </td>
-        <td><span class="tag tag-phase">60 days</span></td>
-        <td style="font-size:13px;">Hub connectivity &amp; centralized egress → enables landing zone networking model</td>
-      </tr>
-      
-      <tr>
-        <td>2</td>
-        <td><strong>RBAC Hygiene and Privileged Identity Management</strong></td>
-        <td style="text-align:center;">3</td>
-        <td>
-          
-            <span style="color:var(--muted);">—</span>
-          
-        </td>
-        <td></td>
-        <td style="font-size:13px;">Identity &amp; Entra ID integration → enables PIM and break-glass governance</td>
-      </tr>
-      
-      <tr>
-        <td>2</td>
-        <td><strong>Operational Management: Patching and Change Tracking</strong></td>
-        <td style="text-align:center;">3</td>
         <td>
           
             <span style="color:var(--muted);">—</span>
@@ -343,21 +303,93 @@ The primary business risk is the high likelihood of service disruption, data los
       
       <tr>
         <td>3</td>
-        <td><strong>Data Protection and Security Visibility</strong></td>
-        <td style="text-align:center;">7</td>
+        <td><strong>Baseline Governance: Policy Assignment and Resource Locks</strong></td>
+        <td style="text-align:center;">5</td>
         <td>
           
-            
-              <span style="font-size:13px;">Establish centralized monitoring and workspace topology for ,</span>
-            
-              <span style="font-size:13px;">Implement network segmentation and centralized egress contro,</span>
-            
-              <span style="font-size:13px;">Remediate RBAC hygiene and establish least-privilege access </span>
-            
+            <span style="color:var(--muted);">—</span>
           
         </td>
-        <td><span class="tag tag-phase">90 days</span></td>
+        <td></td>
+        <td style="font-size:13px;">Policy-driven guardrails → enables safe self-service for landing zone teams</td>
+      </tr>
+      
+      <tr>
+        <td>4</td>
+        <td><strong>Secure Network Topology: Hub-Spoke, DDoS, and Centralized Egress</strong></td>
+        <td style="text-align:center;">4</td>
+        <td>
+          
+            <span style="color:var(--muted);">—</span>
+          
+        </td>
+        <td></td>
+        <td style="font-size:13px;">Hub connectivity &amp; centralized egress → enables landing zone networking model</td>
+      </tr>
+      
+      <tr>
+        <td>5</td>
+        <td><strong>Security Baseline and Centralized Security Visibility</strong></td>
+        <td style="text-align:center;">3</td>
+        <td>
+          
+            <span style="color:var(--muted);">—</span>
+          
+        </td>
+        <td></td>
         <td style="font-size:13px;">Security baseline enforcement → enables SOC integration</td>
+      </tr>
+      
+      <tr>
+        <td>6</td>
+        <td><strong>Identity Hygiene and Privileged Access Management</strong></td>
+        <td style="text-align:center;">3</td>
+        <td>
+          
+            <span style="color:var(--muted);">—</span>
+          
+        </td>
+        <td></td>
+        <td style="font-size:13px;">Identity &amp; Entra ID integration → enables PIM and break-glass governance</td>
+      </tr>
+      
+      <tr>
+        <td>7</td>
+        <td><strong>Operational Management: Update, Alert, and Change Tracking</strong></td>
+        <td style="text-align:center;">3</td>
+        <td>
+          
+            <span style="color:var(--muted);">—</span>
+          
+        </td>
+        <td></td>
+        <td style="font-size:13px;">Platform capability improvement</td>
+      </tr>
+      
+      <tr>
+        <td>8</td>
+        <td><strong>Backup and Resilience Coverage</strong></td>
+        <td style="text-align:center;">1</td>
+        <td>
+          
+            <span style="color:var(--muted);">—</span>
+          
+        </td>
+        <td></td>
+        <td style="font-size:13px;">Platform capability improvement</td>
+      </tr>
+      
+      <tr>
+        <td>9</td>
+        <td><strong>Data Protection: Storage Posture and Private Endpoints</strong></td>
+        <td style="text-align:center;">3</td>
+        <td>
+          
+            <span style="color:var(--muted);">—</span>
+          
+        </td>
+        <td></td>
+        <td style="font-size:13px;">Platform capability improvement</td>
       </tr>
       
     </table>
@@ -389,7 +421,7 @@ The primary business risk is the high likelihood of service disruption, data los
     </div>
     <div class="arrow">→</div>
     <div class="step">
-      <div class="pct" style="color:var(--success);">70%</div>
+      <div class="pct" style="color:var(--success);">75%</div>
       <div class="lbl">After Phase 3 (90 d)</div>
     </div>
   </div>
@@ -399,13 +431,13 @@ The primary business risk is the high likelihood of service disruption, data los
     <h3>Assumptions</h3>
     <ul style="padding-left:18px;font-size:13px;color:var(--muted);">
       
-      <li>All initiatives are resourced and executed in parallel where dependencies allow.</li>
+      <li>All initiatives are resourced and executed as planned</li>
       
-      <li>No additional subscriptions are onboarded during this period.</li>
+      <li>No additional subscriptions are added during the 90-day window</li>
       
-      <li>Tenant-level permissions are available for required changes.</li>
+      <li>No major platform outages or external blockers</li>
       
-      <li>Manual controls are addressed during workshops and implementation sprints.</li>
+      <li>Tenant-level permissions remain available for required changes</li>
       
     </ul>
   </div>
@@ -434,38 +466,50 @@ The primary business risk is the high likelihood of service disruption, data los
       </tr>
       
       <tr>
-        <td><strong>Centralized Monitoring and Workspace Topology</strong></td>
+        <td><strong>Centralized Monitoring and Log Analytics Workspace Topology</strong></td>
         <td>Platform capability improvement</td>
         <td><span class="tag tag-medium">Management</span></td>
       </tr>
       
       <tr>
-        <td><strong>Policy Baseline and Resource Governance</strong></td>
+        <td><strong>Baseline Governance: Policy Assignment and Resource Locks</strong></td>
         <td>Policy-driven guardrails → enables safe self-service for landing zone teams</td>
         <td><span class="tag tag-medium">Governance</span></td>
       </tr>
       
       <tr>
-        <td><strong>Network Segmentation and Centralized Egress Control</strong></td>
+        <td><strong>Secure Network Topology: Hub-Spoke, DDoS, and Centralized Egress</strong></td>
         <td>Hub connectivity &amp; centralized egress → enables landing zone networking model</td>
         <td><span class="tag tag-medium">Network Topology and Connectivity</span></td>
       </tr>
       
       <tr>
-        <td><strong>RBAC Hygiene and Privileged Identity Management</strong></td>
+        <td><strong>Security Baseline and Centralized Security Visibility</strong></td>
+        <td>Security baseline enforcement → enables SOC integration</td>
+        <td><span class="tag tag-medium">Security</span></td>
+      </tr>
+      
+      <tr>
+        <td><strong>Identity Hygiene and Privileged Access Management</strong></td>
         <td>Identity &amp; Entra ID integration → enables PIM and break-glass governance</td>
         <td><span class="tag tag-medium">Identity and Access Management</span></td>
       </tr>
       
       <tr>
-        <td><strong>Operational Management: Patching and Change Tracking</strong></td>
+        <td><strong>Operational Management: Update, Alert, and Change Tracking</strong></td>
         <td>Platform capability improvement</td>
         <td><span class="tag tag-medium">Management</span></td>
       </tr>
       
       <tr>
-        <td><strong>Data Protection and Security Visibility</strong></td>
-        <td>Security baseline enforcement → enables SOC integration</td>
+        <td><strong>Backup and Resilience Coverage</strong></td>
+        <td>Platform capability improvement</td>
+        <td><span class="tag tag-medium">Management</span></td>
+      </tr>
+      
+      <tr>
+        <td><strong>Data Protection: Storage Posture and Private Endpoints</strong></td>
+        <td>Platform capability improvement</td>
         <td><span class="tag tag-medium">Security</span></td>
       </tr>
       
@@ -895,17 +939,17 @@ The primary business risk is the high likelihood of service disruption, data los
       <h3>Identity and Access Management</h3>
       
       <div class="q-item">
-        <div class="q-text">What is the maturity of your identity and privileged access management practices, including RBAC hygiene, PIM adoption, and break-glass account validation?</div>
+        <div class="q-text">To what extent are privileged access management practices implemented, including RBAC hygiene, Privileged Identity Management (PIM) for all privileged roles, and validated break-glass accounts?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; RBAC assignments are excessive or unmanaged; PIM is not used; break-glass accounts are absent or untested.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Some RBAC hygiene enforced; PIM enabled for select roles; break-glass accounts exist but validation is ad hoc.</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; RBAC assignments are minimal and group-based; PIM is enforced for all privileged roles; break-glass accounts are validated and documented.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; Privileged access controls are not enforced; RBAC assignments are excessive, PIM is not in use, and break-glass accounts are untested or absent.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Some privileged access controls are in place (e.g., PIM for select roles, some RBAC cleanup, break-glass accounts exist but not regularly validated).</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; RBAC hygiene is enforced, PIM is required for all privileged roles, and break-glass accounts are validated and documented according to ALZ best practices.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Identity and Access Management · 
-          Ref: B03.01, B03.04, B03.05, B03.06, B03.07, B03.15 · 
+          Ref: B03.01, B03.04, B03.05, B03.06, B03.07, B03.08, B03.15, B04.04 · 
           Resolves 3 control(s)
         </div>
       </div>
@@ -918,17 +962,17 @@ The primary business risk is the high likelihood of service disruption, data los
       <h3>Network Topology and Connectivity</h3>
       
       <div class="q-item">
-        <div class="q-text">To what extent is a standardized, secure, and scalable network topology (including hub-spoke, Azure Firewall, and DDoS Protection) implemented and documented for all landing zones?</div>
+        <div class="q-text">To what extent is your network topology standardized and centrally managed, including implementation of a hub-spoke architecture, Azure Firewall, and DDoS Protection for all production workloads?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; No standardized network topology; hub-spoke, Azure Firewall, and DDoS Protection not implemented or documented.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Basic network segmentation in place; partial hub-spoke, limited Azure Firewall or DDoS Protection, with some documentation.</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; Fully standardized and documented hub-spoke topology with Azure Firewall and DDoS Protection consistently implemented across all landing zones.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; No standardized network topology; hub-spoke, Azure Firewall, and DDoS Protection are not implemented or only ad hoc.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Partial implementation of hub-spoke topology, Azure Firewall, or DDoS Protection for some workloads; not consistently enforced or centrally managed.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; Hub-spoke topology, Azure Firewall, and DDoS Protection are fully implemented and centrally managed for all production workloads according to ALZ best practices.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Network Topology and Connectivity · 
-          Ref: D01.01, D01.02, D01.03, D01.04, D02.01, D02.02, D03.01, D03.02, D04.01 · 
+          Ref: C03.01, C03.02, C03.03, C03.04, C03.05, C03.06, C03.07, C03.08, C03.09, C03.10, C03.11, C03.12, C03.13, C03.14, C03.15, C03.16, C03.17, C03.18, C03.19, C03.20, C03.21, C03.22, C03.23, C03.24, C03.25, C03.26, C03.27, C03.28, C03.29, C03.30, C03.31, C03.32, C03.33, C03.34, C03.35, C03.36, C03.37, C03.38, C03.39, C03.40, C03.41, C03.42, C03.43, C03.44, C03.45, C03.46, C03.47, C03.48, C03.49, C03.50, C03.51, C03.52, C03.53, C03.54, C03.55, C03.56, C03.57, C03.58, C03.59, C03.60, C03.61, C03.62, C03.63, C03.64, C03.65, C03.66, C03.67, C03.68, C03.69, C03.70, C03.71, C03.72, C03.73, C03.74, C03.75, C03.76, C03.77, C03.78, C03.79, C03.80, C03.81, C03.82, C03.83, C03.84, C03.85, C03.86, C03.87, C03.88, C03.89, C03.90, C03.91, C03.92, C03.93, C03.94, C03.95, C03.96, C03.97, C03.98, C03.99, C03.100, C03.101, C03.102, C03.103 · 
           Resolves 4 control(s)
         </div>
       </div>
@@ -941,18 +985,18 @@ The primary business risk is the high likelihood of service disruption, data los
       <h3>Governance</h3>
       
       <div class="q-item">
-        <div class="q-text">What is the maturity of your governance practices, including cost management, resource locks, and policy enforcement across the platform?</div>
+        <div class="q-text">To what extent are governance controls implemented, including resource locks, policy enforcement, and compliance monitoring across all management groups and subscriptions?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; Cost management, resource locks, and policy enforcement are not implemented or are inconsistent.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Some governance practices in place; partial cost management, resource locks, or policy enforcement.</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive governance with standardized cost management, resource locks, and policy enforcement across all resources.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; Governance controls such as resource locks and policy enforcement are not implemented or only applied ad hoc.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Some governance controls are in place for select resources or subscriptions, but not consistently enforced or monitored.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive governance controls, including resource locks, policy enforcement, and compliance monitoring, are fully implemented across all management groups and subscriptions.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Governance · 
-          Ref: H01.01, H01.02, H02.01, H03.01 · 
-          Resolves 6 control(s)
+          Ref: H01.01, H01.02, H01.03, H01.04, H01.05, H01.06, H01.07, H01.08, H01.09, H01.10, H01.11, H01.12, H01.13 · 
+          Resolves 5 control(s)
         </div>
       </div>
       
@@ -964,17 +1008,17 @@ The primary business risk is the high likelihood of service disruption, data los
       <h3>Security</h3>
       
       <div class="q-item">
-        <div class="q-text">What is the level of maturity in implementing centralized security visibility, threat detection, and incident response across the platform?</div>
+        <div class="q-text">To what extent is centralized security visibility established, including diagnostic log coverage, security alerting, and integration with SIEM/SOAR solutions?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; No centralized security visibility; threat detection and incident response are ad hoc or absent.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Some security logs are centralized; basic threat detection and incident response processes exist but are not comprehensive.</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive centralized security visibility with automated threat detection and documented incident response processes.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; Centralized security visibility is not established; diagnostic logs and security alerts are not consistently collected or integrated.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Partial coverage of diagnostic logs and security alerting; some integration with SIEM/SOAR solutions exists.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive, centralized security visibility with full diagnostic log coverage and integration with SIEM/SOAR solutions for all critical resources.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Security · 
-          Ref: F01.01, F01.02, F02.01, F03.01 · 
+          Ref: D07.01, D07.02, D07.03, D07.04, D07.05, D07.06, D07.07, D07.08, D07.09 · 
           Resolves 3 control(s)
         </div>
       </div>
@@ -987,17 +1031,17 @@ The primary business risk is the high likelihood of service disruption, data los
       <h3>Management and Operations</h3>
       
       <div class="q-item">
-        <div class="q-text">How mature is your approach to centralized monitoring, alerting, and operational visibility, including workspace topology, update management, alert-action mapping, and change tracking?</div>
+        <div class="q-text">To what extent is centralized management implemented for monitoring, update management, alerting, and change tracking across all Azure resources?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; No centralized monitoring; workspaces are fragmented; update management, alert-action mapping, and change tracking are not standardized.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Partial centralization of monitoring; some update management and alert-action mapping in place; change tracking is inconsistent.</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; Fully centralized monitoring with standardized workspace topology, automated update management, alert-action mapping, and comprehensive change tracking.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; No centralized management for monitoring, updates, alerting, or change tracking; processes are manual or inconsistent.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Some centralized management implemented for select resources or processes; not fully automated or standardized.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; Centralized, automated management for monitoring, update management, alerting, and change tracking is fully implemented for all Azure resources.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Management · 
-          Ref: E01.01, E01.02, E02.01, E03.01, E04.01 · 
+          Ref: E01.01, E01.02, E01.03, E01.04, E01.05, E01.06, E01.07, E01.08, E01.09, E01.10, E01.11, E01.12, E01.13, E01.14, E01.15, E01.16, E01.17, E01.18, E01.19, E01.20, E01.21, E01.22, E01.23, E01.24, E01.25, E01.26 · 
           Resolves 4 control(s)
         </div>
       </div>
@@ -1013,25 +1057,21 @@ The primary business risk is the high likelihood of service disruption, data los
     
   
     
-  
-    
-  
-    
     <div class="card q-domain">
       <h3>Data Protection</h3>
       
       <div class="q-item">
-        <div class="q-text">To what extent are data protection controls (including storage account security, private endpoints, and container registry posture) standardized and enforced across all workloads?</div>
+        <div class="q-text">To what extent are data protection controls implemented for storage accounts, private endpoint coverage, and container registry posture across all critical workloads?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; Data protection controls are not standardized; storage, private endpoints, and registries lack consistent security configuration.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Some workloads have data protection controls; partial implementation of secure storage, private endpoints, or registry hardening.</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; All workloads enforce standardized data protection controls with secure storage, private endpoints, and hardened registries.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; Data protection controls are not consistently applied; storage accounts, private endpoints, and container registries lack baseline security.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Some data protection controls are implemented for critical workloads, but coverage is incomplete or not centrally governed.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; All critical workloads have comprehensive data protection controls, including secure storage posture, private endpoint enforcement, and secure container registry configuration.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Security · 
-          Ref: F04.01, F04.02, F04.03 · 
+          Ref: D05.01, D05.02, D05.03, D05.04, D05.05, D05.06, D05.07, D05.08, D05.09, D05.10, D05.11, D05.12, D05.13, D05.14, D05.15, D05.16, D05.17, D05.18, D05.19, D05.20, D05.21, D05.22, D05.23, D05.24, D05.25, D05.26, D05.27, D05.28, D05.29, D05.30, D05.31 · 
           Resolves 3 control(s)
         </div>
       </div>
@@ -1040,21 +1080,27 @@ The primary business risk is the high likelihood of service disruption, data los
     
   
     
+  
+    
+  
+    
+  
+    
     <div class="card q-domain">
       <h3>Resilience</h3>
       
       <div class="q-item">
-        <div class="q-text">How mature is your backup and resilience strategy for critical workloads, including automated backup coverage and recovery validation?</div>
+        <div class="q-text">To what extent is backup and resilience coverage implemented for critical workloads, including VM backup and recovery validation?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; No automated backup or resilience strategy; recovery processes are undocumented.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Some critical workloads are protected by backup; recovery validation is manual or infrequent.</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; All critical workloads are covered by automated backup with regular recovery validation and documented processes.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; Backup and resilience coverage is not implemented or only covers a subset of critical workloads.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Partial backup and resilience coverage for critical workloads; recovery validation is not consistently performed.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive backup and resilience coverage for all critical workloads, with regular recovery validation according to ALZ best practices.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Management · 
-          Ref: E05.01, E05.02 · 
+          Ref: E02.01, E02.02, E02.03 · 
           Resolves 1 control(s)
         </div>
       </div>
@@ -1062,6 +1108,27 @@ The primary business risk is the high likelihood of service disruption, data los
     </div>
     
   
+    
+    <div class="card q-domain">
+      <h3>Cost</h3>
+      
+      <div class="q-item">
+        <div class="q-text">To what extent is cost governance established, including cost forecasting, budget assignment, and proactive cost management for all Azure resources?</div>
+        
+        <div class="q-maturity">
+          <span class="maturity-level"><strong>1</strong> &mdash; No cost governance processes in place; forecasting and budgeting are not performed.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Basic cost governance with some forecasting and budgeting for select resources or departments.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive cost governance with proactive forecasting, budget assignment, and cost management for all Azure resources.</span>
+        </div>
+        
+        <div class="q-meta">
+          ALZ Area: Governance · 
+          Ref: A03.03, A03.04, A04.02, A04.04, H01.04 · 
+          Resolves 1 control(s)
+        </div>
+      </div>
+      
+    </div>
     
   
 </div>
@@ -1075,38 +1142,38 @@ The primary business risk is the high likelihood of service disruption, data los
   <h2>Top Platform Adoption Risks</h2>
   
   <div class="card">
-    <h3>Exposure to Data Loss and Breach</h3>
+    <h3>Critical Data Exposure and Loss</h3>
     <p style="font-size:12px;color:var(--accent);margin-bottom:6px;">ALZ Design Area: Security</p>
-    <p><strong>Platform impact:</strong> Loss of sensitive business data or customer information could result in regulatory penalties, reputational damage, and direct financial loss.</p>
-    <p style="margin-top:6px;"><strong>Technical cause:</strong> Storage accounts and PaaS services lack required security posture and private endpoint coverage; backup coverage for VMs is 0%.</p>
+    <p><strong>Platform impact:</strong> Loss of sensitive business data or intellectual property, leading to regulatory penalties, customer trust erosion, and potential revenue loss.</p>
+    <p style="margin-top:6px;"><strong>Technical cause:</strong> Storage accounts and PaaS resources lack required security controls (encryption, private endpoints), with 0% compliance across assessed resources.</p>
   </div>
   
   <div class="card">
-    <h3>High Risk of Service Disruption and Lateral Attack</h3>
+    <h3>Network Breach and Service Disruption</h3>
     <p style="font-size:12px;color:var(--accent);margin-bottom:6px;">ALZ Design Area: Network Topology and Connectivity</p>
-    <p><strong>Platform impact:</strong> Unprotected network and lack of segmentation increase the likelihood of successful cyberattacks or outages, threatening business continuity.</p>
-    <p style="margin-top:6px;"><strong>Technical cause:</strong> No hub-spoke topology, no Azure Firewall, and missing DDoS protection on VNets.</p>
+    <p><strong>Platform impact:</strong> Increased likelihood of successful cyberattacks or denial-of-service events, resulting in downtime, operational disruption, and reputational damage.</p>
+    <p style="margin-top:6px;"><strong>Technical cause:</strong> Absence of DDoS protection, Azure Firewall, and hub-spoke network topology exposes cloud resources to external threats.</p>
   </div>
   
   <div class="card">
-    <h3>Privileged Access Mismanagement</h3>
+    <h3>Privileged Access Abuse and Insider Risk</h3>
     <p style="font-size:12px;color:var(--accent);margin-bottom:6px;">ALZ Design Area: Identity and Access Management</p>
-    <p><strong>Platform impact:</strong> Excessive privileged access increases the risk of accidental or malicious changes, leading to potential outages or data compromise.</p>
-    <p style="margin-top:6px;"><strong>Technical cause:</strong> RBAC hygiene issues (27 Owner assignments, 0% group-based), and Privileged Identity Management (PIM) not in effect.</p>
+    <p><strong>Platform impact:</strong> Potential for unauthorized changes, data exfiltration, or service outages due to excessive privileged access and lack of just-in-time controls.</p>
+    <p style="margin-top:6px;"><strong>Technical cause:</strong> RBAC hygiene issues (27 Owner assignments, no group-based access), and Privileged Identity Management (PIM) not enforced.</p>
   </div>
   
   <div class="card">
-    <h3>Lack of Centralized Security and Monitoring</h3>
+    <h3>Operational Blind Spots and Slow Incident Response</h3>
     <p style="font-size:12px;color:var(--accent);margin-bottom:6px;">ALZ Design Area: Management</p>
-    <p><strong>Platform impact:</strong> Inability to detect, respond to, or investigate security incidents in a timely manner, increasing exposure to undetected threats.</p>
-    <p style="margin-top:6px;"><strong>Technical cause:</strong> Centralized security visibility is lacking; SOC workspace topology is fragmented and Sentinel is not enabled.</p>
+    <p><strong>Platform impact:</strong> Delayed detection and response to security incidents, increasing the risk of prolonged breaches and regulatory non-compliance.</p>
+    <p style="margin-top:6px;"><strong>Technical cause:</strong> Lack of centralized security monitoring (low diagnostics coverage), fragmented SOC workspace topology, and insufficient log retention.</p>
   </div>
   
   <div class="card">
-    <h3>Ineffective Cost and Policy Governance</h3>
-    <p style="font-size:12px;color:var(--accent);margin-bottom:6px;">ALZ Design Area: Governance</p>
-    <p><strong>Platform impact:</strong> Potential for uncontrolled cloud spend and non-compliance with internal or external policies, risking budget overruns and audit findings.</p>
-    <p style="margin-top:6px;"><strong>Technical cause:</strong> Cost forecasting and governance controls are failing or not implemented.</p>
+    <h3>Inadequate Backup and Recovery</h3>
+    <p style="font-size:12px;color:var(--accent);margin-bottom:6px;">ALZ Design Area: Management</p>
+    <p><strong>Platform impact:</strong> Inability to recover from ransomware, accidental deletion, or infrastructure failures, resulting in prolonged business outages.</p>
+    <p style="margin-top:6px;"><strong>Technical cause:</strong> No VM backup coverage; critical workloads are left unprotected.</p>
   </div>
   
 </div>
