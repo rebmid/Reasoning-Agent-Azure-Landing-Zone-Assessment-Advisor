@@ -54,6 +54,7 @@ from schemas.taxonomy import (
     bucket_domain as _bucket_domain,
     MODE_SECTIONS as _MODE_SECTIONS,
 )
+from engine.risk_scoring import build_risk_overview
 
 
 def _build_report_context(output: dict) -> dict:
@@ -263,6 +264,9 @@ def _build_report_context(output: dict) -> dict:
     # top business risks
     top_business_risks = executive.get("top_business_risks", [])
 
+    # ── Platform Risk Overview (deterministic) ────────────────────
+    risk_overview = build_risk_overview(results)
+
     # ALZ design area references from MCP grounding
     alz_design_area_refs = output.get("alz_design_area_references", {})
     alz_design_area_urls = output.get("alz_design_area_urls", {})
@@ -328,6 +332,7 @@ def _build_report_context(output: dict) -> dict:
         "data_confidence": data_confidence,
         "validation_questions": validation_questions,
         "top_business_risks": top_business_risks,
+        "risk_overview": risk_overview,
         "platform_readiness_text": platform_readiness_text,
         "workshop": output.get("workshop", {}),
         "alz_design_area_references": alz_design_area_refs,

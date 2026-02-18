@@ -5,8 +5,8 @@ into the existing sheets:
 
 - ``0_Executive_Summary`` — engagement framing + assessment metrics + top risks
 - ``1_30-60-90_Roadmap`` — phased remediation initiatives
-- ``2_Control_Details`` — one row per assessed control (columns A–U)
-  plus enrichment metadata (columns V–Y)
+- ``2_Control_Details`` — one row per assessed control (columns A–O)
+  plus enrichment column P (Control Source)
 - ``3_Risk_Analysis`` — causal risk blocks with failing controls,
   dependency impact, remediation roadmap, and cascade effect
 
@@ -128,19 +128,35 @@ def _write_control_detail_rows(
 ) -> int:
     """Populate 2_Control_Details starting at row 10.
 
-    Columns A–U:
+    Columns A–O:
       A: ID  B: Design Area  C: Sub Area  D: WAF Pillar  E: Service
-      F: Checklist item  G: Description  H: Severity  I: Status
-      J: Comment  K: AMMP  L: More info  M: Training  N: Graph Query
-      O: GUID  P: Coverage %  Q: Subs Affected  R: Scope Level
-      S: Scope Pattern  T: (reserved)  U: Source File
+      F: Checklist item  G: Severity  H: Status  I: Comment
+      J: AMMP  K: More info  L: Training
+      M: % Compliant  N: Subs Affected  O: Scope Level
 
-    Enterprise-scale columns P–S carry aggregated metadata
+    Enterprise-scale columns M–O carry aggregated metadata
     (populated by ``engine.aggregation.enrich_results_enterprise``).
+    Enrichment appends P: Control Source after the data columns.
     One row per control — never per-subscription.
 
     Returns the number of rows written.
     """
+    # ── Write / refresh column headers ────────────────────────────
+    _HEADERS = [
+        "ID", "Design Area", "Sub Area", "WAF Pillar", "Service",
+        "Checklist item", "Severity", "Status", "Comment",
+        "AMMP", "More info", "Training",
+        "% Compliant", "Subs Affected", "Scope Level",
+    ]
+    for col, hdr in enumerate(_HEADERS, start=1):
+        ws.cell(row=_CD_HEADER_ROW, column=col, value=hdr)
+
+    # Clear stale headers beyond the new layout
+    for col in range(len(_HEADERS) + 1, 25):
+        cell = ws.cell(row=_CD_HEADER_ROW, column=col)
+        if cell.value:
+            cell.value = None
+
     row = _CD_DATA_START
 
     for ctrl in results:
@@ -155,10 +171,9 @@ def _write_control_detail_rows(
         ws.cell(row=row, column=5,  value=cl.get("service", ""))
         ws.cell(row=row, column=6,  value=cl.get(
             "text", ctrl.get("text", ctrl.get("question", ""))))
-        ws.cell(row=row, column=7,  value="")
-        ws.cell(row=row, column=8,  value=ctrl.get(
+        ws.cell(row=row, column=7,  value=ctrl.get(
             "severity", cl.get("severity", "")))
-        ws.cell(row=row, column=9,  value=_map_status(
+        ws.cell(row=row, column=8,  value=_map_status(
             ctrl.get("status", "Manual")))
 
         # Comment / evidence
@@ -172,42 +187,34 @@ def _write_control_detail_rows(
                 s = ev.get("summary", ev.get("resource_id", ""))
                 if s:
                     parts.append(str(s)[:120])
-        ws.cell(row=row, column=10, value="\n".join(parts))
+        ws.cell(row=row, column=9, value="\n".join(parts))
 
-        ws.cell(row=row, column=11, value="")                       # AMMP
-        ws.cell(row=row, column=12, value=cl.get("link", ""))       # Learn link
-        ws.cell(row=row, column=13, value=cl.get("training", ""))   # Training
-        ws.cell(row=row, column=14, value=ctrl.get("signal_used", ""))
-        ws.cell(row=row, column=15, value=cid)                      # GUID
+        ws.cell(row=row, column=10, value="")                       # AMMP
+        ws.cell(row=row, column=11, value=cl.get("link", ""))       # Learn link
+        ws.cell(row=row, column=12, value=cl.get("training", ""))   # Training
 
-        # ── Enterprise-scale columns (P–S) ────────────────────────
-        # Coverage %: e.g. "85.0%" or "17/100 compliant"
+        # ── Enterprise-scale columns (M–P) ────────────────────────
+        # % Compliant: e.g. "85.0%" or "17/100 compliant"
         cov_display = ctrl.get("coverage_display")
         cov_pct = ctrl.get("coverage_pct")
         if cov_display:
-            ws.cell(row=row, column=16, value=cov_display)
+            ws.cell(row=row, column=13, value=cov_display)
         elif cov_pct is not None:
-            ws.cell(row=row, column=16, value=f"{cov_pct}%")
+            ws.cell(row=row, column=13, value=f"{cov_pct}%")
         else:
-            ws.cell(row=row, column=16, value="")
+            ws.cell(row=row, column=13, value="")
 
         # Subs Affected: e.g. "3/10"
         subs_affected = ctrl.get("subscriptions_affected")
         subs_assessed = ctrl.get("subscriptions_assessed")
         if subs_affected is not None and subs_assessed:
-            ws.cell(row=row, column=17,
+            ws.cell(row=row, column=14,
                     value=f"{subs_affected}/{subs_assessed}")
         else:
-            ws.cell(row=row, column=17, value="")
+            ws.cell(row=row, column=14, value="")
 
         # Scope Level: Subscription | Management Group | Tenant
-        ws.cell(row=row, column=18, value=ctrl.get("scope_level", ""))
-
-        # Scope Pattern: Platform Governance Gap | Moderate Spread | Isolated Drift
-        ws.cell(row=row, column=19, value=ctrl.get("scope_pattern", ""))
-
-        ws.cell(row=row, column=20, value="")                       # T (reserved)
-        ws.cell(row=row, column=21, value="lz-assessor")            # Source
+        ws.cell(row=row, column=15, value=ctrl.get("scope_level", ""))
 
         row += 1
 
@@ -392,12 +399,12 @@ def _populate_risk_analysis(ws, why_payloads: list[dict]) -> int:
     row = 1
     for wp in why_payloads:
         risk = wp.get("risk", {})
-        domain = wp.get("domain", "Unknown")
-        title = risk.get("title", domain)
+        title = risk.get("title", wp.get("domain", "Unknown"))
+        severity = risk.get("severity", "Medium").upper()
 
         # ── Title ─────────────────────────────────────────────────
         ws.cell(row=row, column=1,
-                value=f"  {domain.upper()} — {title}")
+                value=f"  {severity} — {title}")
         row += 1
 
         # ── Root Cause ────────────────────────────────────────────

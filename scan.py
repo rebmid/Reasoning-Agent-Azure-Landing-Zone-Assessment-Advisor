@@ -39,7 +39,6 @@ from engine.assessment_runtime import AssessmentRuntime
 from agent.intent_orchestrator import IntentOrchestrator
 from agent.run_loader import load_run
 from agent.why_reasoning import build_why_payload, print_why_report
-from agent.why_ai import generate_why_explanation
 from discovery.resolver import run_workshop
 
 # Import evaluator modules so register_evaluator() calls fire
@@ -130,28 +129,20 @@ def main():
     if args.why:
         run = load_run(demo=args.demo)
 
-        # Step 1: deterministic payload
+        # Step 1: deterministic payload (no LLM)
         payload = build_why_payload(run, args.why, verbose=True)
 
-        # Step 2: optional AI explanation
-        if enable_ai and "error" not in payload:
-            try:
-                provider = AOAIReasoningProvider()
-                payload["ai_explanation"] = generate_why_explanation(provider, payload)
-            except EnvironmentError as e:
-                print(f"  ⚠ AI disabled: {e}")
-
-        # Step 3: terminal display
+        # Step 2: terminal display
         print_why_report(payload)
 
-        # Step 4: save JSON + workbook
+        # Step 3: save JSON + workbook
         os.makedirs(OUT_DIR, exist_ok=True)
         why_path = os.path.join(OUT_DIR, f"why-{args.why.lower()}.json")
         with open(why_path, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2, default=str)
         print(f"  Saved: {why_path}")
 
-        # Step 5: generate CSA Workbook with risk-analysis sheet
+        # Step 4: generate CSA Workbook with risk-analysis sheet
         # Find the run JSON path for existing workbook data
         run_source = "demo/demo_run.json" if args.demo else None
         if not run_source:
@@ -542,7 +533,8 @@ def main():
         generate_report(output, out_path=report_path)
 
     # ── CSA Workbook ──────────────────────────────────────────────
-    # Auto-generate why-analysis for each top business risk
+    # Build deterministic why-payloads for each top business risk
+    # (no LLM call — risk scoring and narrative are deterministic)
     why_payloads: list[dict] = []
     top_risks = output.get("executive_summary", {}).get("top_business_risks", [])
     if top_risks:
@@ -557,11 +549,6 @@ def main():
                 continue
             try:
                 wp = build_why_payload(output, domain, verbose=False)
-                if "error" not in wp and enable_ai:
-                    try:
-                        wp["ai_explanation"] = generate_why_explanation(provider, wp)
-                    except Exception:
-                        pass   # deterministic payload is still valuable
                 why_payloads.append(wp)
             except Exception as e:
                 print(f"  ⚠ Why-analysis skipped for {domain}: {e}")

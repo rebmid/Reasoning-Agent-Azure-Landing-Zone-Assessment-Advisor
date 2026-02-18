@@ -124,6 +124,7 @@
 <nav class="toc">
   <a href="#snapshot">Platform Readiness</a>
   <a href="#blockers">Adoption Blockers</a>
+  <a href="#risks">Platform Risk</a>
   <a href="#sequence">Remediation Sequence</a>
   <a href="#trajectory">Maturity Trajectory</a>
   <a href="#capabilities">Capability Unlock</a>
@@ -197,6 +198,74 @@
       {% endfor %}
     </table>
   </div>
+</div>
+{% endif %}
+
+<!-- ════════════════════════════════════════════════════════════════
+     PLATFORM RISK OVERVIEW (deterministic — no LLM)
+     ════════════════════════════════════════════════════════════════ -->
+{% if risk_overview %}
+<div class="section" id="risks">
+  <h2>Platform Risk Overview</h2>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">
+    Risks derived deterministically from control metadata.
+    <span style="font-style:italic;">{{ risk_overview.formula }}</span>
+  </p>
+
+  <div class="grid-4" style="margin-bottom:16px;">
+    <div class="kpi danger">
+      <div class="value">{{ risk_overview.summary.critical_count }}</div>
+      <div class="label">Critical</div>
+    </div>
+    <div class="kpi warn">
+      <div class="value">{{ risk_overview.summary.high_count }}</div>
+      <div class="label">High</div>
+    </div>
+    <div class="kpi" style="border-left:3px solid var(--accent);">
+      <div class="value">{{ risk_overview.summary.medium_count }}</div>
+      <div class="label">Medium</div>
+    </div>
+    <div class="kpi ok">
+      <div class="value">{{ risk_overview.summary.hygiene_count }}</div>
+      <div class="label">Hygiene</div>
+    </div>
+  </div>
+
+  {% for tier_name, tier_color in [('Critical', 'danger'), ('High', 'warn'), ('Medium', 'accent'), ('Hygiene', 'success')] %}
+  {% set controls = risk_overview.tiers[tier_name] %}
+  {% if controls %}
+  <div class="card" style="border-left:3px solid var(--{{ tier_color }});">
+    <h3><span class="tag tag-{{ 'critical' if tier_name == 'Critical' else ('high' if tier_name == 'High' else ('medium' if tier_name == 'Medium' else 'low')) }}">{{ tier_name }}</span> Risks ({{ controls | length }})</h3>
+    <table>
+      <tr>
+        <th style="width:50px;">Score</th>
+        <th>Control</th>
+        <th>Section</th>
+        <th>Severity</th>
+        <th>Status</th>
+        <th>Scope</th>
+        <th>Foundation</th>
+        <th>Evidence</th>
+      </tr>
+      {% for c in controls[:15] %}
+      <tr>
+        <td style="text-align:center;font-weight:700;">{{ c.risk_score }}</td>
+        <td><a href="#ctrl-{{ c.short_id }}" style="color:var(--accent);text-decoration:none;">{{ c.text }}</a></td>
+        <td>{{ c.section }}</td>
+        <td><span class="tag tag-{{ c.severity | lower }}">{{ c.severity }}</span></td>
+        <td><span class="tag tag-{{ 'critical' if c.status == 'Fail' else ('high' if c.status == 'Partial' else 'medium') }}">{{ c.status }}</span></td>
+        <td>{{ c.scope_level }}</td>
+        <td style="text-align:center;">{% if c.is_foundational %}<strong style="color:var(--success);">Y</strong>{% endif %}</td>
+        <td style="font-size:12px;color:var(--muted);">{{ c.notes[:80] }}{% if c.notes | length > 80 %}&hellip;{% endif %}</td>
+      </tr>
+      {% endfor %}
+      {% if controls | length > 15 %}
+      <tr><td colspan="8" style="text-align:center;color:var(--muted);font-size:13px;">… and {{ controls | length - 15 }} more</td></tr>
+      {% endif %}
+    </table>
+  </div>
+  {% endif %}
+  {% endfor %}
 </div>
 {% endif %}
 
@@ -598,22 +667,7 @@
 </div>
 {% endif %}
 
-<!-- ════════════════════════════════════════════════════════════════
-     TOP PLATFORM RISKS (from AI executive)
-     ════════════════════════════════════════════════════════════════ -->
-{% if top_business_risks %}
-<div class="section" id="risks">
-  <h2>Top Platform Adoption Risks</h2>
-  {% for risk in top_business_risks %}
-  <div class="card">
-    <h3>{{ risk.title }}</h3>
-    {% if risk.alz_design_area %}<p style="font-size:12px;color:var(--accent);margin-bottom:6px;">ALZ Design Area: {{ risk.alz_design_area }}</p>{% endif %}
-    <p><strong>Platform impact:</strong> {{ risk.business_impact }}</p>
-    <p style="margin-top:6px;"><strong>Technical cause:</strong> {{ risk.technical_cause }}</p>
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
+<!-- Platform risks are now shown deterministically in the Platform Risk Overview section above -->
 
 <!-- ════════════════════════════════════════════════════════════════
      ALZ DESIGN AREA REFERENCES (from MCP grounding)

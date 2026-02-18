@@ -4,11 +4,12 @@ Normalises every row so that it has:
   - a Control ID
   - a valid ALZ Design Area
   - a WAF pillar
-  - traceability metadata (Control Source, Derived Control ID, Control Type,
-    Related ALZ Control IDs)
+  - traceability metadata (Control Source)
 
-This runs **after** the workbook is already written — it never touches
-evaluator logic, scoring, roadmap generation, or the ALZ fetch pipeline.
+The enrichment column is written to P (col 16), appended after the
+data columns A–O.  This runs **after** the workbook is already written
+— it never touches evaluator logic, scoring, roadmap generation, or the
+ALZ fetch pipeline.
 """
 from __future__ import annotations
 
@@ -27,28 +28,21 @@ _SHEET_NAME = "Checklist"
 _HEADER_ROW = 9
 _DATA_START = 10
 
-# Existing column layout (A-U = 1-21)
+# Existing column layout (A-P = 1-16)
 _COL_ID = 1           # A  e.g. "D07.01"
 _COL_DESIGN_AREA = 2  # B
 _COL_SUB_AREA = 3     # C
 _COL_WAF = 4          # D
 _COL_SERVICE = 5      # E
 _COL_TEXT = 6          # F  Checklist item
-_COL_SEVERITY = 8     # H
-_COL_STATUS = 9       # I
-_COL_GUID = 15        # O
+_COL_SEVERITY = 7     # G
+_COL_STATUS = 8       # H
 
-# New enrichment columns (appended after U=21)
-_COL_CONTROL_SOURCE = 22      # V
-_COL_DERIVED_CONTROL_ID = 23  # W
-_COL_CONTROL_TYPE = 24        # X
-_COL_RELATED_ALZ = 25         # Y
+# Enrichment column (appended after O=15)
+_COL_CONTROL_SOURCE = 16      # P
 
 _NEW_HEADERS = {
     _COL_CONTROL_SOURCE: "Control Source",
-    _COL_DERIVED_CONTROL_ID: "Derived Control ID",
-    _COL_CONTROL_TYPE: "Control Type",
-    _COL_RELATED_ALZ: "Related ALZ Control IDs",
 }
 
 # ALZ ID pattern: <letter><digits>.<digits>  (e.g. D01.01, C02.03)
@@ -224,8 +218,8 @@ def _find_related_alz(derived_text: str, alz_rows: list[dict[str, str]]) -> str:
 def enrich_control_details_sheet(workbook_path: str) -> dict[str, Any]:
     """Post-process the Checklist sheet to normalise all rows.
 
-    This is called AFTER the workbook is written.  It adds 4 columns
-    (V-Y) and populates metadata for both ALZ and derived controls.
+    This is called AFTER the workbook is written.  It adds 1 column
+    (P: Control Source) and populates metadata for both ALZ and derived controls.
 
     Returns a validation summary dict.
     """
@@ -239,7 +233,7 @@ def enrich_control_details_sheet(workbook_path: str) -> dict[str, Any]:
     # ── STEP 2: Write new column headers ──────────────────────────
     header_font = Font(bold=True, color="FFFFFF")
     from openpyxl.styles import PatternFill
-    header_fill = PatternFill("solid", fgColor="4472C4")
+    header_fill = PatternFill("solid", fgColor="000000")
     for col_idx, header_text in _NEW_HEADERS.items():
         cell = ws.cell(row=_HEADER_ROW, column=col_idx, value=header_text)
         cell.font = header_font
@@ -280,39 +274,25 @@ def enrich_control_details_sheet(workbook_path: str) -> dict[str, Any]:
         stats["rows_processed"] += 1
         is_alz = bool(_ALZ_ID_RE.match(item_id))
 
-        # ── STEP 1 & 3: Control Source ────────────────────────────
+        # ── Control Source ────────────────────────────────────────
         if is_alz:
             stats["alz"] += 1
             ws.cell(row=row, column=_COL_CONTROL_SOURCE, value="ALZ")
-            ws.cell(row=row, column=_COL_DERIVED_CONTROL_ID, value="")
-            ws.cell(row=row, column=_COL_CONTROL_TYPE, value="Foundational")
-            ws.cell(row=row, column=_COL_RELATED_ALZ, value="")
         else:
             stats["derived"] += 1
             ws.cell(row=row, column=_COL_CONTROL_SOURCE, value="Derived")
 
-            # ── STEP 5: Design Area auto-mapping ──────────────────
+            # ── Design Area auto-mapping ──────────────────────────
             if not design_area:
                 design_area = _infer_design_area(text)
                 ws.cell(row=row, column=_COL_DESIGN_AREA, value=design_area)
                 stats["design_area_filled"] += 1
 
-            # ── STEP 6: WAF pillar mapping ────────────────────────
+            # ── WAF pillar mapping ────────────────────────────────
             if not waf:
                 waf = _infer_waf(design_area)
                 ws.cell(row=row, column=_COL_WAF, value=waf)
                 stats["waf_filled"] += 1
-
-            # ── STEP 4: Deterministic derived ID ──────────────────
-            derived_id = _make_derived_id(design_area, text)
-            ws.cell(row=row, column=_COL_DERIVED_CONTROL_ID, value=derived_id)
-
-            # ── STEP 7: Control Type ──────────────────────────────
-            ws.cell(row=row, column=_COL_CONTROL_TYPE, value="Detective")
-
-            # ── STEP 8: Related ALZ Control IDs ───────────────────
-            related = _find_related_alz(text, alz_rows_for_linking)
-            ws.cell(row=row, column=_COL_RELATED_ALZ, value=related)
 
     # ── Save ──────────────────────────────────────────────────────
     try:
@@ -343,8 +323,8 @@ def _validate(stats: dict[str, Any]) -> None:
     if stats["waf_filled"]:
         print(f"    → {stats['waf_filled']} derived rows: WAF pillar auto-mapped")
     if derived > 0:
-        print(f"    → All derived rows have: Derived Control ID ✅, Control Source ✅")
-    print(f"    → All rows have: Control Source ✅, Control Type ✅")
+        print(f"    → All derived rows have: Control Source ✅")
+    print(f"    → All rows have: Control Source ✅")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -352,7 +332,7 @@ def _validate(stats: dict[str, Any]) -> None:
 # ══════════════════════════════════════════════════════════════════
 
 def enrich_open_worksheet(ws) -> dict[str, Any]:
-    """Apply enrichment columns (V–Y) to an already-open worksheet.
+    """Apply enrichment column (P: Control Source) to an already-open worksheet.
 
     This avoids a second openpyxl load/save cycle.  Called by the main
     workbook builder after writing Checklist data rows.
@@ -361,7 +341,7 @@ def enrich_open_worksheet(ws) -> dict[str, Any]:
     """
     # ── Write enrichment headers ──────────────────────────────────
     header_font = Font(bold=True, color="FFFFFF")
-    header_fill = PatternFill("solid", fgColor="4472C4")
+    header_fill = PatternFill("solid", fgColor="000000")
     for col_idx, header_text in _NEW_HEADERS.items():
         cell = ws.cell(row=_HEADER_ROW, column=col_idx, value=header_text)
         cell.font = header_font
@@ -407,9 +387,6 @@ def enrich_open_worksheet(ws) -> dict[str, Any]:
         if is_alz:
             stats["alz"] += 1
             ws.cell(row=row, column=_COL_CONTROL_SOURCE, value="ALZ")
-            ws.cell(row=row, column=_COL_DERIVED_CONTROL_ID, value="")
-            ws.cell(row=row, column=_COL_CONTROL_TYPE, value="Foundational")
-            ws.cell(row=row, column=_COL_RELATED_ALZ, value="")
         else:
             stats["derived"] += 1
             ws.cell(row=row, column=_COL_CONTROL_SOURCE, value="Derived")
@@ -423,16 +400,6 @@ def enrich_open_worksheet(ws) -> dict[str, Any]:
                 waf = _infer_waf(design_area)
                 ws.cell(row=row, column=_COL_WAF, value=waf)
                 stats["waf_filled"] += 1
-
-            ws.cell(
-                row=row, column=_COL_DERIVED_CONTROL_ID,
-                value=_make_derived_id(design_area, text),
-            )
-            ws.cell(row=row, column=_COL_CONTROL_TYPE, value="Detective")
-            ws.cell(
-                row=row, column=_COL_RELATED_ALZ,
-                value=_find_related_alz(text, alz_rows_for_linking),
-            )
 
     _validate(stats)
     return stats
