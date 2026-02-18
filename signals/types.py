@@ -10,6 +10,7 @@ class SignalStatus(str, Enum):
     OK = "OK"
     NOT_AVAILABLE = "NotAvailable"
     ERROR = "Error"
+    SIGNAL_ERROR = "SignalError"  # distinct from ERROR — signal provider failure (not eval logic)
 
 
 @dataclass
@@ -55,7 +56,7 @@ CONFIDENCE_LABEL = {
 @dataclass
 class ControlResult:
     """Deterministic result from a single control evaluator."""
-    status: str  # Pass | Fail | Partial | Manual | NotApplicable | Unknown | Error
+    status: str  # Pass | Fail | Partial | Manual | NotApplicable | Unknown | Error | SignalError
     severity: str = "Medium"
     confidence: str = "High"
     confidence_score: float = 1.0  # numeric 0-1 (overrides label when set)

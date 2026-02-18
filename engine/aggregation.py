@@ -150,6 +150,7 @@ def enrich_results_enterprise(
 
         # ── Subscriptions assessed ────────────────────────────────
         r["subscriptions_assessed"] = total_subs
+        r["subscription_count_total"] = total_subs          # canonical alias
 
         # ── Subscriptions affected ────────────────────────────────
         # Try 1: evidence resource IDs (most accurate)
@@ -173,6 +174,7 @@ def enrich_results_enterprise(
             affected = 0  # No automated evidence
 
         r["subscriptions_affected"] = affected
+        r["subscription_count_noncompliant"] = affected     # canonical alias
 
         # ── Coverage ──────────────────────────────────────────────
         # Extract applicable/compliant from coverage data if available

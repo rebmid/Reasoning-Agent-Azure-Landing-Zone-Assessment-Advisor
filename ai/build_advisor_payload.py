@@ -17,22 +17,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Any
 
-
-# ── ALZ design-area ↔ section mapping ─────────────────────────────
-# Maps assessment section names to official ALZ design areas so the AI
-# can reason in platform terms.
-_SECTION_TO_DESIGN_AREA: dict[str, str] = {
-    "Security": "Security",
-    "Networking": "Network Topology and Connectivity",
-    "Network Coverage": "Network Topology and Connectivity",
-    "Governance": "Governance",
-    "Identity": "Identity and Access Management",
-    "Management": "Management",
-    "Data Protection": "Security",
-    "Resilience": "Management",
-    "Platform": "Platform Automation and DevOps",
-    "Cost": "Governance",
-}
+from schemas.taxonomy import SECTION_TO_DESIGN_AREA as _SECTION_TO_DESIGN_AREA
 
 
 def _build_design_area_maturity(section_scores: list[dict]) -> list[dict]:

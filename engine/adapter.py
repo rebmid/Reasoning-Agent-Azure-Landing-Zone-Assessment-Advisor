@@ -20,16 +20,7 @@ from typing import Any
 from signals.types import EvalScope
 from signals.registry import SignalBus
 from evaluators.registry import EVALUATORS, evaluate_control
-
-# ── Design-area → scoring section mapping ─────────────────────────
-_DESIGN_AREA_SECTION = {
-    "network": "Networking",
-    "governance": "Governance",
-    "security": "Security",
-    "data_protection": "Data Protection",
-    "resilience": "Resilience",
-    "identity": "Identity",
-}
+from schemas.taxonomy import DESIGN_AREA_SECTION as _DESIGN_AREA_SECTION
 
 _PACK_CONTROLS_PATH = os.path.join(
     os.path.dirname(__file__), "..", "control_packs", "alz", "v1.0", "controls.json"

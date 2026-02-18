@@ -97,6 +97,9 @@ _STATUS_MAP: dict[str, str] = {
     "Not verified": "Not verified",
     "Not required": "Not required",
     "N/A":          "N/A",
+    "SignalError":  "Not verified (Signal failure)",
+    "Error":        "Not verified",
+    "Unknown":      "Not verified",
 }
 
 

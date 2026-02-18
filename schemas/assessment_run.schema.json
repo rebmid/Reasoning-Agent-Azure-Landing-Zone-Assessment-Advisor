@@ -1,0 +1,344 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lz-assessor/schemas/assessment_run.schema.json",
+  "title": "Assessment Run",
+  "description": "Normalized results data model for lz-assessor. Supports 100+ subscriptions without row explosion — one control_result per control with nested per_subscription detail.",
+  "type": "object",
+  "required": ["run_id", "timestamp", "scope", "control_results"],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Unique run identifier (e.g., 'run-20260217-1430')"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp of run start"
+    },
+    "tool_version": {
+      "type": "string",
+      "description": "lz-assessor version"
+    },
+    "control_pack_id": {
+      "type": "string",
+      "description": "Control pack used (e.g., 'alz-v1.0')"
+    },
+    "control_pack_version": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["live", "demo", "delta"],
+      "description": "Execution mode"
+    },
+    "scope": { "$ref": "#/$defs/scope" },
+    "telemetry": { "$ref": "#/$defs/telemetry" },
+    "control_results": {
+      "type": "array",
+      "description": "One entry per control (NOT per control × subscription). Per-subscription detail is nested.",
+      "items": { "$ref": "#/$defs/control_result" }
+    },
+    "aggregations": { "$ref": "#/$defs/aggregations" }
+  },
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "required": ["tenant_id", "subscription_ids", "subscription_count"],
+      "properties": {
+        "tenant_id": { "type": "string" },
+        "tenant_display_name": { "type": "string" },
+        "subscription_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "subscription_count": { "type": "integer", "minimum": 0 },
+        "management_group_root": { "type": "string" },
+        "rbac_scope": {
+          "type": "string",
+          "enum": ["Subscription", "Management Group", "Tenant"]
+        },
+        "rbac_highest_role": { "type": "string" },
+        "coverage_percent": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "properties": {
+        "phases": {
+          "type": "array",
+          "description": "Timing for each pipeline phase",
+          "items": {
+            "type": "object",
+            "required": ["name", "duration_sec"],
+            "properties": {
+              "name": { "type": "string" },
+              "start_iso": { "type": "string", "format": "date-time" },
+              "duration_sec": { "type": "number" }
+            }
+          }
+        },
+        "total_duration_sec": { "type": "number" },
+        "signal_executions": {
+          "type": "array",
+          "description": "One entry per signal_bus_name actually invoked. Source of truth for API call counts.",
+          "items": {
+            "type": "object",
+            "required": ["signal_bus_name", "signal_category"],
+            "properties": {
+              "signal_bus_name": { "type": "string" },
+              "signal_category": { "type": "string" },
+              "provider": { "type": "string" },
+              "execution_mode": {
+                "type": "string",
+                "enum": ["single_sub", "multi_sub_aggregate", "cached"]
+              },
+              "subscriptions_queried": { "type": "integer" },
+              "api_calls": { "type": "integer" },
+              "duration_ms": { "type": "integer" },
+              "result_status": {
+                "type": "string",
+                "enum": ["ok", "error", "partial"]
+              },
+              "items_returned": { "type": "integer" },
+              "cache_hit": { "type": "boolean" },
+              "error": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "totals": {
+          "type": "object",
+          "description": "COMPUTED from signal_executions[] — never independently accumulated",
+          "properties": {
+            "api_calls": { "type": "integer" },
+            "rg_queries": { "type": "integer" },
+            "arm_calls": { "type": "integer" },
+            "signals_fetched": { "type": "integer" },
+            "signals_cached": { "type": "integer" },
+            "signal_errors": { "type": "integer" },
+            "total_duration_ms": { "type": "integer" }
+          }
+        }
+      }
+    },
+    "control_result": {
+      "type": "object",
+      "required": ["control_id", "name", "alz_design_area", "status", "severity"],
+      "properties": {
+        "control_id": {
+          "type": "string",
+          "description": "Stable control ID (e.g., 'N01.02')"
+        },
+        "legacy_id": { "type": "string" },
+        "name": { "type": "string" },
+        "alz_design_area": {
+          "type": "string",
+          "description": "Authoritative taxonomy — same enum as control_definition"
+        },
+        "section": {
+          "type": "string",
+          "description": "Derived scoring section (from taxonomy.scoring_section())"
+        },
+        "platform_domain": {
+          "type": "string",
+          "description": "Derived platform domain (from taxonomy.platform_domain())"
+        },
+        "waf_pillar": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Derived WAF pillars (primary + overrides)"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Pass", "Fail", "Partial", "Manual", "Unknown", "Deferred", "Error"]
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["Critical", "High", "Medium", "Low"]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["Low", "Medium", "High"]
+        },
+        "confidence_score": {
+          "type": "number",
+          "minimum": 0, "maximum": 1
+        },
+        "evaluation_mode": {
+          "type": "string",
+          "enum": ["data_driven", "questionnaire", "hybrid"]
+        },
+        "signals_used": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "reason": { "type": "string" },
+        "subscription_summary": {
+          "type": "object",
+          "description": "Cross-subscription aggregation for this control",
+          "properties": {
+            "total_assessed": { "type": "integer" },
+            "passing": { "type": "integer" },
+            "failing": { "type": "integer" },
+            "not_applicable": { "type": "integer" },
+            "coverage_pct": { "type": "number" },
+            "coverage_display": {
+              "type": "string",
+              "description": "Human-readable: '2/3 compliant'"
+            }
+          }
+        },
+        "scope_level": {
+          "type": "string",
+          "enum": ["Subscription", "Management Group", "Tenant"],
+          "description": "Classified from subscription_summary.coverage_pct"
+        },
+        "scope_pattern": {
+          "type": "string",
+          "enum": ["Platform Governance Gap", "Moderate Spread", "Isolated Drift", "None"],
+          "description": "Auto-elevated finding pattern"
+        },
+        "per_subscription": {
+          "type": "array",
+          "description": "NESTED per-subscription detail (NOT top-level rows). This is what prevents 27k row explosion.",
+          "items": {
+            "type": "object",
+            "required": ["subscription_id", "status"],
+            "properties": {
+              "subscription_id": { "type": "string" },
+              "subscription_name": { "type": "string" },
+              "status": {
+                "type": "string",
+                "enum": ["Pass", "Fail", "Partial", "Manual", "Unknown", "Error", "Not Applicable"]
+              },
+              "evidence_count": { "type": "integer" },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": { "type": "string" },
+                    "resource_id": { "type": "string" },
+                    "resource_type": { "type": "string" },
+                    "detail": { "type": "string" },
+                    "subscription_id": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "evidence_count": {
+          "type": "integer",
+          "description": "Total evidence items across all subscriptions (for display)"
+        },
+        "evidence": {
+          "type": "array",
+          "description": "Flattened top-N sample evidence for AI payload and report summary",
+          "items": { "type": "object" }
+        }
+      }
+    },
+    "aggregations": {
+      "type": "object",
+      "properties": {
+        "design_area_maturity": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["alz_design_area", "maturity_pct"],
+            "properties": {
+              "alz_design_area": { "type": "string" },
+              "label": { "type": "string" },
+              "scoring_section": { "type": "string" },
+              "total_controls": { "type": "integer" },
+              "pass": { "type": "integer" },
+              "fail": { "type": "integer" },
+              "partial": { "type": "integer" },
+              "manual": { "type": "integer" },
+              "deferred": { "type": "integer" },
+              "maturity_pct": { "type": "number" },
+              "weighted_score": { "type": "number" },
+              "domain_weight": { "type": "number" },
+              "subscription_coverage": {
+                "type": "object",
+                "properties": {
+                  "avg_pct": { "type": "number" },
+                  "min_pct": { "type": "number" },
+                  "max_pct": { "type": "number" },
+                  "controls_below_80pct": { "type": "integer" }
+                }
+              },
+              "top_gaps": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "control_id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "status": { "type": "string" },
+                    "coverage_pct": { "type": "number" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "risk_findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "finding_id": { "type": "string" },
+              "title": { "type": "string" },
+              "risk_level": {
+                "type": "string",
+                "enum": ["Critical", "High", "Medium", "Low"]
+              },
+              "alz_design_area": { "type": "string" },
+              "affected_controls": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "affected_subscriptions": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "scope_pattern": { "type": "string" },
+              "recommendation": { "type": "string" }
+            }
+          }
+        },
+        "executive_summary": {
+          "type": "object",
+          "properties": {
+            "overall_maturity_pct": { "type": "number" },
+            "overall_weighted_score": { "type": "number" },
+            "total_controls_assessed": { "type": "integer" },
+            "automation_coverage_pct": { "type": "number" },
+            "pass_count": { "type": "integer" },
+            "fail_count": { "type": "integer" },
+            "partial_count": { "type": "integer" },
+            "manual_count": { "type": "integer" },
+            "subscriptions_in_scope": { "type": "integer" },
+            "strongest_area": {
+              "type": "object",
+              "properties": {
+                "area": { "type": "string" },
+                "maturity_pct": { "type": "number" }
+              }
+            },
+            "weakest_area": {
+              "type": "object",
+              "properties": {
+                "area": { "type": "string" },
+                "maturity_pct": { "type": "number" }
+              }
+            },
+            "governance_gap_count": { "type": "integer" },
+            "tenant_wide_issues": { "type": "integer" }
+          }
+        }
+      }
+    }
+  }
+}

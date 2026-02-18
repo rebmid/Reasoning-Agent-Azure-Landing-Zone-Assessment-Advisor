@@ -27,6 +27,13 @@ from preflight.analyzer import run_preflight, build_azure_context, print_preflig
 from signals.types import EvalScope
 from signals.registry import SignalBus
 from signals.telemetry import RunTelemetry
+from signals.validation import (
+    validate_signal_bindings,
+    build_signal_execution_summary,
+    print_signal_execution_summary,
+    run_validate_signals,
+    SignalBindingError,
+)
 from control_packs.loader import load_pack
 from engine.assessment_runtime import AssessmentRuntime
 from agent.intent_orchestrator import IntentOrchestrator
@@ -102,6 +109,8 @@ def parse_args():
                    help="Run interactive discovery workshop to resolve Manual controls")
     p.add_argument("--mg-scope", metavar="MG_ID",
                    help="Scope assessment to subscriptions under a specific management group")
+    p.add_argument("--validate-signals", action="store_true",
+                   help="Probe all signal providers without scoring and exit")
     return p.parse_args()
 
 
@@ -232,7 +241,21 @@ def main():
     print(f"  RBAC role:       {execution_context.get('rbac_highest_role', '?')}")
     print(f"  RBAC scope:      {execution_context.get('rbac_scope', '?')}")
     telemetry.end_phase("context")
-
+    # ── Validate-signals mode (no scoring) ────────────────────
+    if args.validate_signals:
+        pack = load_pack("alz", "v1.0")
+        scope = EvalScope(
+            tenant_id=tenant_id,
+            subscription_ids=execution_context.get("subscription_ids_visible", []),
+        )
+        report = run_validate_signals(scope, pack, verbose=True)
+        vs_path = os.path.join(OUT_DIR, "signal-validation.json")
+        with open(vs_path, "w", encoding="utf-8") as f:
+            json.dump(report, f, indent=2, default=str)
+        print(f"\n  Saved: {vs_path}")
+        if report["binding_violations"]:
+            print(f"  ⚠ {len(report['binding_violations'])} binding violation(s) found")
+        return
     # ── Preflight-only mode ───────────────────────────────────────
     if args.preflight:
         ctx = build_azure_context(
@@ -314,7 +337,24 @@ def main():
 
     # ── Checklist (full ALZ list — Manual items backfill scoring) ──
     checklist = load_alz_checklist(force_refresh=True)
-
+    # ── Fail-fast: binding validation ─────────────────────────
+    pack = load_pack("alz", "v1.0")
+    binding_violations = validate_signal_bindings(pack)
+    if binding_violations:
+        # Separate critical violations (missing_provider) from expected gaps
+        critical = [v for v in binding_violations if v["type"] != "missing_evaluator"]
+        pending  = [v for v in binding_violations if v["type"] == "missing_evaluator"]
+        if critical:
+            print("\n┌─ Signal Binding Errors ───────────────────────────────────┐")
+            for v in critical:
+                print(f"│  ✗ [{v['type']}] {v['control_id'][:20]}: {v['detail'][:60]}")
+            print("└──────────────────────────────────────────────────────────┘")
+            raise SignalBindingError(
+                f"{len(critical)} critical signal binding violation(s) — "
+                f"fix before scanning"
+            )
+        if pending:
+            print(f"\n  ⚠ {len(pending)} data-driven control(s) awaiting evaluator implementation")
     # ── Signal Bus + evaluators ───────────────────────────────────
     telemetry.start_phase("signals")
     print("\nRunning evaluators via SignalBus …")
@@ -344,12 +384,21 @@ def main():
     print(f"  Scope model: {scope_summary.get('total_findings', 0)} findings, "
           f"{scope_summary.get('governance_gap_percent', 0)}% platform governance gaps")
 
-    # Harvest signal bus telemetry
+    # Harvest signal bus telemetry (snapshot events before reset)
+    all_bus_events = list(bus.events)  # snapshot for execution summary
     telemetry.record_signal_events(bus.reset_events())
 
-    auto_count = sum(1 for r in results if r["status"] != "Manual")
-    print(f"  Evaluated {auto_count} automated + "
-          f"{len(results) - auto_count} manual controls")
+    # ── Signal execution summary (coverage report) ────────────
+    sig_summary = build_signal_execution_summary(results, all_bus_events, pack)
+    print_signal_execution_summary(sig_summary)
+
+    auto_count = sum(1 for r in results if r["status"] not in ("Manual", "SignalError"))
+    se_count = sum(1 for r in results if r["status"] == "SignalError")
+    manual_count = len(results) - auto_count - se_count
+    parts = [f"{auto_count} automated", f"{manual_count} manual"]
+    if se_count:
+        parts.append(f"{se_count} signal-error")
+    print(f"  Evaluated {' + '.join(parts)} controls")
     telemetry.end_phase("evaluators")
 
     # ── Limitations ───────────────────────────────────────────────
@@ -358,11 +407,15 @@ def main():
         limitations.append("Management group hierarchy not visible with current access")
     if not subscription_ids:
         limitations.append("No subscriptions visible — assessment is empty")
-    # Surface any evaluator-level errors
+    # Surface any evaluator-level errors and signal failures
     for r in results:
         if r.get("status") == "Error":
             limitations.append(
                 f"Control {r['control_id'][:8]} error: {r.get('notes', 'unknown')}"
+            )
+        elif r.get("status") == "SignalError":
+            limitations.append(
+                f"Control {r['control_id'][:8]} signal failure: {r.get('notes', 'all signals errored')}"
             )
 
     # ── Build output ──────────────────────────────────────────────
@@ -377,6 +430,7 @@ def main():
         "execution_context": execution_context,
         "limitations": limitations,
         "signal_availability": sig_matrix,
+        "signal_execution_summary": sig_summary,
         "scoring": scoring,
         "scope_summary": scope_summary,
         "rollups": dict(rollup_by_section(results)),
@@ -477,7 +531,6 @@ def main():
         print(f"│  API calls:         {provenance['api_calls_total']}")
         print(f"│  Signals fetched:   {provenance['signals_fetched']}")
         print(f"│  Data-driven ctrls: {provenance['data_driven_controls']}")
-        print(f"│  Scan duration:     {provenance['scan_duration_sec']}s")
         print("└───────────────────────────────────────┘")
     except SignalIntegrityError as e:
         print(f"\n  ✗ {e}")

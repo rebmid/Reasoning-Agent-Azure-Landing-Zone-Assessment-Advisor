@@ -3,16 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Any, Dict, List, Optional
 
-DOMAIN_WEIGHTS = {
-    "Security": 1.5,
-    "Networking": 1.4,
-    "Governance": 1.3,
-    "Identity": 1.4,
-    "Platform": 1.2,
-    "Management": 1.1,
-    "Data Protection": 1.3,
-    "Resilience": 1.2,
-}
+from schemas.taxonomy import DOMAIN_WEIGHTS
 
 STATUS_MULTIPLIER = {
     "Fail": 1.0,
@@ -20,6 +11,9 @@ STATUS_MULTIPLIER = {
     "Pass": 0,
     "Manual": 0,
     "NotApplicable": 0,
+    "SignalError": 0,   # excluded from scoring — signal infra failure
+    "Error": 0,         # excluded from scoring — evaluator exception
+    "Unknown": 0,       # excluded from scoring — no evaluator registered
 }
 
 SEVERITY_WEIGHTS = {
@@ -40,18 +34,30 @@ FAIL_STATUSES = {"Fail"}
 AUTO_STATUSES = {"Pass", "Fail", "Partial", "Info", "NotApplicable"}
 MANUAL_STATUSES = {"Manual"}
 NA_STATUSES = {"NotApplicable"}
+# Explicitly excluded from maturity — never counted as Pass or Fail
+NON_MATURITY_STATUSES = {"Manual", "SignalError"}
+SIGNAL_ERROR_STATUSES = {"SignalError"}
 
 def automation_coverage(results: List[Dict[str, Any]], total_controls: int) -> Dict[str, Any]:
     automated = sum(1 for r in results if (r.get("status") in AUTO_STATUSES))
     manual = sum(1 for r in results if (r.get("status") in MANUAL_STATUSES))
     not_applicable = sum(1 for r in results if (r.get("status") in NA_STATUSES))
+    signal_errors = sum(1 for r in results if (r.get("status") in SIGNAL_ERROR_STATUSES))
     pct = round((automated / total_controls) * 100.0, 1) if total_controls else 0.0
+
+    # automation_integrity: what fraction of attempted automated controls
+    # actually executed cleanly (no signal failures).  Separate from maturity.
+    attempted = automated + signal_errors
+    automation_integrity = round(1.0 - (signal_errors / attempted), 4) if attempted else 1.0
+
     return {
         "total_controls": total_controls,
         "automated_controls": automated,
         "manual_controls": manual,
         "not_applicable_controls": not_applicable,
+        "signal_error_controls": signal_errors,
         "automation_percent": pct,
+        "automation_integrity": automation_integrity,
         # Assessment coverage: conversation-guide framing
         "data_driven": automated,
         "requires_customer_input": manual,
@@ -69,7 +75,8 @@ def section_scores(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         for r in items:
             counts[r.get("status") or "Unknown"] += 1
 
-        # Exclude NotApplicable from maturity calculation
+        # Exclude NotApplicable and NON_MATURITY_STATUSES from maturity
+        # SignalError is explicitly excluded here — not accidental omission
         automated_items = [r for r in items
                            if r.get("status") in AUTO_STATUSES
                            and r.get("status") not in NA_STATUSES]

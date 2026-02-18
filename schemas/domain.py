@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Literal, Optional, TypedDict
 
 
 # ── Status literals ───────────────────────────────────────────────
-ControlStatus = Literal["Pass", "Fail", "Partial", "Manual", "Unknown", "Deferred", "Error"]
+ControlStatus = Literal["Pass", "Fail", "Partial", "Manual", "Unknown", "Deferred", "Error", "SignalError"]
 Confidence = Literal["Low", "Medium", "High"]
 
 
@@ -41,8 +41,19 @@ class IntentResult(TypedDict):
 
 
 # ── Scoring-compatible flat result (consumed by engine/scoring.py) ─
-class ScoringResult(TypedDict):
-    """Shape expected by compute_scoring(), rollup_by_section(), and reports."""
+class ScoringResult(TypedDict, total=False):
+    """Shape expected by compute_scoring(), rollup_by_section(), and reports.
+
+    Assessment model: **tenant-platform**.  Each control produces exactly
+    one ScoringResult regardless of how many subscriptions are in scope.
+    Evaluators may internally inspect subscription distribution, but
+    the result resolves to a single tenant-level status and score.
+
+    Required fields are always present; optional fields (subscription
+    counts, coverage, scope) are added by engine/aggregation.py when
+    enterprise enrichment runs.
+    """
+    # ── Required (always present) ─────────────────────────────────
     control_id: str
     section: str
     category: str
@@ -55,3 +66,12 @@ class ScoringResult(TypedDict):
     signal_used: Optional[str]
     confidence: str
     notes: str
+
+    # ── Optional: subscription distribution (set by aggregation) ──
+    subscription_count_total: Optional[int]
+    subscription_count_noncompliant: Optional[int]
+    coverage_ratio: Optional[float]
+    coverage_pct: Optional[float]
+    coverage_display: Optional[str]
+    scope_level: Optional[str]
+    scope_pattern: Optional[str]

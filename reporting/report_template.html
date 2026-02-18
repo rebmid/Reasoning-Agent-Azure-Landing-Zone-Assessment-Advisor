@@ -649,10 +649,6 @@
     {% if provenance.live %}
     <div class="grid-4" style="margin-bottom:14px;">
       <div class="kpi">
-        <div class="value">{% if provenance.scan_duration_sec is not none %}{{ provenance.scan_duration_sec }}s{% else %}Unavailable{% endif %}</div>
-        <div class="label">Scan Duration</div>
-      </div>
-      <div class="kpi">
         <div class="value">{% if provenance.api_calls_total is not none %}{{ provenance.api_calls_total }}{% else %}Unavailable{% endif %}</div>
         <div class="label">API Calls{% if provenance.rg_queries is not none %} ({{ provenance.rg_queries }} RG + {{ provenance.arm_calls }} ARM){% endif %}</div>
       </div>

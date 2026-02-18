@@ -50,31 +50,10 @@ def _domain_for_question(question: dict, results_by_id: dict) -> str:
     return "General"
 
 
-_DOMAIN_BUCKETS = {
-    "Identity and Access Management": ["Identity and Access Management", "Azure Billing and Microsoft Entra ID Tenants", "Identity"],
-    "Network Topology and Connectivity": ["Networking", "Network Topology and Connectivity"],
-    "Governance": ["Governance", "Resource Organization"],
-    "Security": ["Security"],
-    "Management and Operations": ["Management", "Platform Automation and DevOps", "Operations"],
-}
-
-
-def _bucket_domain(raw: str) -> str:
-    for bucket, members in _DOMAIN_BUCKETS.items():
-        if raw in members:
-            return bucket
-    return raw
-
-
-# ── Assessment-mode filter sets ──────────────────────────────────
-_MODE_SECTIONS = {
-    "Scale": ["Resource Organization", "Azure Billing and Microsoft Entra ID Tenants",
-              "Identity and Access Management", "Governance"],
-    "Security": ["Security", "Identity and Access Management"],
-    "Operations": ["Management", "Platform Automation and DevOps"],
-    "Cost": ["Governance", "Azure Billing and Microsoft Entra ID Tenants"],
-    "Data Confidence": [],
-}
+from schemas.taxonomy import (
+    bucket_domain as _bucket_domain,
+    MODE_SECTIONS as _MODE_SECTIONS,
+)
 
 
 def _build_report_context(output: dict) -> dict:
