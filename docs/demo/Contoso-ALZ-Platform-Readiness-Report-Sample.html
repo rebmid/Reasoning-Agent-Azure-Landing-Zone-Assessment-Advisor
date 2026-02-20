@@ -62,6 +62,12 @@
     .tag-low { background: #e6f4ea; color: var(--success); }
     .tag-phase { background: #f3f2f1; color: #323130; }
 
+    /* ── Tier border classes ──────────────────────────────── */
+    .tier-border-danger { border-left: 3px solid var(--danger); }
+    .tier-border-warn { border-left: 3px solid var(--warn); }
+    .tier-border-accent { border-left: 3px solid var(--accent); }
+    .tier-border-success { border-left: 3px solid var(--success); }
+
     /* ── Trajectory bar ───────────────────────────────────── */
     .trajectory { display: flex; align-items: center; gap: 0; margin: 16px 0; }
     .trajectory .step { flex: 1; text-align: center; padding: 14px 8px; border: 1px solid var(--border); position: relative; background: var(--card-bg); }
@@ -135,7 +141,7 @@
 </nav>
 
 <h1>Azure Landing Zone — Platform Readiness Report
-  <br><small>2026-02-18 · Run run-20260218-0154</small>
+  <br><small>2026-02-20 · Run run-20260220-2110</small>
 </h1>
 
 <!-- ════════════════════════════════════════════════════════════════
@@ -146,15 +152,15 @@
 
   <div class="grid-4" style="margin-bottom:16px;">
     <div class="kpi danger">
-      <div class="value">20.0%</div>
-      <div class="label">Overall Maturity</div>
+      <div class="value">22.5%</div>
+      <div class="label">Tenant Maturity</div>
     </div>
     <div class="kpi">
-      <div class="value">46/271</div>
+      <div class="value">40/271</div>
       <div class="label">Automated Controls</div>
     </div>
     <div class="kpi danger">
-      <div class="value">20</div>
+      <div class="value">22</div>
       <div class="label">Enterprise Readiness Score</div>
     </div>
     <div class="kpi">
@@ -166,9 +172,9 @@
   
   <div class="card">
     <h3>Platform Scale Implication</h3>
-    <p>Contoso&#39;s current Azure platform maturity is critically low, with an overall score of 20%. Key foundational controls across security, identity, networking, and management are failing, exposing the organization to significant operational, compliance, and reputational risks. The assessment reveals that all major design areas—especially Governance, Management, Network Topology, Data Protection, and Identity—are underperforming, with high-confidence evidence of platform-wide governance gaps. This posture leaves the environment highly vulnerable to security breaches, data loss, and service outages, and undermines the ability to scale or onboard new workloads safely.
+    <p>Contoso&#39;s current Azure platform maturity is critically low, with less than 25% overall readiness and multiple high-severity gaps across security, identity, network, and management domains. The assessment reveals systemic weaknesses in foundational controls such as privileged access management, network segmentation, data protection, and operational resilience. These gaps expose the organization to elevated risks of service disruption, data loss, and regulatory non-compliance, directly impacting business continuity and stakeholder trust. The platform is operating with a single subscription and no management group hierarchy, which limits scalability and increases the blast radius of any misconfiguration.
 
-The most acute risks stem from the absence of essential security controls (such as DDoS protection, Azure Firewall, and centralized monitoring), poor data protection practices (with no compliant storage or backup coverage), and weak identity governance (with excessive privileged access and no effective Privileged Identity Management). Without immediate investment in foundational controls and platform governance, Contoso faces a heightened likelihood of regulatory non-compliance, business disruption, and loss of stakeholder trust. The investment thesis is clear: prioritizing remediation of these critical gaps will enable secure, compliant growth and restore confidence in the cloud platform&#39;s ability to support business objectives.</p>
+The most urgent risks are concentrated in identity hygiene, lack of privileged access controls, missing network security layers, and insufficient backup and monitoring coverage. Without immediate investment in these areas, Contoso faces a high probability of security breaches, operational outages, and audit failures. The investment thesis is clear: rapid remediation of these platform governance gaps will unlock secure growth, enable compliance, and reduce the likelihood of costly incidents. Addressing these foundational issues will also position Contoso to scale Azure adoption safely and efficiently.</p>
     
     <p style="margin-top:8px;color:var(--muted);font-size:13px;">Estimated max supported subscriptions in current state: <strong>1</strong></p>
     
@@ -192,52 +198,38 @@ The most acute risks stem from the absence of essential security controls (such 
       </tr>
       
       <tr>
-        <td><strong>Network Topology and Connectivity</strong></td>
-        <td>No hub-spoke or centralized network topology detected; no Azure Firewall or DDoS Protection present. This prevents scalable, secure, and manageable network expansion required for enterprise-scale.</td>
+        <td><strong>Networking</strong></td>
+        <td>No evidence of hub-spoke or Virtual WAN topology; no Azure Firewall or DDoS Protection detected. Network security and centralized egress are not in place.</td>
         <td><span class="tag tag-critical">Critical</span></td>
-        <td>Establish tenant-wide governance baseline and policy enforcement</td>
+        <td>RBAC Hygiene Remediation and PIM Activation</td>
       </tr>
       
       <tr>
-        <td><strong>Governance</strong></td>
-        <td>No management group hierarchy or platform-level policy enforcement. Policy compliance and governance controls are missing, blocking scalable delegation and policy-driven management.</td>
+        <td><strong>Identity</strong></td>
+        <td>Privileged Identity Management (PIM) is not enabled for privileged roles; RBAC hygiene is poor with excessive Owner assignments and no group-based access; no break-glass accounts detected.</td>
         <td><span class="tag tag-critical">Critical</span></td>
-        <td>Centralize monitoring and log analytics workspace topology</td>
-      </tr>
-      
-      <tr>
-        <td><strong>Identity and Access Management</strong></td>
-        <td>Privileged Identity Management (PIM) is not enabled; RBAC hygiene is poor with excessive Owner assignments and no group-based access. No validated break-glass accounts. This creates high risk for privilege escalation and tenant lockout.</td>
-        <td><span class="tag tag-critical">Critical</span></td>
-        <td>Implement secure network topology with hub-spoke, DDoS protection, and centralized egress control</td>
+        <td>Centralized Monitoring Workspace Topology</td>
       </tr>
       
       <tr>
         <td><strong>Management</strong></td>
-        <td>No centralized Log Analytics workspace or Sentinel; workspace topology is fragmented and retention is insufficient (&lt;90d). This blocks centralized monitoring, security operations, and compliance reporting.</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td>Enforce least-privilege access and Privileged Identity Management (PIM)</td>
+        <td>No centralized Log Analytics workspace or Sentinel; workspace topology is fragmented and retention is insufficient (&lt;90d). Diagnostics coverage is extremely low.</td>
+        <td><span class="tag tag-critical">Critical</span></td>
+        <td>Hub-Spoke Network Topology and Security Controls</td>
       </tr>
       
       <tr>
         <td><strong>Security</strong></td>
-        <td>Defender for Cloud is not fully enabled; centralized security visibility is lacking and diagnostics coverage is extremely low (&lt;5%). Secure Score and threat detection posture are insufficient for enterprise risk tolerance.</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td>Remediate security visibility gaps and enforce centralized diagnostics</td>
+        <td>Centralized security visibility is lacking; Defender for Cloud not confirmed as enabled across all plans; Secure Score not available; backup coverage for VMs is 0%.</td>
+        <td><span class="tag tag-critical">Critical</span></td>
+        <td>Centralized Security Visibility and Diagnostics Enforcement</td>
       </tr>
       
       <tr>
-        <td><strong>Data Protection</strong></td>
-        <td>Storage accounts and PaaS services lack private endpoints and backup coverage. Data protection controls are not enforced, creating risk for data exfiltration and loss.</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td>Achieve data protection and resilience for critical workloads</td>
-      </tr>
-      
-      <tr>
-        <td><strong>Platform Automation and DevOps</strong></td>
-        <td>No evidence of automated subscription vending, IaC adoption, or policy remediation. Manual processes will not scale beyond a handful of subscriptions.</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td>Advance platform automation and change tracking</td>
+        <td><strong>Governance</strong></td>
+        <td>No management group hierarchy detected; no evidence of policy initiatives assigned at MG scope; resource locks and cost governance controls are missing.</td>
+        <td><span class="tag tag-critical">Critical</span></td>
+        <td>Cost Governance and Budget Enforcement</td>
       </tr>
       
     </table>
@@ -246,371 +238,520 @@ The most acute risks stem from the absence of essential security controls (such 
 
 
 <!-- ════════════════════════════════════════════════════════════════
-     PLATFORM RISK OVERVIEW (deterministic — no LLM)
+     PLATFORM RISK PRIORITIZATION (deterministic — no LLM)
      ════════════════════════════════════════════════════════════════ -->
 
 <div class="section" id="risks">
-  <h2>Platform Risk Overview</h2>
+  <h2>Platform Risk Prioritization</h2>
   <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">
-    Risks derived deterministically from control metadata.
-    <span style="font-style:italic;">risk_score = severity_weight × blast_radius × foundational_weight  (Severity: High=3, Med=2, Low=1 · Scope: Tenant=3, MG=2, Sub=1 · Foundational=×2 if depended-on)</span>
+    Risks ranked deterministically by tenant-wide impact and severity weighting.
   </p>
 
   <div class="grid-4" style="margin-bottom:16px;">
     <div class="kpi danger">
-      <div class="value">11</div>
+      <div class="value">9</div>
       <div class="label">Critical</div>
     </div>
     <div class="kpi warn">
-      <div class="value">22</div>
+      <div class="value">19</div>
       <div class="label">High</div>
     </div>
     <div class="kpi" style="border-left:3px solid var(--accent);">
-      <div class="value">0</div>
+      <div class="value">3</div>
       <div class="label">Medium</div>
     </div>
     <div class="kpi ok">
-      <div class="value">0</div>
+      <div class="value">2</div>
       <div class="label">Hygiene</div>
     </div>
   </div>
 
   
-  
-  
-  <div class="card" style="border-left:3px solid var(--danger);">
-    <h3><span class="tag tag-critical">Critical</span> Risks (11)</h3>
+  <div class="card" style="border-left:4px solid #e74c3c;">
+    <h3><span style="display:inline-block;padding:2px 10px;border-radius:4px;font-size:13px;font-weight:700;color:#fff;background:#e74c3c;">Tier 1 — Platform Critical</span> (2)</h3>
     <table>
       <tr>
-        <th style="width:50px;">Score</th>
+        <th style="width:160px;">Risk Tier</th>
         <th>Control</th>
         <th>Section</th>
         <th>Severity</th>
         <th>Status</th>
+        <th>Confidence</th>
         <th>Scope</th>
+        <th>Type</th>
         <th>Foundation</th>
-        <th>Evidence</th>
       </tr>
       
       <tr>
-        <td style="text-align:center;font-weight:700;">18</td>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#e74c3c;">Tier 1 — Platform Critical</span></td>
         <td><a href="#ctrl-rbac-hyg" style="color:var(--accent);text-decoration:none;">RBAC Hygiene</a></td>
         <td>Identity</td>
         <td><span class="tag tag-high">High</span></td>
         <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
         <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
         <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
-        <td style="font-size:12px;color:var(--muted);">RBAC hygiene issues: 27 Owner role assignments (recommend ≤ 5); Group-based: 0% &hellip;</td>
       </tr>
       
       <tr>
-        <td style="text-align:center;font-weight:700;">18</td>
-        <td><a href="#ctrl-entra-lo" style="color:var(--accent);text-decoration:none;">Entra ID Log Availability</a></td>
-        <td>Identity</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td><span class="tag tag-high">Partial</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
-        <td style="font-size:12px;color:var(--muted);">Entra ID log gaps: Sign-in logs not forwarded to Log Analytics; Audit logs not f&hellip;</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">18</td>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#e74c3c;">Tier 1 — Platform Critical</span></td>
         <td><a href="#ctrl-monitor-" style="color:var(--accent);text-decoration:none;">SOC Workspace Topology</a></td>
         <td>Management</td>
         <td><span class="tag tag-high">High</span></td>
         <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
         <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
         <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
-        <td style="font-size:12px;color:var(--muted);">Workspace topology issues: 5 workspaces — not centralized; Sentinel not enabled;&hellip;</td>
       </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">18</td>
-        <td><a href="#ctrl-e6c4cfd3" style="color:var(--accent);text-decoration:none;">Azure Firewall Presence</a></td>
-        <td>Networking</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
-        <td style="font-size:12px;color:var(--muted);">No Azure Firewall resources detected in visible subscriptions.</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">12</td>
-        <td><a href="#ctrl-61623a76" style="color:var(--accent);text-decoration:none;">Platform Management Group</a></td>
-        <td>Governance</td>
-        <td><span class="tag tag-medium">Medium</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
-        <td style="font-size:12px;color:var(--muted);">No Platform management group detected under root.</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">12</td>
-        <td><a href="#ctrl-d8a2adb1" style="color:var(--accent);text-decoration:none;">Policy Compliance Percentage</a></td>
-        <td>Governance</td>
-        <td><span class="tag tag-medium">Medium</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
-        <td style="font-size:12px;color:var(--muted);">Policy compliance is 0.0% (3 noncompliant of 3). Target ≥ 70%.</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">12</td>
-        <td><a href="#ctrl-pim-usag" style="color:var(--accent);text-decoration:none;">PIM Usage</a></td>
-        <td>Identity</td>
-        <td><span class="tag tag-medium">Medium</span></td>
-        <td><span class="tag tag-high">Partial</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
-        <td style="font-size:12px;color:var(--muted);">No PIM eligibility activations detected in activity log (90d). PIM may not be en&hellip;</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">12</td>
-        <td><a href="#ctrl-alert-ac" style="color:var(--accent);text-decoration:none;">Alert to Action Group Mapping</a></td>
-        <td>Management</td>
-        <td><span class="tag tag-medium">Medium</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
-        <td style="font-size:12px;color:var(--muted);">No metric or scheduled query alert rules found.</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">12</td>
-        <td><a href="#ctrl-3c5a808d" style="color:var(--accent);text-decoration:none;">Public IP Governance</a></td>
-        <td>Networking</td>
-        <td><span class="tag tag-medium">Medium</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
-        <td style="font-size:12px;color:var(--muted);">1 public IP(s) detected. Review for policy alignment.</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">12</td>
-        <td><a href="#ctrl-67e7a8ed" style="color:var(--accent);text-decoration:none;">Diagnostics Coverage</a></td>
-        <td>Security</td>
-        <td><span class="tag tag-medium">Medium</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
-        <td style="font-size:12px;color:var(--muted);">Diagnostics coverage is 2.1% (sample=94). Most resources lack diagnostic setting&hellip;</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">12</td>
-        <td><a href="#ctrl-1cf0b8da" style="color:var(--accent);text-decoration:none;">Diagnostics for Identity (Entra ID)</a></td>
-        <td>Security</td>
-        <td><span class="tag tag-medium">Medium</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
-        <td style="font-size:12px;color:var(--muted);">Low diagnostics coverage (2.1%) suggests Entra ID logs may not be centralized.</td>
-      </tr>
-      
       
     </table>
   </div>
   
-  
-  
-  
-  <div class="card" style="border-left:3px solid var(--warn);">
-    <h3><span class="tag tag-high">High</span> Risks (22)</h3>
+  <div class="card" style="border-left:4px solid #e67e22;">
+    <h3><span style="display:inline-block;padding:2px 10px;border-radius:4px;font-size:13px;font-weight:700;color:#fff;background:#e67e22;">Tier 2 — High Impact</span> (2)</h3>
     <table>
       <tr>
-        <th style="width:50px;">Score</th>
+        <th style="width:160px;">Risk Tier</th>
         <th>Control</th>
         <th>Section</th>
         <th>Severity</th>
         <th>Status</th>
+        <th>Confidence</th>
         <th>Scope</th>
+        <th>Type</th>
         <th>Foundation</th>
-        <th>Evidence</th>
       </tr>
       
       <tr>
-        <td style="text-align:center;font-weight:700;">9</td>
-        <td><a href="#ctrl-storage-" style="color:var(--accent);text-decoration:none;">Storage Account Posture</a></td>
-        <td>Data Protection</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">Storage accounts: only 0/5 compliant (0%). Majority of resources are non-complia&hellip;</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">9</td>
-        <td><a href="#ctrl-keyvault" style="color:var(--accent);text-decoration:none;">Key Vault Posture</a></td>
-        <td>Data Protection</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td><span class="tag tag-high">Partial</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">Key Vaults: 1/2 compliant (50%). 1 resource(s) need remediation.</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">9</td>
-        <td><a href="#ctrl-private-" style="color:var(--accent);text-decoration:none;">Private Endpoint Coverage</a></td>
-        <td>Data Protection</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">PaaS private endpoints: only 0/10 compliant (0%). Majority of resources are non-&hellip;</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">9</td>
-        <td><a href="#ctrl-49b82111" style="color:var(--accent);text-decoration:none;">Noncompliant Resource Count</a></td>
-        <td>Governance</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td><span class="tag tag-high">Partial</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">3 noncompliant resource(s) detected.</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">9</td>
-        <td><a href="#ctrl-pim-matu" style="color:var(--accent);text-decoration:none;">PIM Maturity for Privileged Roles</a></td>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#e67e22;">Tier 2 — High Impact</span></td>
+        <td><a href="#ctrl-entra-lo" style="color:var(--accent);text-decoration:none;">Entra ID Log Availability</a></td>
         <td>Identity</td>
         <td><span class="tag tag-high">High</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">PIM not effective: Eligible ratio 0% (recommend ≥ 80%).</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">9</td>
-        <td><a href="#ctrl-breakgla" style="color:var(--accent);text-decoration:none;">Break-Glass Account Validation</a></td>
-        <td>Identity</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">No break-glass accounts detected (naming pattern: breakglass*, emergency*, bg-*)&hellip;</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">9</td>
-        <td><a href="#ctrl-e8bbac75" style="color:var(--accent);text-decoration:none;">Hub-Spoke Topology</a></td>
-        <td>Networking</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">No hub VNet or Azure Firewall detected. Hub-spoke topology may not be implemente&hellip;</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">9</td>
-        <td><a href="#ctrl-088137f5" style="color:var(--accent);text-decoration:none;">DDoS Protection</a></td>
-        <td>Networking</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">2 VNet(s) without DDoS Protection.</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">9</td>
-        <td><a href="#ctrl-nsg-cove" style="color:var(--accent);text-decoration:none;">NSG Subnet Coverage</a></td>
-        <td>Networking</td>
-        <td><span class="tag tag-high">High</span></td>
         <td><span class="tag tag-high">Partial</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
         <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">NSG coverage gaps: 2 empty NSG(s).</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
       </tr>
       
       <tr>
-        <td style="text-align:center;font-weight:700;">9</td>
-        <td><a href="#ctrl-backup-c" style="color:var(--accent);text-decoration:none;">VM Backup Coverage</a></td>
-        <td>Resilience</td>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#e67e22;">Tier 2 — High Impact</span></td>
+        <td><a href="#ctrl-e6c4cfd3" style="color:var(--accent);text-decoration:none;">Azure Firewall Presence</a></td>
+        <td>Networking</td>
         <td><span class="tag tag-high">High</span></td>
         <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#e74c3c;">Low</span></td>
         <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">Backup coverage: only 0/1 VMs protected (0%).</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
       </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">9</td>
-        <td><a href="#ctrl-77425f48" style="color:var(--accent);text-decoration:none;">Defender CWP Coverage</a></td>
-        <td>Security</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td><span class="tag tag-high">Partial</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">14/18 Defender plans enabled (77.8%). Some plans still disabled.</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">9</td>
-        <td><a href="#ctrl-a56888b2" style="color:var(--accent);text-decoration:none;">Centralized Security Visibility</a></td>
-        <td>Security</td>
-        <td><span class="tag tag-high">High</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">Centralized security visibility gaps: Diagnostics coverage 2.1% is low.</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">6</td>
-        <td><a href="#ctrl-appservi" style="color:var(--accent);text-decoration:none;">App Service Posture</a></td>
-        <td>Data Protection</td>
-        <td><span class="tag tag-medium">Medium</span></td>
-        <td><span class="tag tag-medium">SignalError</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">All required signals failed: resource_graph:app_service_posture: (BadRequest) Pl&hellip;</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">6</td>
-        <td><a href="#ctrl-acr-post" style="color:var(--accent);text-decoration:none;">Container Registry Posture</a></td>
-        <td>Data Protection</td>
-        <td><span class="tag tag-medium">Medium</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">Container Registries: only 0/1 compliant (0%). Majority of resources are non-com&hellip;</td>
-      </tr>
-      
-      <tr>
-        <td style="text-align:center;font-weight:700;">6</td>
-        <td><a href="#ctrl-92481607" style="color:var(--accent);text-decoration:none;">Landing Zones Management Group</a></td>
-        <td>Governance</td>
-        <td><span class="tag tag-medium">Medium</span></td>
-        <td><span class="tag tag-critical">Fail</span></td>
-        <td>Tenant</td>
-        <td style="text-align:center;"></td>
-        <td style="font-size:12px;color:var(--muted);">No Landing Zones management group detected.</td>
-      </tr>
-      
-      
-      <tr><td colspan="8" style="text-align:center;color:var(--muted);font-size:13px;">… and 7 more</td></tr>
       
     </table>
   </div>
   
+  <div class="card" style="border-left:4px solid #f1c40f;">
+    <h3><span style="display:inline-block;padding:2px 10px;border-radius:4px;font-size:13px;font-weight:700;color:#fff;background:#f1c40f;">Tier 3 — Significant</span> (13)</h3>
+    <table>
+      <tr>
+        <th style="width:160px;">Risk Tier</th>
+        <th>Control</th>
+        <th>Section</th>
+        <th>Severity</th>
+        <th>Status</th>
+        <th>Confidence</th>
+        <th>Scope</th>
+        <th>Type</th>
+        <th>Foundation</th>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-61623a76" style="color:var(--accent);text-decoration:none;">Platform Management Group</a></td>
+        <td>Governance</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-d8a2adb1" style="color:var(--accent);text-decoration:none;">Policy Compliance Percentage</a></td>
+        <td>Governance</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-3c5a808d" style="color:var(--accent);text-decoration:none;">Public IP Governance</a></td>
+        <td>Networking</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-67e7a8ed" style="color:var(--accent);text-decoration:none;">Diagnostics Coverage</a></td>
+        <td>Security</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-1cf0b8da" style="color:var(--accent);text-decoration:none;">Diagnostics for Identity (Entra ID)</a></td>
+        <td>Security</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-pim-usag" style="color:var(--accent);text-decoration:none;">PIM Usage</a></td>
+        <td>Identity</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-high">Partial</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-alert-ac" style="color:var(--accent);text-decoration:none;">Alert to Action Group Mapping</a></td>
+        <td>Management</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#e74c3c;">Low</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"><strong style="color:var(--success);">Y</strong></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-storage-" style="color:var(--accent);text-decoration:none;">Storage Account Posture</a></td>
+        <td>Data Protection</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-pim-matu" style="color:var(--accent);text-decoration:none;">PIM Maturity for Privileged Roles</a></td>
+        <td>Identity</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-breakgla" style="color:var(--accent);text-decoration:none;">Break-Glass Account Validation</a></td>
+        <td>Identity</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-088137f5" style="color:var(--accent);text-decoration:none;">DDoS Protection</a></td>
+        <td>Networking</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-backup-c" style="color:var(--accent);text-decoration:none;">VM Backup Coverage</a></td>
+        <td>Resilience</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#f1c40f;">Tier 3 — Significant</span></td>
+        <td><a href="#ctrl-a56888b2" style="color:var(--accent);text-decoration:none;">Centralized Security Visibility</a></td>
+        <td>Security</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+    </table>
+  </div>
   
+  <div class="card" style="border-left:4px solid #3498db;">
+    <h3><span style="display:inline-block;padding:2px 10px;border-radius:4px;font-size:13px;font-weight:700;color:#fff;background:#3498db;">Tier 4 — Moderate</span> (11)</h3>
+    <table>
+      <tr>
+        <th style="width:160px;">Risk Tier</th>
+        <th>Control</th>
+        <th>Section</th>
+        <th>Severity</th>
+        <th>Status</th>
+        <th>Confidence</th>
+        <th>Scope</th>
+        <th>Type</th>
+        <th>Foundation</th>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#3498db;">Tier 4 — Moderate</span></td>
+        <td><a href="#ctrl-keyvault" style="color:var(--accent);text-decoration:none;">Key Vault Posture</a></td>
+        <td>Data Protection</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td><span class="tag tag-high">Partial</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#3498db;">Tier 4 — Moderate</span></td>
+        <td><a href="#ctrl-49b82111" style="color:var(--accent);text-decoration:none;">Noncompliant Resource Count</a></td>
+        <td>Governance</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td><span class="tag tag-high">Partial</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#3498db;">Tier 4 — Moderate</span></td>
+        <td><a href="#ctrl-e8bbac75" style="color:var(--accent);text-decoration:none;">Hub-Spoke Topology</a></td>
+        <td>Networking</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#e74c3c;">Low</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#3498db;">Tier 4 — Moderate</span></td>
+        <td><a href="#ctrl-77425f48" style="color:var(--accent);text-decoration:none;">Defender CWP Coverage</a></td>
+        <td>Security</td>
+        <td><span class="tag tag-high">High</span></td>
+        <td><span class="tag tag-high">Partial</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#3498db;">Tier 4 — Moderate</span></td>
+        <td><a href="#ctrl-cost-for" style="color:var(--accent);text-decoration:none;">Cost Forecast Accuracy</a></td>
+        <td>Cost</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#3498db;">Tier 4 — Moderate</span></td>
+        <td><a href="#ctrl-acr-post" style="color:var(--accent);text-decoration:none;">Container Registry Posture</a></td>
+        <td>Data Protection</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#3498db;">Tier 4 — Moderate</span></td>
+        <td><a href="#ctrl-92481607" style="color:var(--accent);text-decoration:none;">Landing Zones Management Group</a></td>
+        <td>Governance</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#3498db;">Tier 4 — Moderate</span></td>
+        <td><a href="#ctrl-8bbac757" style="color:var(--accent);text-decoration:none;">Connectivity Management Group</a></td>
+        <td>Governance</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#3498db;">Tier 4 — Moderate</span></td>
+        <td><a href="#ctrl-resource" style="color:var(--accent);text-decoration:none;">Resource Lock Coverage</a></td>
+        <td>Governance</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#3498db;">Tier 4 — Moderate</span></td>
+        <td><a href="#ctrl-update-m" style="color:var(--accent);text-decoration:none;">Update Manager Posture</a></td>
+        <td>Management</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#3498db;">Tier 4 — Moderate</span></td>
+        <td><a href="#ctrl-change-t" style="color:var(--accent);text-decoration:none;">Change Tracking Enabled</a></td>
+        <td>Management</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-critical">Fail</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+    </table>
+  </div>
   
-  
-  
-  
-  
+  <div class="card" style="border-left:4px solid #2ecc71;">
+    <h3><span style="display:inline-block;padding:2px 10px;border-radius:4px;font-size:13px;font-weight:700;color:#fff;background:#2ecc71;">Tier 5 — Hygiene</span> (5)</h3>
+    <table>
+      <tr>
+        <th style="width:160px;">Risk Tier</th>
+        <th>Control</th>
+        <th>Section</th>
+        <th>Severity</th>
+        <th>Status</th>
+        <th>Confidence</th>
+        <th>Scope</th>
+        <th>Type</th>
+        <th>Foundation</th>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#2ecc71;">Tier 5 — Hygiene</span></td>
+        <td><a href="#ctrl-action-g" style="color:var(--accent);text-decoration:none;">Action Group Coverage</a></td>
+        <td>Management</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-high">Partial</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#2ecc71;">Tier 5 — Hygiene</span></td>
+        <td><a href="#ctrl-availabi" style="color:var(--accent);text-decoration:none;">SLO &amp; Availability Signals</a></td>
+        <td>Management</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-high">Partial</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#2ecc71;">Tier 5 — Hygiene</span></td>
+        <td><a href="#ctrl-network-" style="color:var(--accent);text-decoration:none;">Network Watcher Observability</a></td>
+        <td>Networking</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-high">Partial</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#2ecc71;">High</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#2ecc71;">Tier 5 — Hygiene</span></td>
+        <td><a href="#ctrl-appservi" style="color:var(--accent);text-decoration:none;">App Service Posture</a></td>
+        <td>Data Protection</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-medium">SignalError</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#e67e22;">Medium</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+      <tr>
+        <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;color:#fff;background:#2ecc71;">Tier 5 — Hygiene</span></td>
+        <td><a href="#ctrl-private-" style="color:var(--accent);text-decoration:none;">Private Endpoint Coverage</a></td>
+        <td>Data Protection</td>
+        <td><span class="tag tag-medium">Medium</span></td>
+        <td><span class="tag tag-medium">SignalError</span></td>
+        <td style="text-align:center;"><span style="font-weight:600;color:#e67e22;">Medium</span></td>
+        <td>Tenant</td>
+        <td style="font-size:12px;">Derived</td>
+        <td style="text-align:center;"></td>
+      </tr>
+      
+    </table>
+  </div>
   
 </div>
 
@@ -634,20 +775,20 @@ The most acute risks stem from the absence of essential security controls (such 
       
       <tr>
         <td>1</td>
-        <td><strong>Establish tenant-wide governance baseline and policy enforcement</strong></td>
-        <td style="text-align:center;">5</td>
+        <td><strong>Cost Governance and Budget Enforcement</strong></td>
+        <td style="text-align:center;">1</td>
         <td>
           
             <span style="color:var(--muted);">—</span>
           
         </td>
         <td><span class="tag tag-phase">30 days</span></td>
-        <td style="font-size:13px;">Policy-driven guardrails → enables safe self-service for landing zone teams</td>
+        <td style="font-size:13px;">Cost governance controls → enables FinOps visibility across landing zones</td>
       </tr>
       
       <tr>
-        <td>2</td>
-        <td><strong>Centralize monitoring and log analytics workspace topology</strong></td>
+        <td>1</td>
+        <td><strong>Centralized Monitoring Workspace Topology</strong></td>
         <td style="text-align:center;">1</td>
         <td>
           
@@ -659,80 +800,83 @@ The most acute risks stem from the absence of essential security controls (such 
       </tr>
       
       <tr>
-        <td>3</td>
-        <td><strong>Implement secure network topology with hub-spoke, DDoS protection, and centralized egress control</strong></td>
+        <td>1</td>
+        <td><strong>Baseline Governance Policy and Resource Lock Enforcement</strong></td>
+        <td style="text-align:center;">5</td>
+        <td>
+          
+            <span style="color:var(--muted);">—</span>
+          
+        </td>
+        <td></td>
+        <td style="font-size:13px;">Governance policy baseline → enables compliant resource provisioning</td>
+      </tr>
+      
+      <tr>
+        <td>2</td>
+        <td><strong>RBAC Hygiene Remediation and PIM Activation</strong></td>
+        <td style="text-align:center;">3</td>
+        <td>
+          
+            <span style="color:var(--muted);">—</span>
+          
+        </td>
+        <td></td>
+        <td style="font-size:13px;">RBAC scoping &amp; delegation → enables subscription-level team autonomy</td>
+      </tr>
+      
+      <tr>
+        <td>2</td>
+        <td><strong>Hub-Spoke Network Topology and Security Controls</strong></td>
         <td style="text-align:center;">4</td>
         <td>
           
-            
-              <span style="font-size:13px;">Establish tenant-wide governance baseline and policy enforce</span>
-            
+            <span style="color:var(--muted);">—</span>
           
         </td>
-        <td><span class="tag tag-phase">60 days</span></td>
+        <td></td>
         <td style="font-size:13px;">Hub connectivity &amp; centralized egress → enables landing zone networking model</td>
       </tr>
       
       <tr>
-        <td>4</td>
-        <td><strong>Enforce least-privilege access and Privileged Identity Management (PIM)</strong></td>
+        <td>2</td>
+        <td><strong>Centralized Security Visibility and Diagnostics Enforcement</strong></td>
         <td style="text-align:center;">3</td>
         <td>
           
-            
-              <span style="font-size:13px;">Establish tenant-wide governance baseline and policy enforce</span>
-            
+            <span style="color:var(--muted);">—</span>
           
         </td>
-        <td><span class="tag tag-phase">60 days</span></td>
-        <td style="font-size:13px;">Identity &amp; Entra ID integration → enables PIM and break-glass governance</td>
-      </tr>
-      
-      <tr>
-        <td>5</td>
-        <td><strong>Remediate security visibility gaps and enforce centralized diagnostics</strong></td>
-        <td style="text-align:center;">3</td>
-        <td>
-          
-            
-              <span style="font-size:13px;">Centralize monitoring and log analytics workspace topology f</span>
-            
-          
-        </td>
-        <td><span class="tag tag-phase">60 days</span></td>
+        <td></td>
         <td style="font-size:13px;">Centralized diagnostics &amp; monitoring → enables operational visibility</td>
       </tr>
       
       <tr>
-        <td>6</td>
-        <td><strong>Achieve data protection and resilience for critical workloads</strong></td>
-        <td style="text-align:center;">4</td>
+        <td>2</td>
+        <td><strong>Platform-wide VM Backup and Resilience</strong></td>
+        <td style="text-align:center;">1</td>
+        <td>
+          
+            <span style="color:var(--muted);">—</span>
+          
+        </td>
+        <td></td>
+        <td style="font-size:13px;">Platform capability improvement</td>
+      </tr>
+      
+      <tr>
+        <td>3</td>
+        <td><strong>Data Protection Baseline for Storage, ACR, and Key Vault</strong></td>
+        <td style="text-align:center;">2</td>
         <td>
           
             
-              <span style="font-size:13px;">Implement secure network topology with hub-spoke segmentatio,</span>
-            
-              <span style="font-size:13px;">Remediate security visibility gaps and enforce centralized d</span>
+              <span style="font-size:13px;">Centralize security visibility and enforce diagnostics for a</span>
             
           
         </td>
         <td><span class="tag tag-phase">90 days</span></td>
         <td style="font-size:13px;">Platform capability improvement</td>
-      </tr>
-      
-      <tr>
-        <td>7</td>
-        <td><strong>Advance platform automation and change tracking</strong></td>
-        <td style="text-align:center;">3</td>
-        <td>
-          
-            
-              <span style="font-size:13px;">Establish tenant-wide governance baseline and policy enforce</span>
-            
-          
-        </td>
-        <td><span class="tag tag-phase">90 days</span></td>
-        <td style="font-size:13px;">Platform automation &amp; IaC → enables GitOps-driven landing zone lifecycle</td>
       </tr>
       
     </table>
@@ -749,12 +893,12 @@ The most acute risks stem from the absence of essential security controls (such 
 
   <div class="trajectory">
     <div class="step">
-      <div class="pct" style="color:var(--danger);">20%</div>
+      <div class="pct" style="color:var(--danger);">22.5%</div>
       <div class="lbl">Current</div>
     </div>
     <div class="arrow">→</div>
     <div class="step">
-      <div class="pct" style="color:var(--warn);">35%</div>
+      <div class="pct" style="color:var(--warn);">38%</div>
       <div class="lbl">After Phase 1 (30 d)</div>
     </div>
     <div class="arrow">→</div>
@@ -764,7 +908,7 @@ The most acute risks stem from the absence of essential security controls (such 
     </div>
     <div class="arrow">→</div>
     <div class="step">
-      <div class="pct" style="color:var(--success);">75%</div>
+      <div class="pct" style="color:var(--success);">68%</div>
       <div class="lbl">After Phase 3 (90 d)</div>
     </div>
   </div>
@@ -774,13 +918,15 @@ The most acute risks stem from the absence of essential security controls (such 
     <h3>Assumptions</h3>
     <ul style="padding-left:18px;font-size:13px;color:var(--muted);">
       
-      <li>All initiatives are executed as sequenced and resourced appropriately.</li>
+      <li>All initiatives are executed in the prescribed order and within estimated durations.</li>
       
-      <li>No new subscriptions or major platform changes are introduced during the 90-day period.</li>
+      <li>No additional subscriptions are onboarded during the 90-day window.</li>
       
-      <li>Tenant-level permissions remain available for governance and security actions.</li>
+      <li>No major changes to platform scope or business requirements.</li>
       
-      <li>Dependencies between initiatives are honored and not bypassed.</li>
+      <li>Required permissions are available for all initiative owners.</li>
+      
+      <li>Dependencies are resolved without delay.</li>
       
     </ul>
   </div>
@@ -803,45 +949,51 @@ The most acute risks stem from the absence of essential security controls (such 
       </tr>
       
       <tr>
-        <td><strong>Establish tenant-wide governance baseline and policy enforcement</strong></td>
-        <td>Policy-driven guardrails → enables safe self-service for landing zone teams</td>
-        <td><span class="tag tag-medium">Governance</span></td>
+        <td><strong>Cost Governance and Budget Enforcement</strong></td>
+        <td>Cost governance controls → enables FinOps visibility across landing zones</td>
+        <td><span class="tag tag-medium">Azure Billing and Microsoft Entra ID Tenants</span></td>
       </tr>
       
       <tr>
-        <td><strong>Centralize monitoring and log analytics workspace topology</strong></td>
+        <td><strong>Centralized Monitoring Workspace Topology</strong></td>
         <td>Platform capability improvement</td>
         <td><span class="tag tag-medium">Management</span></td>
       </tr>
       
       <tr>
-        <td><strong>Implement secure network topology with hub-spoke, DDoS protection, and centralized egress control</strong></td>
+        <td><strong>Baseline Governance Policy and Resource Lock Enforcement</strong></td>
+        <td>Governance policy baseline → enables compliant resource provisioning</td>
+        <td><span class="tag tag-medium">Governance</span></td>
+      </tr>
+      
+      <tr>
+        <td><strong>RBAC Hygiene Remediation and PIM Activation</strong></td>
+        <td>RBAC scoping &amp; delegation → enables subscription-level team autonomy</td>
+        <td><span class="tag tag-medium">Identity and Access Management</span></td>
+      </tr>
+      
+      <tr>
+        <td><strong>Hub-Spoke Network Topology and Security Controls</strong></td>
         <td>Hub connectivity &amp; centralized egress → enables landing zone networking model</td>
         <td><span class="tag tag-medium">Network Topology and Connectivity</span></td>
       </tr>
       
       <tr>
-        <td><strong>Enforce least-privilege access and Privileged Identity Management (PIM)</strong></td>
-        <td>Identity &amp; Entra ID integration → enables PIM and break-glass governance</td>
-        <td><span class="tag tag-medium">Identity and Access Management</span></td>
-      </tr>
-      
-      <tr>
-        <td><strong>Remediate security visibility gaps and enforce centralized diagnostics</strong></td>
+        <td><strong>Centralized Security Visibility and Diagnostics Enforcement</strong></td>
         <td>Centralized diagnostics &amp; monitoring → enables operational visibility</td>
         <td><span class="tag tag-medium">Security</span></td>
       </tr>
       
       <tr>
-        <td><strong>Achieve data protection and resilience for critical workloads</strong></td>
+        <td><strong>Platform-wide VM Backup and Resilience</strong></td>
         <td>Platform capability improvement</td>
-        <td><span class="tag tag-medium">Security</span></td>
+        <td><span class="tag tag-medium">Resilience</span></td>
       </tr>
       
       <tr>
-        <td><strong>Advance platform automation and change tracking</strong></td>
-        <td>Platform automation &amp; IaC → enables GitOps-driven landing zone lifecycle</td>
-        <td><span class="tag tag-medium">Platform Automation and DevOps</span></td>
+        <td><strong>Data Protection Baseline for Storage, ACR, and Key Vault</strong></td>
+        <td>Platform capability improvement</td>
+        <td><span class="tag tag-medium">Data Protection</span></td>
       </tr>
       
     </table>
@@ -867,14 +1019,154 @@ The most acute risks stem from the absence of essential security controls (such 
   <!-- Overview -->
   <div class="mode-panel active" id="mode-overview">
     <div class="card">
+      <h3>ALZ Design Areas</h3>
+      <p style="margin:0 0 8px;color:var(--muted);font-size:12px;">Tenant-wide maturity per canonical ALZ design area &mdash; sorted by risk, not alphabetical.</p>
       <table>
         <tr>
           <th>Design Area</th>
           <th>Maturity</th>
+          <th>Automation</th>
+          <th>Critical Fails</th>
           <th>Pass</th>
-          <th>Partial</th>
           <th>Fail</th>
-          <th>Manual</th>
+          <th>Partial</th>
+          <th>Total</th>
+        </tr>
+        
+        <tr>
+          <td><strong>Identity</strong></td>
+          <td>
+            
+              <span class="maturity-danger">18.8%</span>
+            
+          </td>
+          <td>
+            <span style="font-weight:600;">86%</span>
+            <span style="font-size:11px;color:var(--muted);">(6/7)</span>
+          </td>
+          <td style="text-align:center;">
+            
+              <span style="color:var(--danger);font-weight:700;">3</span>
+              
+                <span style="font-size:11px;color:var(--warn);">+1p</span>
+              
+            
+          </td>
+          <td>1</td>
+          <td>3</td>
+          <td>2</td>
+          <td>7</td>
+        </tr>
+        
+        <tr>
+          <td><strong>Networking</strong></td>
+          <td>
+            
+              <span class="maturity-danger">29.0%</span>
+            
+          </td>
+          <td>
+            <span style="font-weight:600;">88%</span>
+            <span style="font-size:11px;color:var(--muted);">(7/8)</span>
+          </td>
+          <td style="text-align:center;">
+            
+              <span style="color:var(--danger);font-weight:700;">3</span>
+              
+            
+          </td>
+          <td>2</td>
+          <td>4</td>
+          <td>1</td>
+          <td>8</td>
+        </tr>
+        
+        <tr>
+          <td><strong>Security</strong></td>
+          <td>
+            
+              <span class="maturity-danger">33.3%</span>
+            
+          </td>
+          <td>
+            <span style="font-weight:600;">18%</span>
+            <span style="font-size:11px;color:var(--muted);">(6/33)</span>
+          </td>
+          <td style="text-align:center;">
+            
+              <span style="color:var(--danger);font-weight:700;">1</span>
+              
+                <span style="font-size:11px;color:var(--warn);">+1p</span>
+              
+            
+          </td>
+          <td>2</td>
+          <td>3</td>
+          <td>1</td>
+          <td>33</td>
+        </tr>
+        
+        <tr>
+          <td><strong>Management</strong></td>
+          <td>
+            
+              <span class="maturity-danger">0.0%</span>
+            
+          </td>
+          <td>
+            <span style="font-weight:600;">19%</span>
+            <span style="font-size:11px;color:var(--muted);">(6/32)</span>
+          </td>
+          <td style="text-align:center;">
+            
+              <span style="color:var(--danger);font-weight:700;">1</span>
+              
+            
+          </td>
+          <td>0</td>
+          <td>4</td>
+          <td>2</td>
+          <td>32</td>
+        </tr>
+        
+        <tr>
+          <td><strong>Governance</strong></td>
+          <td>
+            
+              <span class="maturity-danger">34.1%</span>
+            
+          </td>
+          <td>
+            <span style="font-weight:600;">47%</span>
+            <span style="font-size:11px;color:var(--muted);">(9/19)</span>
+          </td>
+          <td style="text-align:center;">
+            
+              <span style="color:var(--warn);font-weight:600;">1p</span>
+            
+          </td>
+          <td>3</td>
+          <td>5</td>
+          <td>1</td>
+          <td>19</td>
+        </tr>
+        
+      </table>
+    </div>
+
+    
+    <div class="card" style="margin-top:4px;">
+      <h3>Operational Overlay</h3>
+      <p style="margin:0 0 8px;color:var(--muted);font-size:12px;">Derived domains that cross-cut ALZ design areas &mdash; Data Protection, Resilience, Cost.</p>
+      <table>
+        <tr>
+          <th>Domain</th>
+          <th>Maturity</th>
+          <th>Automation</th>
+          <th>Critical Fails</th>
+          <th>Pass</th>
+          <th>Fail</th>
+          <th>Partial</th>
           <th>Total</th>
         </tr>
         
@@ -885,10 +1177,21 @@ The most acute risks stem from the absence of essential security controls (such 
               <span class="maturity-danger">0.0%</span>
             
           </td>
+          <td>
+            <span style="font-weight:600;">50%</span>
+            <span style="font-size:11px;color:var(--muted);">(3/6)</span>
+          </td>
+          <td style="text-align:center;">
+            
+              <span style="color:var(--danger);font-weight:700;">1</span>
+              
+                <span style="font-size:11px;color:var(--warn);">+1p</span>
+              
+            
+          </td>
           <td>0</td>
+          <td>2</td>
           <td>1</td>
-          <td>3</td>
-          <td>0</td>
           <td>6</td>
         </tr>
         
@@ -899,169 +1202,47 @@ The most acute risks stem from the absence of essential security controls (such 
               <span class="maturity-danger">0.0%</span>
             
           </td>
-          <td>0</td>
-          <td>0</td>
-          <td>1</td>
-          <td>0</td>
-          <td>1</td>
-        </tr>
-        
-        <tr>
-          <td><strong>Management</strong></td>
           <td>
+            <span style="font-weight:600;">100%</span>
+            <span style="font-size:11px;color:var(--muted);">(1/1)</span>
+          </td>
+          <td style="text-align:center;">
             
-              <span class="maturity-danger">0.0%</span>
+              <span style="color:var(--danger);font-weight:700;">1</span>
+              
             
           </td>
           <td>0</td>
-          <td>2</td>
-          <td>4</td>
-          <td>25</td>
-          <td>32</td>
-        </tr>
-        
-        <tr>
-          <td><strong>Networking</strong></td>
-          <td>
-            
-              <span class="maturity-danger">16.7%</span>
-            
-          </td>
           <td>1</td>
-          <td>1</td>
-          <td>4</td>
           <td>0</td>
-          <td>7</td>
-        </tr>
-        
-        <tr>
-          <td><strong>Identity</strong></td>
-          <td>
-            
-              <span class="maturity-danger">18.8%</span>
-            
-          </td>
           <td>1</td>
-          <td>2</td>
-          <td>3</td>
-          <td>0</td>
-          <td>7</td>
-        </tr>
-        
-        <tr>
-          <td><strong>Security</strong></td>
-          <td>
-            
-              <span class="maturity-danger">33.3%</span>
-            
-          </td>
-          <td>2</td>
-          <td>1</td>
-          <td>3</td>
-          <td>27</td>
-          <td>33</td>
-        </tr>
-        
-        <tr>
-          <td><strong>Governance</strong></td>
-          <td>
-            
-              <span class="maturity-danger">34.1%</span>
-            
-          </td>
-          <td>3</td>
-          <td>1</td>
-          <td>5</td>
-          <td>10</td>
-          <td>19</td>
         </tr>
         
         <tr>
           <td><strong>Cost</strong></td>
           <td>
             
-              <span style="color:var(--muted);">Customer operating model validation required</span>
+              <span class="maturity-warn">53.3%</span>
             
           </td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>2</td>
-        </tr>
-        
-        <tr>
-          <td><strong>Azure Billing and Microsoft Entra ID Tenants</strong></td>
           <td>
+            <span style="font-weight:600;">67%</span>
+            <span style="font-size:11px;color:var(--muted);">(2/3)</span>
+          </td>
+          <td style="text-align:center;">
             
-              <span style="color:var(--muted);">Customer operating model validation required</span>
+              <span style="color:var(--success);">0</span>
             
           </td>
+          <td>1</td>
+          <td>1</td>
           <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>15</td>
-          <td>15</td>
-        </tr>
-        
-        <tr>
-          <td><strong>Identity and Access Management</strong></td>
-          <td>
-            
-              <span style="color:var(--muted);">Customer operating model validation required</span>
-            
-          </td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>22</td>
-          <td>22</td>
-        </tr>
-        
-        <tr>
-          <td><strong>Resource Organization</strong></td>
-          <td>
-            
-              <span style="color:var(--muted);">Customer operating model validation required</span>
-            
-          </td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>14</td>
-          <td>14</td>
-        </tr>
-        
-        <tr>
-          <td><strong>Network Topology and Connectivity</strong></td>
-          <td>
-            
-              <span style="color:var(--muted);">Customer operating model validation required</span>
-            
-          </td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>98</td>
-          <td>98</td>
-        </tr>
-        
-        <tr>
-          <td><strong>Platform Automation and DevOps</strong></td>
-          <td>
-            
-              <span style="color:var(--muted);">Customer operating model validation required</span>
-            
-          </td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>13</td>
-          <td>13</td>
+          <td>3</td>
         </tr>
         
       </table>
     </div>
+    
   </div>
 
   <!-- Scale -->
@@ -1070,30 +1251,38 @@ The most acute risks stem from the absence of essential security controls (such 
       <h3>Scale — Management Groups, RBAC, Policy Scope</h3>
       
       <table>
-        <tr><th>Section</th><th>Maturity</th><th>Pass</th><th>Fail</th><th>Manual</th></tr>
+        <tr><th>Section</th><th>Maturity</th><th>Automation</th><th>Critical Fails</th><th>Pass</th><th>Fail</th></tr>
         
         <tr>
           <td>Resource Organization</td>
-          <td><span style="color:var(--muted);">Customer operating model validation required</span></td>
-          <td>0</td> <td>0</td> <td>14</td>
+          <td><span style="color:var(--muted);font-size:12px;">Automation: 0% · Manual validation required</span></td>
+          <td>0% <span style="font-size:11px;color:var(--muted);">(0/14)</span></td>
+          <td style="text-align:center;"><span style="color:var(--success);">0</span></td>
+          <td>0</td> <td>0</td>
         </tr>
         
         <tr>
           <td>Azure Billing and Microsoft Entra ID Tenants</td>
-          <td><span style="color:var(--muted);">Customer operating model validation required</span></td>
-          <td>0</td> <td>0</td> <td>15</td>
+          <td><span style="color:var(--muted);font-size:12px;">Automation: 0% · Manual validation required</span></td>
+          <td>0% <span style="font-size:11px;color:var(--muted);">(0/15)</span></td>
+          <td style="text-align:center;"><span style="color:var(--success);">0</span></td>
+          <td>0</td> <td>0</td>
         </tr>
         
         <tr>
           <td>Identity and Access Management</td>
-          <td><span style="color:var(--muted);">Customer operating model validation required</span></td>
-          <td>0</td> <td>0</td> <td>22</td>
+          <td><span style="color:var(--muted);font-size:12px;">Automation: 0% · Manual validation required</span></td>
+          <td>0% <span style="font-size:11px;color:var(--muted);">(0/22)</span></td>
+          <td style="text-align:center;"><span style="color:var(--success);">0</span></td>
+          <td>0</td> <td>0</td>
         </tr>
         
         <tr>
           <td>Governance</td>
           <td>34.1%</td>
-          <td>3</td> <td>5</td> <td>10</td>
+          <td>47% <span style="font-size:11px;color:var(--muted);">(9/19)</span></td>
+          <td style="text-align:center;"><span style="color:var(--success);">0</span></td>
+          <td>3</td> <td>5</td>
         </tr>
         
       </table>
@@ -1107,18 +1296,22 @@ The most acute risks stem from the absence of essential security controls (such 
       <h3>Security — PIM, Private Endpoints, SOC Topology</h3>
       
       <table>
-        <tr><th>Section</th><th>Maturity</th><th>Pass</th><th>Fail</th><th>Manual</th></tr>
+        <tr><th>Section</th><th>Maturity</th><th>Automation</th><th>Critical Fails</th><th>Pass</th><th>Fail</th></tr>
         
         <tr>
           <td>Security</td>
           <td>33.3%</td>
-          <td>2</td> <td>3</td> <td>27</td>
+          <td>18% <span style="font-size:11px;color:var(--muted);">(6/33)</span></td>
+          <td style="text-align:center;"><span style="color:var(--danger);font-weight:700;">1</span></td>
+          <td>2</td> <td>3</td>
         </tr>
         
         <tr>
           <td>Identity and Access Management</td>
-          <td><span style="color:var(--muted);">Customer operating model validation required</span></td>
-          <td>0</td> <td>0</td> <td>22</td>
+          <td><span style="color:var(--muted);font-size:12px;">Automation: 0% · Manual validation required</span></td>
+          <td>0% <span style="font-size:11px;color:var(--muted);">(0/22)</span></td>
+          <td style="text-align:center;"><span style="color:var(--success);">0</span></td>
+          <td>0</td> <td>0</td>
         </tr>
         
       </table>
@@ -1132,18 +1325,22 @@ The most acute risks stem from the absence of essential security controls (such 
       <h3>Operations — Diagnostics, Alert→Action Mapping, Change Tracking</h3>
       
       <table>
-        <tr><th>Section</th><th>Maturity</th><th>Pass</th><th>Fail</th><th>Manual</th></tr>
+        <tr><th>Section</th><th>Maturity</th><th>Automation</th><th>Critical Fails</th><th>Pass</th><th>Fail</th></tr>
         
         <tr>
           <td>Management</td>
           <td>0.0%</td>
-          <td>0</td> <td>4</td> <td>25</td>
+          <td>19% <span style="font-size:11px;color:var(--muted);">(6/32)</span></td>
+          <td style="text-align:center;"><span style="color:var(--danger);font-weight:700;">1</span></td>
+          <td>0</td> <td>4</td>
         </tr>
         
         <tr>
           <td>Platform Automation and DevOps</td>
-          <td><span style="color:var(--muted);">Customer operating model validation required</span></td>
-          <td>0</td> <td>0</td> <td>13</td>
+          <td><span style="color:var(--muted);font-size:12px;">Automation: 0% · Manual validation required</span></td>
+          <td>0% <span style="font-size:11px;color:var(--muted);">(0/13)</span></td>
+          <td style="text-align:center;"><span style="color:var(--success);">0</span></td>
+          <td>0</td> <td>0</td>
         </tr>
         
       </table>
@@ -1157,18 +1354,22 @@ The most acute risks stem from the absence of essential security controls (such 
       <h3>Cost — Budgets, Forecast Delta, Idle Resources</h3>
       
       <table>
-        <tr><th>Section</th><th>Maturity</th><th>Pass</th><th>Fail</th><th>Manual</th></tr>
+        <tr><th>Section</th><th>Maturity</th><th>Automation</th><th>Critical Fails</th><th>Pass</th><th>Fail</th></tr>
         
         <tr>
           <td>Governance</td>
           <td>34.1%</td>
-          <td>3</td> <td>5</td> <td>10</td>
+          <td>47% <span style="font-size:11px;color:var(--muted);">(9/19)</span></td>
+          <td style="text-align:center;"><span style="color:var(--success);">0</span></td>
+          <td>3</td> <td>5</td>
         </tr>
         
         <tr>
           <td>Azure Billing and Microsoft Entra ID Tenants</td>
-          <td><span style="color:var(--muted);">Customer operating model validation required</span></td>
-          <td>0</td> <td>0</td> <td>15</td>
+          <td><span style="color:var(--muted);font-size:12px;">Automation: 0% · Manual validation required</span></td>
+          <td>0% <span style="font-size:11px;color:var(--muted);">(0/15)</span></td>
+          <td style="text-align:center;"><span style="color:var(--success);">0</span></td>
+          <td>0</td> <td>0</td>
         </tr>
         
       </table>
@@ -1182,7 +1383,7 @@ The most acute risks stem from the absence of essential security controls (such 
       <h3>Data Confidence — Scope &amp; Signal Availability</h3>
       <div class="grid-3" style="margin-bottom:12px;">
         <div class="kpi">
-          <div class="value">46</div>
+          <div class="value">40</div>
           <div class="label"><span class="conf-evidence">Evidence-based</span> controls</div>
         </div>
         <div class="kpi">
@@ -1190,17 +1391,19 @@ The most acute risks stem from the absence of essential security controls (such 
           <div class="label"><span class="conf-assumption">Assumption-based</span> controls</div>
         </div>
         <div class="kpi">
-          <div class="value">17.0%</div>
+          <div class="value">14.8%</div>
           <div class="label">Automation Coverage</div>
         </div>
       </div>
       <p style="font-size:13px;color:var(--muted);">
-        <strong>46</strong> controls scored from live platform signals (evidence).
+        <strong>40</strong> controls scored from live platform signals (evidence).
         <strong>224</strong> controls require customer input (assumption).
         
-        <br>Limitations: Control appservi signal failure: All required signals failed: resource_graph:app_service_posture: (BadRequest) Please provide below info when asking for support: timestamp = 2026-02-18T01:55:12.0063238Z, correlationId = 9d7d489c-c05d-42e4-8ad4-276786e89ae2.
+        <br>Limitations: Control appservi SignalError: All required signals failed: resource_graph:app_service_posture: (BadRequest) Please provide below info when asking for support: timestamp = 2026-02-20T21:11:26.3208601Z, correlationId = 3b52373d-ae16-4641-8099-afe021dd333a.
 Code: BadRequest
-Message: Please provide below info when asking for support: timestamp = 2026-02-18T01:5
+Message: Please provide below info when asking for support: timestamp = 2026-02-20T21:1, Control private- SignalError: All required signals failed: resource_graph:private_endpoints: (RateLimiting) Please provide below info when asking for support: timestamp = 2026-02-20T21:11:45.5694681Z, correlationId = 6e192c00-c46d-47a8-8d6a-ff82bb628184.
+Code: RateLimiting
+Message: Please provide below info when asking for support: timestamp = 2026-02-20T21
         
       </p>
       
@@ -1217,7 +1420,7 @@ Message: Please provide below info when asking for support: timestamp = 2026-02-
     <div class="grid-4" style="margin-bottom:14px;">
       <div class="kpi">
         <div class="value">1</div>
-        <div class="label">Subscriptions Assessed</div>
+        <div class="label">Subscriptions (Input Scope)</div>
       </div>
       <div class="kpi">
         <div class="value">Yes</div>
@@ -1236,7 +1439,7 @@ Message: Please provide below info when asking for support: timestamp = 2026-02-
     <table>
       <tr><th>Dimension</th><th>Source</th><th>Confidence</th></tr>
       <tr>
-        <td>Control scores (46 controls)</td>
+        <td>Control scores (40 controls)</td>
         <td>Live platform signals</td>
         <td><span class="conf-evidence">Evidence</span></td>
       </tr>
@@ -1274,18 +1477,18 @@ Message: Please provide below info when asking for support: timestamp = 2026-02-
       <h3>Identity and Access Management</h3>
       
       <div class="q-item">
-        <div class="q-text">To what extent are privileged access management practices (including RBAC hygiene, Privileged Identity Management, and break-glass accounts) implemented and regularly reviewed for all Azure environments?</div>
+        <div class="q-text">How mature are your Identity and Access Management practices regarding RBAC hygiene, Privileged Identity Management, break-glass accounts, and group-based access assignment?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; Privileged access is not governed by RBAC best practices; PIM is not enabled; break-glass accounts are not established or reviewed.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Some privileged access controls are in place (e.g., limited RBAC hygiene, PIM partially enabled, break-glass accounts exist but are not regularly validated).</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; RBAC hygiene is enforced, PIM is fully implemented for all privileged roles, and break-glass accounts are established, documented, and periodically validated.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; RBAC assignments are not reviewed; PIM is not implemented; break-glass accounts are missing; access is not group-based.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; RBAC assignments are periodically reviewed; PIM is partially implemented for some roles; break-glass accounts exist but are not regularly validated; some access is group-based.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; RBAC assignments are fully group-based and reviewed; PIM is enforced for all privileged roles; break-glass accounts are implemented and regularly validated; all access follows least privilege and zero standing access principles.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Identity and Access Management · 
-          Ref: B03.01, B03.04, B03.05, B03.07, B03.15 · 
-          Resolves 3 control(s)
+          Ref: B03.01, B03.03, B03.04, B03.05, B03.06, B03.07, B03.08, B03.09, B03.10, B03.11, B03.12, B03.13, B03.14, B03.15, B03.16, B03.17, B03.18, B04.01, B04.02, B04.03, B04.04 · 
+          Resolves 24 control(s)
         </div>
       </div>
       
@@ -1297,17 +1500,17 @@ Message: Please provide below info when asking for support: timestamp = 2026-02-
       <h3>Network Topology and Connectivity</h3>
       
       <div class="q-item">
-        <div class="q-text">To what extent is a standardized, secure, and resilient network topology (including hub-spoke, Azure Firewall, DDoS Protection, and NSG coverage) implemented and documented for all landing zones?</div>
+        <div class="q-text">What is the maturity of your network topology and connectivity, including hub-spoke design, Azure Firewall, DDoS Protection, and central network services?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; No standardized hub-spoke topology, Azure Firewall, or DDoS Protection in place; network security controls are inconsistently applied.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Partial implementation of hub-spoke topology or security controls (e.g., some VNets peered, limited firewall or DDoS coverage); documentation or enforcement is incomplete.</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; Fully implemented and documented hub-spoke topology with Azure Firewall, DDoS Protection, and NSG coverage enforced across all landing zones.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; No standard network topology; hub-spoke is not implemented; Azure Firewall and DDoS Protection are missing.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Basic hub-spoke topology is in place for some workloads; Azure Firewall or DDoS Protection is partially deployed; central network services are inconsistently applied.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive hub-spoke topology is implemented for all workloads; Azure Firewall and DDoS Protection are enforced; all central network services are standardized and documented.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Network Topology and Connectivity · 
-          Ref: C03.01, C03.02, C03.03, C03.04, C03.05, C03.06, C03.07 · 
+          Ref: C01.01, C02.01, C03.01, C04.01, C05.01 · 
           Resolves 4 control(s)
         </div>
       </div>
@@ -1320,17 +1523,17 @@ Message: Please provide below info when asking for support: timestamp = 2026-02-
       <h3>Governance</h3>
       
       <div class="q-item">
-        <div class="q-text">To what extent are governance controls (including policy assignment, resource locks, and compliance processes) defined, implemented, and regularly reviewed at the platform level?</div>
+        <div class="q-text">What is the maturity of your governance framework, including policy assignment, resource locks, and compliance monitoring?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; No formal governance controls or policy assignments; resource locks and compliance processes are not in place.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Some governance controls are defined or implemented (e.g., select policies or locks), but coverage is incomplete or not regularly reviewed.</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive governance controls, policy assignments, and resource locks are defined, implemented, and reviewed regularly at the platform level.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; No formal governance framework; policies and resource locks are not implemented; compliance is not monitored.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Some policies and resource locks are in place; compliance monitoring is partially implemented.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; A comprehensive governance framework is implemented with standardized policies, resource locks, and continuous compliance monitoring.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Governance · 
-          Ref: H01.01, H01.02, H01.03, H02.01 · 
+          Ref: G01.01, G02.01, G03.01, G04.01, G05.01 · 
           Resolves 5 control(s)
         </div>
       </div>
@@ -1343,18 +1546,34 @@ Message: Please provide below info when asking for support: timestamp = 2026-02-
       <h3>Security</h3>
       
       <div class="q-item">
-        <div class="q-text">To what extent are centralized security visibility and event monitoring (including diagnostic settings, security alerting, and incident response integration) implemented and enforced across the platform?</div>
+        <div class="q-text">How mature are your security operations regarding centralized visibility, diagnostics, and security monitoring across all Azure resources?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; Security visibility is fragmented or absent; diagnostic settings and alerting are not consistently enabled or integrated.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Partial implementation of centralized security visibility or alerting (e.g., some resources sending logs, limited incident response integration).</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive, centralized security visibility and alerting are enforced; all critical resources send diagnostics to a central sink and are integrated with incident response processes.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; Security monitoring and diagnostics are not centralized; visibility is limited or inconsistent.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Some security monitoring and diagnostics are centralized; coverage is partial across resources.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive, centralized security monitoring and diagnostics are implemented for all resources, with standardized processes and alerting.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Security · 
-          Ref: D03.01, D03.02, D04.01 · 
+          Ref: E01.01, E02.01, E03.01 · 
           Resolves 3 control(s)
+        </div>
+      </div>
+      
+      <div class="q-item">
+        <div class="q-text">How mature is your data protection strategy for storage accounts, container registries, and key vaults?</div>
+        
+        <div class="q-maturity">
+          <span class="maturity-level"><strong>1</strong> &mdash; Data protection controls for storage accounts, container registries, and key vaults are not implemented.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Some data protection controls are implemented for critical resources; coverage is inconsistent.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive data protection controls are implemented and standardized for all storage accounts, container registries, and key vaults.</span>
+        </div>
+        
+        <div class="q-meta">
+          ALZ Area: Security · 
+          Ref: E04.01, E05.01 · 
+          Resolves 2 control(s)
         </div>
       </div>
       
@@ -1366,76 +1585,49 @@ Message: Please provide below info when asking for support: timestamp = 2026-02-
       <h3>Management and Operations</h3>
       
       <div class="q-item">
-        <div class="q-text">To what extent are centralized management and monitoring capabilities (including Log Analytics workspace topology, update management, alerting, and change tracking) standardized and enforced across all landing zones?</div>
+        <div class="q-text">To what extent are centralized monitoring, update management, alerting, and change tracking implemented across your Azure environment?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; No centralized monitoring or management; workspaces are fragmented, update management and alerting are inconsistent, and change tracking is not enforced.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Partial centralization of monitoring or management (e.g., some resources connected to a central workspace, update management or alerting in place for select workloads).</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; Centralized Log Analytics workspace topology is enforced, update management and alerting are standardized, and change tracking is implemented for all landing zones.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; Monitoring, update management, alerting, and change tracking are not centrally managed or standardized.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Some monitoring and management capabilities are implemented centrally; alerting and change tracking are partially configured.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive centralized monitoring, update management, alerting, and change tracking are fully implemented and standardized across all resources.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Management · 
-          Ref: E01.01, E01.02, E01.03, E02.01, E03.01 · 
+          Ref: D01.01, D02.01, D03.01, D04.01, D05.01 · 
           Resolves 4 control(s)
         </div>
       </div>
       
-    </div>
-    
-  
-
-  
-  
-    
-  
-    
-  
-    
-  
-    
-    <div class="card q-domain">
-      <h3>Data Protection</h3>
-      
       <div class="q-item">
-        <div class="q-text">To what extent are data protection controls (including secure storage configuration, private endpoint coverage, and container registry posture) implemented and validated for all critical data assets?</div>
+        <div class="q-text">To what extent are backup and resilience strategies implemented for critical workloads?</div>
         
         <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; Data protection controls are not implemented or are inconsistently applied; storage and registries lack secure configuration and private endpoints.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Some data protection controls are in place (e.g., secure configuration or private endpoints for select assets), but coverage is incomplete or not validated.</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; All critical data assets are protected by secure configuration, private endpoints, and registry hardening, with regular validation and documentation.</span>
-        </div>
-        
-        <div class="q-meta">
-          ALZ Area: Security · 
-          Ref: D01.01, D01.02, D01.03, D02.01 · 
-          Resolves 3 control(s)
-        </div>
-      </div>
-      
-    </div>
-    
-  
-    
-  
-    
-  
-    
-    <div class="card q-domain">
-      <h3>Resilience</h3>
-      
-      <div class="q-item">
-        <div class="q-text">To what extent is backup and resilience coverage implemented for critical workloads, and are recovery processes regularly tested and validated?</div>
-        
-        <div class="q-maturity">
-          <span class="maturity-level"><strong>1</strong> &mdash; No backup or resilience coverage for critical workloads; recovery processes are undocumented or untested.</span>
-          <span class="maturity-level"><strong>2</strong> &mdash; Partial backup coverage or ad hoc recovery testing for some workloads.</span>
-          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive backup coverage for all critical workloads with documented and regularly tested recovery processes.</span>
+          <span class="maturity-level"><strong>1</strong> &mdash; No backup or resilience strategies are implemented for critical workloads.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Backup and resilience strategies are implemented for some critical workloads; coverage is incomplete.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive backup and resilience strategies are implemented and regularly tested for all critical workloads.</span>
         </div>
         
         <div class="q-meta">
           ALZ Area: Management · 
-          Ref: E04.01, E04.02 · 
+          Ref: D06.01 · 
+          Resolves 1 control(s)
+        </div>
+      </div>
+      
+      <div class="q-item">
+        <div class="q-text">How mature are your cost forecasting and cost management practices across the Azure platform?</div>
+        
+        <div class="q-maturity">
+          <span class="maturity-level"><strong>1</strong> &mdash; No cost forecasting or cost management practices are implemented.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Basic cost forecasting and management are in place for some subscriptions or departments.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; Comprehensive cost forecasting and management practices are standardized and automated across all subscriptions and departments.</span>
+        </div>
+        
+        <div class="q-meta">
+          ALZ Area: Azure Billing and Microsoft Entra ID Tenants · 
+          Ref: A03.03, A02.03 · 
           Resolves 1 control(s)
         </div>
       </div>
@@ -1443,10 +1635,46 @@ Message: Please provide below info when asking for support: timestamp = 2026-02-
     </div>
     
   
+
+  
+  
+    
+    <div class="card q-domain">
+      <h3>General</h3>
+      
+      <div class="q-item">
+        <div class="q-text">To what extent are Azure Billing and Microsoft Entra ID Tenant management practices standardized and documented, including cost reporting, notification contacts, and multi-tenant automation?</div>
+        
+        <div class="q-maturity">
+          <span class="maturity-level"><strong>1</strong> &mdash; No formalized tenant or billing management processes; notification contacts and cost reporting are not configured.</span>
+          <span class="maturity-level"><strong>2</strong> &mdash; Basic tenant and billing management processes exist; notification contacts and cost reporting are partially configured and documented for some agreements.</span>
+          <span class="maturity-level"><strong>3</strong> &mdash; All tenant and billing management practices are fully standardized, documented, and automated across all agreements, including cost reporting, notification contacts, and multi-tenant automation.</span>
+        </div>
+        
+        <div class="q-meta">
+          ALZ Area: Azure Billing and Microsoft Entra ID Tenants · 
+          Ref: A01.01, A01.02, A01.03, A02.01, A02.02, A02.03, A03.01, A03.02, A03.03, A03.04, A03.05, A04.01, A04.02, A04.03, A04.04 · 
+          Resolves 15 control(s)
+        </div>
+      </div>
+      
+    </div>
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
 </div>
 
 
-<!-- Platform risks are now shown deterministically in the Platform Risk Overview section above -->
+<!-- Platform risks are now shown deterministically in the Platform Risk Prioritization section above -->
 
 <!-- ════════════════════════════════════════════════════════════════
      ALZ DESIGN AREA REFERENCES (from MCP grounding)
@@ -1474,7 +1702,7 @@ Message: Please provide below info when asking for support: timestamp = 2026-02-
         <div class="label">Signals Fetched (33 cached)</div>
       </div>
       <div class="kpi">
-        <div class="value">46 / 271</div>
+        <div class="value">40 / 271</div>
         <div class="label">Data-Driven Controls</div>
       </div>
     </div>
@@ -1498,10 +1726,10 @@ Message: Please provide below info when asking for support: timestamp = 2026-02-
     
     <div style="margin-top:12px;font-size:12px;color:var(--muted);">
       Phase timing:
-      context=22.05s
-      &middot; signals=224.33s
-      &middot; evaluators=238.53s
-      &middot; ai=379.08s
+      context=26.63s
+      &middot; signals=296.58s
+      &middot; evaluators=196.73s
+      &middot; ai=531.86s
       &middot; reporting=0.0s
       
     </div>
