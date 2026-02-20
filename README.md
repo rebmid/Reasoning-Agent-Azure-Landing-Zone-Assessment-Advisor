@@ -15,6 +15,12 @@ This agent:
 
 **Run one command → get a scored assessment, executive briefing, and a traceable 30-60-90 plan.**
 
+> [!IMPORTANT]
+> 🔍 **Open the interactive demo report:**
+> 👉 **[View the HTML assessment report](https://htmlpreview.github.io/?https://github.com/rebmid/Reasoning-Agent-Azure-Landing-Zone-Assessment-Advisor/blob/main/docs/demo/Contoso-ALZ-Platform-Readiness-Report-Sample.html)**
+>
+> Generated from a real Azure Test/Lab "Contoso" tenant using read-only access.
+
 ---
 
 ## Demo Screenshots
