@@ -19,13 +19,17 @@ This agent:
 
 ## Demo Screenshots
 
-| 7-Pass Reasoning Pipeline | Control Evaluation |
+| Execution Context | Control Evaluation with Evidence |
 |---|---|
-| ![7-Pass Reasoning Pipeline](docs/demo/01_reasoning-engine.png) | ![Control Evaluation](docs/demo/02_control-evaluation.png) |
+| ![Execution Context](docs/demo/00a_execution-context.png) | ![Control Evaluation](docs/demo/02_automated-control-evaluation-with-evidence.png) |
 
-| Roadmap Traceability | Executive Briefing |
+| Roadmap Traceability | Data Confidence |
 |---|---|
-| ![Roadmap Traceability](docs/demo/03_roadmap-traceability.png) | ![Executive Briefing](docs/demo/04_executive-briefing.png) |
+| ![Roadmap Traceability](docs/demo/03_roadmap-traceability.png) | ![Data Confidence](docs/demo/04_data-confidence.png) |
+
+| Causal Risk Analysis | Executive Report |
+|---|---|
+| ![Causal Risk Analysis](docs/demo/05_causal-risk-analysis-networking.png) | ![Executive Report](docs/demo/report-hero.png) |
 
 ## Features
 
