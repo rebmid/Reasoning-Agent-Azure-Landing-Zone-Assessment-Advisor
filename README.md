@@ -39,13 +39,14 @@ The result is a **repeatable, evidence-driven governance assessment powered by r
 | **Target Architecture** | Recommended architecture with Microsoft Learn references |
 
 
-## Demo Walkthrough
+## 📸 Demo Walkthrough
 
 The following screenshots show the output of a full Azure Landing Zone assessment executed against a real Azure test tenant using **read-only access**.
 
 ---
 
-### 1. Assessment Execution Context
+### Assessment Execution Context
+
 The scanner discovers tenant scope, management groups, and subscriptions before collecting platform signals.
 
 This validates access, confirms scope, and ensures signal availability before evaluation begins.
@@ -54,7 +55,8 @@ This validates access, confirms scope, and ensures signal availability before ev
 
 ---
 
-### 2. Enterprise Readiness Gate
+### Enterprise Readiness Gate
+
 A deterministic readiness gate determines whether the platform foundation is prepared for enterprise-scale landing zone adoption.
 
 This gate aggregates critical control failures and platform maturity indicators.
@@ -63,7 +65,8 @@ This gate aggregates critical control failures and platform maturity indicators.
 
 ---
 
-### 3. Enterprise Readiness Blockers
+### Enterprise Readiness Blockers
+
 Structural gaps preventing enterprise-scale landing zone adoption.
 
 These blockers are derived directly from failing controls and dependency graph analysis.
@@ -72,14 +75,16 @@ These blockers are derived directly from failing controls and dependency graph a
 
 ---
 
-### 4. Top Business Risks
+### Top Business Risks
+
 Deterministically ranked platform risks with root cause analysis and supporting control evidence.
 
 ![Top Business Risks](docs/demo/02_top-business-risks.png)
 
 ---
 
-### 5. Transformation Roadmap
+### Transformation Roadmap
+
 Dependency-ordered **30-60-90 remediation initiatives** generated from the control graph.
 
 Each initiative resolves multiple failing controls and unlocks platform capabilities.
@@ -88,21 +93,24 @@ Each initiative resolves multiple failing controls and unlocks platform capabili
 
 ---
 
-### 6. Roadmap Traceability
+### Roadmap Traceability
+
 Every remediation initiative is mapped back to the failing controls and checklist IDs that caused it.
 
 ![Roadmap Traceability](docs/demo/03_roadmap-traceability.png)
 
 ---
 
-### 7. ALZ Design Area Breakdown
+### ALZ Design Area Breakdown
+
 Detailed maturity scoring across governance, networking, identity, security, and platform design areas.
 
 ![Design Area Breakdown](docs/demo/04_design_area_breakdown.png)
 
 ---
 
-### 8. Workshop Decision Funnel
+### Workshop Decision Funnel
+
 CSA workshop facilitation view that connects:
 
 **platform blockers → business risks → remediation initiatives**
@@ -111,7 +119,8 @@ CSA workshop facilitation view that connects:
 
 ---
 
-### 9. CSA Workbook Deliverables
+### CSA Workbook Deliverables
+
 Customer-ready Excel outputs automatically generated from the assessment.
 
 #### Executive Summary
@@ -128,11 +137,19 @@ Customer-ready Excel outputs automatically generated from the assessment.
 
 ---
 
+### Critical Issues & Course of Action
+
+The reasoning engine identifies the most critical platform risks and provides architecture-aligned remediation guidance.
+
+![Critical Issues](docs/demo/05_critical_issues.png)
+
+---
+
 ### Interactive Report
 
 > **Open the full interactive demo report**
->
-> 👉 **[View the HTML assessment report](https://htmlpreview.github.io/?https://github.com/rebmid/Reasoning-Agent-Azure-Landing-Zone-Assessment-Advisor/blob/main/docs/demo/Contoso-ALZ-Platform-Readiness-Report-Sample.html)**
+
+👉 **[View the HTML assessment report](https://htmlpreview.github.io/?https://github.com/rebmid/Reasoning-Agent-Azure-Landing-Zone-Assessment-Advisor/blob/main/docs/demo/Contoso-ALZ-Platform-Readiness-Report-Sample.html)**
 
 Generated from a real Azure Test/Lab **Contoso tenant** using read-only access.
 
