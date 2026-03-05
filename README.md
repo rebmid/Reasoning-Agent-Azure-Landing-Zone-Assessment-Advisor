@@ -1,170 +1,184 @@
-## 🧠 Reasoning Agent for Enterprise-Scale Azure Governance
+# Azure Landing Zone Assessment Engine
 
-### Why This Is a True Reasoning Agent (Not Just an Assessment Tool)
+### Deterministic Governance Assessment with AI Reasoning
 
-This system performs structured, multi-step reasoning over live Azure telemetry:
+Azure Landing Zone governance reviews are typically delivered through manual workshops, slide decks, and checklist interviews.
+These engagements are difficult to scale, inconsistent across architects, and rarely produce repeatable governance insights.
 
-1. Deterministic control evaluation  
-2. Dependency graph impact analysis  
-3. Initiative ordering based on structural constraints  
-4. Causal “why-risk” chain construction  
-5. Grounded remediation via Microsoft Learn MCP  
+This project is a **deterministic Azure Landing Zone assessment engine** with a multi-stage AI reasoning layer.
+
+The platform operates in two layers:
+
+### Deterministic Assessment Engine
+Evaluates Azure Landing Zone posture using live Azure telemetry and the official [Azure Landing Zone Review Checklist](https://github.com/Azure/review-checklists). Scores controls, computes maturity, and produces customer-ready deliverables -- all without AI.
+
+### AI Reasoning Layer
+Consumes the deterministic output and performs structured multi-step reasoning:
+
+1. Dependency graph impact analysis
+2. Initiative ordering based on structural constraints
+3. Causal "why-risk" chain construction
+4. Grounded remediation using Microsoft Learn MCP
 
 **The AI does not score. It reasons over scored evidence.**
 
-This is a deterministic Azure Landing Zone assessment engine with a multi-stage AI reasoning layer that:
+The result is a **repeatable, evidence-driven governance assessment powered by real Azure telemetry.**
 
-- Scores every control in the [Azure Landing Zone Review Checklist](https://github.com/Azure/review-checklists) against live Azure telemetry  
-- Builds a dependency-ordered 30-60-90 transformation roadmap  
-- Performs causal “why-risk” analysis across domains  
-- Grounds every remediation in official Microsoft Learn documentation via MCP  
-
-# Azure Landing Zone Assessor (`lz-assessor`)
-
-Built for **Cloud Solution Architects (CSAs)**, this engine evaluates an Azure tenant against Microsoft’s [Azure Review Checklists](https://github.com/Azure/review-checklists), scores controls from live platform signals.
-
-## Why This Exists
-
-Most landing zone assessments rely on interviews, slideware, or static checklists.
-
-Evaluates the actual Azure configuration state using read-only telemetry and maps findings directly to official checklist IDs.
-- Grounds every finding in a canonical checklist control  
-- Separates deterministic evaluation from AI enrichment  
-- Accelerates CSA workshops without replacing architectural judgement  
-
-**Run one command → get a scored assessment, executive briefing, and a traceable 30-60-90 transformation plan.**
-
-> [!IMPORTANT]
-> 🔍 **Open the interactive demo report:**
-> 👉 **[View the HTML assessment report](https://htmlpreview.github.io/?https://github.com/rebmid/Reasoning-Agent-Azure-Landing-Zone-Assessment-Advisor/blob/main/docs/demo/Contoso-ALZ-Platform-Readiness-Report-Sample.html)**
->
-> Generated from a real Azure Test/Lab "Contoso" tenant using read-only access.
-
----
-## 📸 Demo Walkthrough
-
-### 1️⃣ Platform Snapshot
-
-Deterministic maturity scoring across ALZ design areas with automation coverage and enterprise readiness scoring.
-
-![Platform Snapshot](docs/demo/report-hero.png)
+> **Run one command -- get a scored assessment, executive briefing, and a traceable 30-60-90 transformation plan.**
 
 ---
 
-### 2️⃣ Enterprise Readiness Blockers
+## What the Engine Produces
 
-Foundation gaps that prevent enterprise-scale adoption — derived from failed controls and dependency graph impact.
+| Artifact | Description |
+|---|---|
+| **HTML Report** | Interactive CSA Decision-Driven platform readiness report with design area breakdown |
+| **CSA Workbook** | 3-sheet Excel workbook (`.xlsm`) ready for customer engagements |
+| **30-60-90 Roadmap** | Dependency-ordered transformation plan with checklist ID traceability |
+| **Assessment JSON** | Complete traceable assessment data (controls, scores, AI output, execution context) |
+| **Target Architecture** | Recommended architecture with Microsoft Learn references |
+
+
+## Demo Walkthrough
+
+The following screenshots show the output of a full Azure Landing Zone assessment executed against a real Azure test tenant using **read-only access**.
+
+---
+
+### 1. Assessment Execution Context
+The scanner discovers tenant scope, management groups, and subscriptions before collecting platform signals.
+
+This validates access, confirms scope, and ensures signal availability before evaluation begins.
+
+![Execution Context](docs/demo/00a_execution-context.png)
+
+---
+
+### 2. Enterprise Readiness Gate
+A deterministic readiness gate determines whether the platform foundation is prepared for enterprise-scale landing zone adoption.
+
+This gate aggregates critical control failures and platform maturity indicators.
+
+![Foundation Gate](docs/demo/001_foundation_gate.png)
+
+---
+
+### 3. Enterprise Readiness Blockers
+Structural gaps preventing enterprise-scale landing zone adoption.
+
+These blockers are derived directly from failing controls and dependency graph analysis.
 
 ![Enterprise Readiness Blockers](docs/demo/01_enterprise-readiness-blockers.png)
 
 ---
 
-### 3️⃣ Top Business Risks
-
-Deterministically ranked business risks with root cause and score drivers.
+### 4. Top Business Risks
+Deterministically ranked platform risks with root cause analysis and supporting control evidence.
 
 ![Top Business Risks](docs/demo/02_top-business-risks.png)
 
 ---
 
-### 4️⃣ 30-60-90 Transformation Roadmap
+### 5. Transformation Roadmap
+Dependency-ordered **30-60-90 remediation initiatives** generated from the control graph.
 
-Dependency-ordered remediation initiatives with maturity trajectory projections.
+Each initiative resolves multiple failing controls and unlocks platform capabilities.
+
+![30-60-90 Roadmap](docs/demo/003_30-60-90-roadmap.png)
+
+---
+
+### 6. Roadmap Traceability
+Every remediation initiative is mapped back to the failing controls and checklist IDs that caused it.
 
 ![Roadmap Traceability](docs/demo/03_roadmap-traceability.png)
 
 ---
 
-### 5️⃣ Design Area Breakdown
-
-ALZ design area maturity breakdown with automation %, critical failures, and control status distribution.
+### 7. ALZ Design Area Breakdown
+Detailed maturity scoring across governance, networking, identity, security, and platform design areas.
 
 ![Design Area Breakdown](docs/demo/04_design_area_breakdown.png)
 
 ---
 
-### 6️⃣ Workshop Decision Funnel
+### 8. Workshop Decision Funnel
+CSA workshop facilitation view that connects:
 
-CSA decision framing — blockers → risks → remediation path.
+**platform blockers → business risks → remediation initiatives**
 
 ![Workshop Decision Funnel](docs/demo/04_workshop_decision_funnel.png)
 
 ---
 
-### 7️⃣ CSA Workbook – 30-60-90 Plan
+### 9. CSA Workbook Deliverables
+Customer-ready Excel outputs automatically generated from the assessment.
 
-Customer-ready Excel roadmap aligned to checklist IDs and owners.
-
-![Excel 30-60-90 Roadmap](docs/demo/05_excel_30_60_90_roadmap.png)
-
----
-
-### 8️⃣ CSA Workbook – Executive Summary
-
-Executive framing with top risks, maturity metrics, and engagement summary.
+#### Executive Summary
 
 ![Excel Executive Summary](docs/demo/05_excel_executive_summary.png)
 
----
+#### 30-60-90 Transformation Plan
 
-### 9️⃣ Full Checklist Control Details
+![Excel Roadmap](docs/demo/05_excel_30_60_90_roadmap.png)
 
-Control-level scoring mapped directly to Azure Review Checklist IDs.
+#### Full Control Traceability
 
 ![Excel Control Details](docs/demo/05_excel_landing_zone_checklist_control_details.png)
 
 ---
 
-### 🔎 Execution Context
+### Interactive Report
 
-Assessment scope, subscriptions evaluated, and API access confirmation.
+> **Open the full interactive demo report**
+>
+> 👉 **[View the HTML assessment report](https://htmlpreview.github.io/?https://github.com/rebmid/Reasoning-Agent-Azure-Landing-Zone-Assessment-Advisor/blob/main/docs/demo/Contoso-ALZ-Platform-Readiness-Report-Sample.html)**
 
-![Execution Context](docs/demo/00a_execution-context.png)
+Generated from a real Azure Test/Lab **Contoso tenant** using read-only access.
 
 ## Architectural Characteristics
 
 | Principle | Implementation |
-|------------|----------------|
+|---|---|
 | **Deterministic First** | All scoring, risk tiers, and control verdicts are computed from live Azure signals before AI executes |
-| **Checklist-Grounded** | Every remediation item maps to an official Azure Review Checklist ID — no synthetic identifiers |
+| **Checklist-Grounded** | Every remediation item maps to an official Azure Review Checklist ID -- no synthetic identifiers |
 | **One-Way Data Flow** | AI consumes scored results but cannot modify deterministic outputs |
 | **Schema-Enforced Output** | All AI responses are validated against JSON schemas before acceptance |
 | **Documentation-Grounded** | Microsoft Learn MCP integration enriches outputs with official implementation guidance |
 | **Traceable Deliverables** | CSA Workbook, HTML Report, and Run JSON preserve referential integrity end-to-end |
 
-
 ---
 
-## End-to-End Reasoning Architecture
+## End-to-End Architecture
 
-> **Architecture Principle — One-Way Data Flow**
+> **Architecture Principle -- One-Way Data Flow**
 >
 > Deterministic assessment **feeds** the AI reasoning layer. Control verdicts and risk scores are final before AI executes.
 
 ```
 Azure Tenant / Demo
-        │
-        ▼
+        |
+        v
 Deterministic ALZ Assessment
 (Resource Graph + Policy + Defender)
-        │
-        ▼
+        |
+        v
 Control Scoring Engine
-        │
-        │─────── one-way feed ──────┐
-        │                           ▼
-        ├────────► CSA Workbook    AI Reasoning Engine
-        │                           │
-        │                           ▼
-        │                     MCP Grounding Layer
-        │            (Microsoft Learn retrieval + patterns)
-        │                           │
-        │                           ▼
-        │                         WHY Reasoning Layer
-        │
-        └───────────────────────────┘
-                    │
-                    ▼
+        |
+        |------- one-way feed ------+
+        |                           v
+        +---------> CSA Workbook   AI Reasoning Engine
+        |                           |
+        |                           v
+        |                     MCP Grounding Layer
+        |            (Microsoft Learn retrieval + patterns)
+        |                           |
+        |                           v
+        |                         WHY Reasoning Layer
+        |
+        +---------------------------+
+                    |
+                    v
           Traceable Deliverables
 ```
 
@@ -177,14 +191,14 @@ Control Scoring Engine
 
 ### Evaluation Engine
 
-- Signal Bus routes platform telemetry → control evaluators
-- ALZ control pack scoring → Pass / Fail / Partial / Manual
+- Signal Bus routes platform telemetry to control evaluators
+- ALZ control pack scoring: Pass / Fail / Partial / Manual
 - Weighted maturity + risk model
 
 ### AI Reasoning Engine
 
 | Pass | Name | Output |
-|------|------|--------|
+|---|---|---|
 | 1 | **Roadmap & Initiatives** | 30-60-90 plan + initiative dependency graph |
 | 2 | **Executive Briefing** | Top risks + maturity narrative |
 | 3 | **Implementation Decision** | ALZ implementation pattern selection per initiative |
@@ -199,10 +213,12 @@ Control Scoring Engine
 
 ### Why-Risk Agent (Deterministic Reasoning Layer)
 
-- Failing controls → dependency graph impact
-- Root cause → cascade effect
+- Failing controls -> dependency graph impact
+- Root cause -> cascade effect
 - Roadmap action that fixes it
 - Microsoft Learn remediation reference
+
+---
 
 ## Prerequisites
 
@@ -216,25 +232,25 @@ Control Scoring Engine
 
 ### Required Azure Resource Providers
 
-The tool queries Azure Resource Graph and ARM APIs using **read-only** calls. The following resource providers must be registered on the target subscriptions for all signals to return data. Most are registered by default on any subscription that has used the service — but if a signal returns empty, missing provider registration is the most common cause.
+The tool queries Azure Resource Graph and ARM APIs using **read-only** calls. The following resource providers must be registered on the target subscriptions for all signals to return data. Most are registered by default on any subscription that has used the service -- but if a signal returns empty, missing provider registration is the most common cause.
 
 | Resource Provider | Signal(s) | Registered by Default? |
 |---|---|---|
-| `Microsoft.ResourceGraph` | All Resource Graph queries | ✅ Yes |
-| `Microsoft.Network` | Firewalls, VNets, Public IPs, NSGs, Route Tables, Private Endpoints, DDoS | ✅ Yes |
-| `Microsoft.Storage` | Storage Account Posture | ✅ Yes |
-| `Microsoft.KeyVault` | Key Vault Posture | ✅ Yes |
+| `Microsoft.ResourceGraph` | All Resource Graph queries | Yes |
+| `Microsoft.Network` | Firewalls, VNets, Public IPs, NSGs, Route Tables, Private Endpoints, DDoS | Yes |
+| `Microsoft.Storage` | Storage Account Posture | Yes |
+| `Microsoft.KeyVault` | Key Vault Posture | Yes |
 | `Microsoft.Sql` | SQL Server Posture | Only if SQL is used |
 | `Microsoft.Web` | App Service Posture | Only if App Service is used |
 | `Microsoft.ContainerRegistry` | Container Registry Posture | Only if ACR is used |
 | `Microsoft.ContainerService` | AKS Cluster Posture | Only if AKS is used |
 | `Microsoft.RecoveryServices` | VM Backup Coverage | Only if Backup is configured |
-| `Microsoft.Compute` | VM inventory (for backup coverage) | ✅ Yes |
-| `Microsoft.Security` | Defender plans, Secure Score | ✅ Yes |
-| `Microsoft.Authorization` | RBAC hygiene, Resource Locks, Policy assignments | ✅ Yes (built-in) |
-| `Microsoft.PolicyInsights` | Policy compliance summary | ✅ Yes |
-| `Microsoft.Management` | Management Group hierarchy | ✅ Yes |
-| `Microsoft.Insights` | Diagnostics coverage | ✅ Yes |
+| `Microsoft.Compute` | VM inventory (for backup coverage) | Yes |
+| `Microsoft.Security` | Defender plans, Secure Score | Yes |
+| `Microsoft.Authorization` | RBAC hygiene, Resource Locks, Policy assignments | Yes (built-in) |
+| `Microsoft.PolicyInsights` | Policy compliance summary | Yes |
+| `Microsoft.Management` | Management Group hierarchy | Yes |
+| `Microsoft.Insights` | Diagnostics coverage | Yes |
 
 To check registration status:
 
@@ -248,7 +264,7 @@ To register a missing provider (requires Contributor or Owner):
 az provider register -n Microsoft.RecoveryServices
 ```
 
-> **Note:** If a resource type doesn't exist in the subscription (e.g., no AKS clusters), the evaluator returns **NotApplicable** — not an error. Missing provider registration only matters when you *have* those resources but the signal returns empty.
+> **Note:** If a resource type doesn't exist in the subscription (e.g., no AKS clusters), the evaluator returns **NotApplicable** -- not an error. Missing provider registration only matters when you *have* those resources but the signal returns empty.
 
 ---
 
@@ -290,6 +306,18 @@ AZURE_OPENAI_ENDPOINT=https://<your-resource>.openai.azure.com/
 AZURE_OPENAI_KEY=<your-api-key>
 ```
 
+The tool expects a **`gpt-4.1`** deployment (or any chat-completion model) on the Azure OpenAI resource.
+
+> **Without these credentials**, the assessment still runs -- all deterministic scoring, control evaluation, and data collection work normally. However, the 11-pass AI reasoning pipeline will be skipped, meaning these report sections will be empty:
+> - 30-60-90 Transformation Roadmap
+> - Executive Briefing & Top Business Risks
+> - Enterprise-Scale Readiness & Blockers
+> - Critical Issues & Course of Action
+> - Workshop Decision Funnel smart questions
+> - Microsoft Learn MCP grounding
+>
+> Use `--no-ai` to explicitly skip AI, or omit the `.env` file to skip silently.
+
 ### 5. Authenticate with Azure
 
 ```bash
@@ -305,17 +333,22 @@ az login --tenant <tenant-id>
 ### 6. Run the assessment
 
 ```bash
-python scan.py
+python scan.py                    # scans the default subscription
+python scan.py --demo             # demo mode -- no Azure connection required
+python scan.py --mg-scope <mg-id> # scope to a management group (recommended for CSA)
+python scan.py --tenant-wide      # all visible subscriptions (large tenants: use --mg-scope instead)
 ```
 
-That's it. The tool will:
+See the [CLI Reference](#cli-reference) for all available modes and flags.
+
+The tool will:
 
 1. Discover your Azure execution context (tenant, subscriptions, identity)
-2. Fetch the latest ALZ checklist from GitHub
+2. Fetch the latest ALZ checklist from GitHub (~255 controls)
 3. Run all evaluators against your environment
 4. Score every control with weighted domain scoring
-5. Run the multi-stage AI reasoning pipeline (if OpenAI is configured)
-6. Ground recommendations in Microsoft Learn documentation
+5. Run the 11-pass AI reasoning pipeline (requires `.env` -- see step 4)
+6. Ground recommendations in Microsoft Learn documentation via MCP
 7. Output all artifacts to the `out/` directory
 
 ---
@@ -329,24 +362,15 @@ That's it. The tool will:
 | `AZURE_OPENAI_ENDPOINT` | For AI features | Your Azure OpenAI resource endpoint URL |
 | `AZURE_OPENAI_KEY` | For AI features | API key for the Azure OpenAI resource |
 
+All variables can be set in a `.env` file in the project root (loaded automatically via `python-dotenv`) or as system environment variables.
+
 ### Azure OpenAI Model
 
-The tool defaults to the `gpt-4.1` deployment. To use a different model, modify the `AOAIClient` initialization in `ai/engine/aoai_client.py`.
+The tool defaults to the **`gpt-4.1`** deployment name. To use a different model, modify the `AOAIClient` initialization in `ai/engine/aoai_client.py`.
 
 ### API Version
 
 Default: `2024-02-15-preview`. Configurable in `AOAIClient.__init__()`.
-
-## CLI Reference
-
-```
-python scan.py            # Standard assessment
-python scan.py --tenant-wide  # Cross-subscription enterprise scan
-| `--pretty` | Pretty-print the final JSON to stdout after the run |
-| `--preflight` | Run preflight access probes and exit — validates permissions without a full assessment |
-| `--why DOMAIN` | Explain **why** a domain is the top risk — runs causal reasoning over an existing assessment |
-| `--demo` | Use the bundled demo fixture (`demo/demo_run.json`) instead of live Azure data — no Azure connection required |
-| `--no-ai` | Skip AI reasoning passes (useful for testing or environments without Azure OpenAI) |
 
 ---
 
@@ -356,10 +380,10 @@ All outputs are written to the `out/` directory:
 
 | File | Description |
 |---|---|
-| `run-YYYYMMDD-HHMM.json` | Complete assessment data — controls, scores, AI output, delta, execution context |
-| `report.html` | Interactive executive HTML report with score breakdowns and gap analysis |
-| `run-YYYYMMDD-HHMM_CSA_Workbook.xlsm` | 3-sheet CSA deliverable workbook — macro-enabled (see [CSA Workbook Deep Dive](#csa-workbook-deep-dive)) |
-| `target_architecture.json` | Target architecture recommendation — derived from scored controls and checklist alignment, with component recommendations and Learn references |
+| `run-YYYYMMDD-HHMM.json` | Complete assessment data -- controls, scores, AI output, delta, execution context |
+| `report.html` | Interactive executive HTML report with design area breakdown and gap analysis |
+| `run-YYYYMMDD-HHMM_CSA_Workbook.xlsm` | 3-sheet CSA deliverable workbook (see [CSA Workbook Deep Dive](#csa-workbook-deep-dive)) |
+| `target_architecture.json` | Target architecture recommendation with component recommendations and Learn references |
 | `preflight.json` | *(preflight mode only)* Access probe results |
 
 Additionally, `assessment.json` is written to the project root as a convenience copy.
@@ -370,30 +394,30 @@ Additionally, `assessment.json` is written to the project root as a convenience 
 
 ### 1. Data Collection
 
-The **collectors** module queries Azure APIs via Resource Graph, Defender, Policy, and Management Group endpoints to gather raw infrastructure data:
+The **collectors** module queries Azure APIs via Resource Graph, Defender, Policy, and Management Group endpoints:
 
-- **Resource Graph** — VNets, firewalls, public IPs, NSGs, route tables, storage accounts, Key Vaults, private endpoints, diagnostic settings, and more
-- **Defender** — security score, coverage tier, recommendations
-- **Policy** — policy definitions, assignments, and compliance state
-- **Management Groups** — full hierarchy tree
+- **Resource Graph** -- VNets, firewalls, public IPs, NSGs, route tables, storage accounts, Key Vaults, private endpoints, diagnostic settings
+- **Defender** -- security score, coverage tier, recommendations
+- **Policy** -- policy definitions, assignments, and compliance state
+- **Management Groups** -- full hierarchy tree
 
-All queries use `AzureCliCredential` — the same identity you authenticated with via `az login`.
+All queries use `AzureCliCredential` -- the same identity you authenticated with via `az login`.
 
 ### 2. Evaluation & Scoring
 
 The **Signal Bus** architecture routes collected data through registered evaluators:
 
-1. The ALZ checklist is fetched live from GitHub (~243 controls across Security, Networking, Governance, Identity, Platform, and Management domains)
-2. Each control is matched to an evaluator (or marked `Manual` if no automated check exists)
+1. The ALZ checklist is fetched live from GitHub (~255 controls across 8 design areas)
+2. Each control is matched to an evaluator (59 automated) or marked `Manual` if no automated check exists
 3. Evaluators emit `Pass`, `Fail`, `Partial`, or `Info` verdicts with evidence
 4. The **scoring engine** applies domain weights and severity multipliers to produce a composite risk score
-5. **Automation coverage** is calculated — typically 20-30% of controls have automated evidence, with the rest requiring customer conversation
+5. **Automation coverage** is calculated -- 59 controls have automated evaluators (~23%), with the rest requiring customer conversation
 
 ### 3. AI Reasoning Engine
 
-The AI layer is a **consumer** of the deterministic scoring output — it receives the scored controls, risk tiers, and evidence via `build_advisor_payload()` and produces advisory content. It never modifies or feeds back into deterministic verdicts.
+The AI layer is a **consumer** of the deterministic scoring output -- it receives the scored controls, risk tiers, and evidence via `build_advisor_payload()` and produces advisory content. It never modifies or feeds back into deterministic verdicts.
 
-When AI is enabled, a **multi-stage reasoning pipeline** runs against Azure OpenAI:
+When AI is enabled, an **11-pass reasoning pipeline** runs against Azure OpenAI:
 
 | Pass | Prompt | Output | max_tokens |
 |---|---|---|---|
@@ -403,20 +427,20 @@ When AI is enabled, a **multi-stage reasoning pipeline** runs against Azure Open
 | 4 | `sequence_justification.txt` | Initiative ordering rationale + engagement recommendations | 8000 |
 | 5 | `readiness.txt` | Enterprise-scale landing zone technical readiness | 8000 |
 | 6 | `smart_questions.txt` | Customer discovery questions per domain | 8000 |
-| 7 | `implementation.txt` × N | Implementation backlog (one item per initiative) | 4000 |
-| 8 | *(MCP grounding)* | Learn doc refs, code samples, full-page enrichment | — |
+| 7 | `implementation.txt` x N | Implementation backlog (one item per initiative) | 4000 |
+| 8 | *(MCP grounding)* | Learn doc refs, code samples, full-page enrichment | -- |
 | 9 | `target_architecture.txt` | Target architecture + `grounding.txt` enrichment | 8000 |
 | 10 | `critical_issues.txt` | Top failing controls advisory with course of action | 8000 |
 | 11 | `blocker_resolution.txt` | Enterprise readiness blocker resolution summary | 8000 |
 
 The `AOAIClient` includes built-in resilience:
-- **JSON fence stripping** — removes markdown ````json```` wrappers from model output
-- **Truncation repair** — closes dangling brackets and strings when output is cut off
-- **Retry loop** — up to 2 retries on invalid JSON responses
+- **JSON fence stripping** -- removes markdown code fences from model output
+- **Truncation repair** -- closes dangling brackets and strings when output is cut off
+- **Retry loop** -- up to 2 retries on invalid JSON responses
 
 ### 4. Grounding via Microsoft Learn MCP
 
-The tool uses the **official MCP Python SDK** (Streamable HTTP transport) to connect to Microsoft's documentation API at `https://learn.microsoft.com/api/mcp`:
+The tool uses the **official MCP Python SDK** (Streamable HTTP transport) to connect to Microsoft's documentation API:
 
 | MCP Tool | Purpose |
 |---|---|
@@ -424,7 +448,7 @@ The tool uses the **official MCP Python SDK** (Streamable HTTP transport) to con
 | `microsoft_code_sample_search` | Fetches Bicep/Terraform code samples for infrastructure recommendations |
 | `microsoft_docs_fetch` | Downloads full documentation pages as markdown for deep grounding |
 
-If MCP is unreachable, a **fallback** uses the public Learn search REST API (`https://learn.microsoft.com/api/search`) to provide title + URL + description.
+If MCP is unreachable, a **fallback** uses the public Learn search REST API to provide title + URL + description.
 
 Grounding runs for:
 - Each initiative in the transformation roadmap
@@ -434,17 +458,12 @@ Grounding runs for:
 ### 5. Report Generation
 
 **HTML Report** (`report.html`):
-- **Platform Readiness Snapshot** — tenant maturity score, automation coverage, enterprise-scale landing zone technical readiness
-- **Landing Zone Adoption Blockers** — AI-identified barriers to ALZ adoption
-- **Platform Risk Prioritization** — 5-tier risk classification (Critical → Hygiene) with confidence indicators
-- **Highest-Impact Remediation Sequence** — prioritised initiative roadmap
-- **Maturity After Roadmap Execution** — projected score improvement
-- **Capability Unlock View** — capabilities enabled by completing each initiative
-- **Domain Deep Dive** — per-section control tables split into ALZ Core and Operational Overlay, with automation %, critical fail counts, and risk sorting
-- **Assessment Scope & Confidence** — subscription coverage, signal availability, and data-collection provenance
-- **Customer Validation Required** — controls needing manual review or customer conversation
-- **ALZ Design Area References** — links to official ALZ design area documentation
-- **Data Collection Provenance** — collector execution metadata and timestamps
+- Foundation Gate -- enterprise-scale readiness with pass/fail blockers
+- Top Business Risks -- deterministically ranked with root cause analysis
+- 30-60-90 Transformation Roadmap with maturity trajectory
+- Design Area Breakdown -- controls grouped by the 8 official ALZ design areas (A-H)
+- Workshop Decision Funnel -- blockers, risks, and smart questions per domain
+- Critical Issues & Course of Action
 
 **CSA Workbook** (`CSA_Workbook_v1.xlsm`):
 - See [CSA Workbook Deep Dive](#csa-workbook-deep-dive) below
@@ -453,13 +472,13 @@ Grounding runs for:
 
 ## CSA Workbook Deep Dive
 
-The workbook is the primary **customer-facing deliverable** — a 3-sheet Excel file ready for CSA engagements:
+The workbook complements the HTML report as a **customer-facing deliverable** -- a 3-sheet Excel file ready for CSA engagements:
 
 ### Sheet 0: `0_Executive_Summary`
 
 | Section | Content |
 |---|---|
-| **CSA Engagement Framing** | Engagement Objective, Key Message, Customer Outcome — ready-made talking points |
+| **CSA Engagement Framing** | Engagement Objective, Key Message, Customer Outcome |
 | **Assessment Metrics** | Total controls, automated %, pass/fail/partial counts, risk score |
 | **Top Business Risks** | AI-identified risks with severity, affected domain, and recommended mitigation |
 
@@ -472,51 +491,26 @@ A phased transformation plan where each action item includes:
 - **CAF Discipline** alignment
 - **Owner** and **Success Criteria**
 - **Dependencies**
-- **Related Controls** — mapped from `checklist_id` → item controls (GUIDs) → checklist IDs
-- **Related Risks** — reverse-mapped through `top_business_risks[].affected_controls`
+- **Related Controls** -- mapped from `checklist_id` to item controls to checklist IDs
+- **Related Risks** -- reverse-mapped through `top_business_risks[].affected_controls`
 
 ### Sheet 2: `2_Control_Details`
 
-All ~243 controls in a flat table with 19 columns:
+All ~255 controls in a flat table:
 
 | Column | Description |
 |---|---|
-| A: Control ID | Checklist GUID (shortened) |
-| B: Section | ALZ domain (Security, Networking, …) |
-| C: Severity | Critical / High / Medium / Low |
-| D: Status | Pass / Fail / Partial / Manual |
-| E: Text | Original checklist text |
-| F: Notes | Evidence notes from evaluator |
-| G: Evidence Count | Number of evidence items |
-| H: Learn URL | Microsoft Learn documentation link |
-| I: Training URL | Microsoft training link |
-| J: Checklist Name | Control name from ALZ checklist |
-| K: Checklist Description | Full description from ALZ checklist |
-| L: WAF Pillar | Well-Architected Framework alignment |
-| M: Grounded Summary | AI-enriched summary with Learn references |
-| N: Grounded URL | Learn documentation URL from MCP |
-| O: Grounded Code | Bicep/Terraform code sample from MCP |
-| P: Grounded Fetch | Full-page markdown excerpt |
-| Q: Related Items | Checklist IDs of related remediation items |
-| R: Category | ALZ category |
-| S: Discussion Points | Customer discovery items mapped by control (224/243 populated) |
-
----
-
-## On-Demand Evaluation Mode
-
-For targeted workshop assessments, use `--on-demand`:
-
-```bash
-python scan.py --on-demand enterprise_readiness
-```
-
-This runs the **IntentOrchestrator** which:
-1. Loads the ALZ control pack
-2. Routes the intent to relevant evaluators
-3. Runs the assessment runtime against the targeted scope
-4. Optionally generates an AI explanation of the results
-5. Saves output to `out/run-*-on-demand.json`
+| A: ID | ALZ checklist ID (e.g. `D07.01`) |
+| B: Design Area | Official ALZ design area name |
+| C: Sub Area | ALZ sub-area |
+| D: WAF Pillar | Well-Architected Framework alignment |
+| E: Service | Azure service |
+| F: Checklist Item | Original checklist text |
+| G: Severity | High / Medium / Low / Info |
+| H: Status | Fulfilled / Open / Not verified / N/A |
+| I: Comment | Evidence notes from evaluator |
+| J-L | AMMP, Learn link, Training link |
+| M-O | Coverage: % Compliant, Subs Affected, Scope Level |
 
 ---
 
@@ -540,10 +534,10 @@ This runs a **6-step causal reasoning pipeline** over the existing assessment da
 | 6. **AI causal explanation** | Sends the assembled evidence to the reasoning model for root-cause analysis |
 
 The AI output includes:
-- **Root cause** — why the domain is the top risk (current-state framing)
-- **Business impact** — specific consequences tied to the evidence
-- **Fix sequence** — ordered remediation steps with dependency rationale and Learn URLs
-- **Cascade effect** — which downstream controls will automatically improve
+- **Root cause** -- why the domain is the top risk
+- **Business impact** -- specific consequences tied to the evidence
+- **Fix sequence** -- ordered remediation steps with dependency rationale and Learn URLs
+- **Cascade effect** -- which downstream controls will automatically improve
 
 Output is saved to `out/why-{domain}.json`. Use `--no-ai` to get the raw evidence payload without the AI narration.
 
@@ -574,18 +568,19 @@ Results are saved to `out/preflight.json` and printed to the console with pass/f
 
 | Domain | Weight | Rationale |
 |---|---|---|
-| Security | 1.5× | Highest impact on breach risk |
-| Networking | 1.4× | Network segmentation is foundational |
-| Identity | 1.4× | Identity is the new perimeter |
-| Governance | 1.3× | Policy enforcement and compliance |
-| Platform | 1.2× | Landing zone structural integrity |
-| Management | 1.1× | Operational visibility |
+| Security | 1.5x | Highest impact on breach risk |
+| Networking | 1.4x | Network segmentation is foundational |
+| Identity | 1.4x | Identity is the new perimeter |
+| Governance | 1.3x | Policy enforcement and compliance |
+| Data Protection | 1.3x | Regulatory alignment |
+| Resilience | 1.2x | Business continuity |
+| Management | 1.1x | Operational visibility |
+| Cost | 1.0x | Financial governance |
 
 ### Severity Weights
 
 | Severity | Points |
 |---|---|
-| Critical | 6 |
 | High | 5 |
 | Medium | 3 |
 | Low | 1 |
@@ -595,12 +590,31 @@ Results are saved to `out/preflight.json` and printed to the console with pass/f
 
 | Status | Multiplier | Meaning |
 |---|---|---|
-| Fail | 1.0× | Full risk weight applied |
-| Partial | 0.6× | Reduced weight — some mitigation in place |
-| Pass | 0× | No risk contribution |
-| Manual | 0× | Not scored — requires customer discussion |
+| Fail | 1.0x | Full risk weight applied |
+| Partial | 0.6x | Reduced weight -- some mitigation in place |
+| Pass | 0x | No risk contribution |
+| Manual | 0x | Not scored -- requires customer discussion |
 
-**Composite risk score** = Σ (severity_weight × status_multiplier × domain_weight) for all controls
+**Composite risk score** = sum of (severity_weight x status_multiplier x domain_weight) for all controls
+
+---
+
+## ALZ Design Area Mapping
+
+The HTML report and Excel workbook use the official [Azure Landing Zone design areas](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/design-areas) with checklist ID prefixes A-H from the [Azure Review Checklist](https://github.com/Azure/review-checklists):
+
+| Letter | Design Area | Objective |
+|---|---|---|
+| **A** | Azure Billing and Microsoft Entra ID Tenants | Proper tenant creation, enrollment, and billing setup are important early steps. |
+| **B** | Identity and Access Management | Identity and access management is a primary security boundary in the public cloud. |
+| **C** | Resource Organization | Subscription design and management group hierarchy impact governance, operations, and adoption patterns. |
+| **D** | Network Topology and Connectivity | Networking and connectivity decisions are an equally important foundational aspect of any cloud architecture. |
+| **E** | Governance | Automate auditing and enforcement of governance policies. |
+| **F** | Management | A management baseline is required to provide visibility, operations compliance, and protect and recover capabilities. |
+| **G** | Security | Implement controls and processes to protect your cloud environments. |
+| **H** | Platform Automation and DevOps | Align the best tools and templates to deploy your landing zones and supporting resources. |
+
+These IDs match the `checklist_ids` in the ALZ control pack and the ID column in the CSA Workbook.
 
 ---
 
@@ -610,18 +624,17 @@ Results are saved to `out/preflight.json` and printed to the console with pass/f
 |---|---|
 | `AZURE_OPENAI_KEY / AZURE_OPENAI_ENDPOINT not set` | Create a `.env` file with your Azure OpenAI credentials, or run with `--no-ai` |
 | `No subscriptions found` | Ensure `az login` succeeded and your identity has Reader on at least one subscription |
-| `Management group hierarchy not visible` | Your identity needs Management Group Reader — the tool still works, but MG-related controls will be `Manual` |
-| `Unterminated string` / JSON parse errors in AI output | The tool auto-repairs truncated JSON. If it persists, check your Azure OpenAI quota and model deployment |
+| `Management group hierarchy not visible` | Your identity needs Management Group Reader -- the tool still works, but MG-related controls will be `Manual` |
+| `Unterminated string` / JSON parse errors | The tool auto-repairs truncated JSON. If it persists, check your Azure OpenAI quota and model deployment |
 | `MCP connection failed` | The tool falls back to the public Learn search API automatically. No action needed. |
 | `ModuleNotFoundError` | Ensure your virtual environment is activated and `pip install -r requirements.txt` completed successfully |
 | `az: command not found` | Install the [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) |
-| Slow execution | Large tenants take longer. Use `--tenant-wide` only when needed. AI passes add ~60-90s. |
+| Slow execution | Large tenants take longer. Use `--mg-scope <mg-id>` to limit scope instead of `--tenant-wide`. AI passes add ~60-90s. For 50+ subscriptions, expect 3-5 minutes without AI. |
+
+---
 
 ## Built with AI Assistance
 
-This project was developed using GitHub Copilot as an AI pair programmer for code generation, refactoring, and test scaffolding.  
-All architecture, control logic, Azure integration, and reasoning workflows were designed and implemented by the author.
+This project was developed using GitHub Copilot as an AI pair programmer for code generation, refactoring, and test scaffolding.
 
-## License
-
-Copyright (c) 2026 Rebekah Midkiff
+All architecture, control logic, Azure integration, and reasoning workflows were designed and implemented by the author Rebekah Midkiff.

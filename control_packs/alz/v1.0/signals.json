@@ -3,7 +3,6 @@
   "name": "Azure Landing Zone — V1 Starter",
   "version": "1.3.0",
   "description": "Signal and control definitions for the ALZ enterprise-scale assessment. Maps logical signal names to signal providers registered in the signals/ layer.",
-
   "signals": {
     "mg_hierarchy": {
       "provider": "arm",
@@ -103,7 +102,6 @@
       "description": "Log Analytics workspaces for centralized logging validation",
       "preflight_probe": "log_analytics_reader"
     },
-
     "storage_posture": {
       "provider": "resource_graph",
       "signal_bus_name": "resource_graph:storage_posture",
@@ -170,7 +168,6 @@
       "description": "RBAC hygiene — owner count, group vs user ratio, service principals (coverage-based)",
       "preflight_probe": null
     },
-
     "entra_log_availability": {
       "provider": "entra",
       "signal_bus_name": "identity:entra_log_availability",
@@ -183,7 +180,6 @@
       "description": "PIM usage — role eligibility activations, break-glass detection (coverage-based)",
       "preflight_probe": null
     },
-
     "workspace_topology": {
       "provider": "monitor",
       "signal_bus_name": "monitor:workspace_topology",
@@ -196,28 +192,24 @@
       "description": "Activity log automation maturity — IaC ratio, policy remediations, RBAC/NSG/FW churn (coverage-based)",
       "preflight_probe": null
     },
-
     "cost_management_posture": {
       "provider": "cost_management",
       "signal_bus_name": "cost:management_posture",
       "description": "Cost governance — budgets, cost alerts, reservation/savings plan (coverage-based)",
       "preflight_probe": "cost_management_reader"
     },
-
     "network_watcher_posture": {
       "provider": "network_watcher",
       "signal_bus_name": "network:watcher_posture",
       "description": "Network Watcher observability — flow logs v2, Traffic Analytics, connection monitors (coverage-based)",
       "preflight_probe": null
     },
-
     "update_manager": {
       "provider": "maintenance",
       "signal_bus_name": "manage:update_manager",
       "description": "Update Manager posture — maintenance configs, guest configuration, patch assessment, VM maintenance join (coverage-based)",
       "preflight_probe": null
     },
-
     "pim_maturity": {
       "provider": "graph_api",
       "signal_bus_name": "identity:pim_maturity",
@@ -242,7 +234,6 @@
       "description": "Admin Conditional Access coverage — admin users protected by CA policies requiring MFA",
       "preflight_probe": "graph_api_reader"
     },
-
     "alert_action_mapping": {
       "provider": "resource_graph",
       "signal_bus_name": "monitor:alert_action_mapping",
@@ -267,7 +258,6 @@
       "description": "Change tracking — Microsoft.ChangeAnalysis RP registration, ChangeTracking solutions, VM extensions",
       "preflight_probe": null
     },
-
     "cost_forecast_accuracy": {
       "provider": "cost_management",
       "signal_bus_name": "cost:forecast_accuracy",
@@ -279,6 +269,72 @@
       "signal_bus_name": "cost:idle_resources",
       "description": "Idle resource detection — Advisor cost recommendations for underutilized VMs, estimated savings",
       "preflight_probe": "resource_graph"
+    },
+    "vnet_peerings": {
+      "provider": "resource_graph",
+      "query": "vnet_peerings",
+      "signal_bus_name": "resource_graph:vnet_peerings",
+      "description": "VNet peering connectivity state"
+    },
+    "gateway_inventory": {
+      "provider": "resource_graph",
+      "query": "gateway_inventory",
+      "signal_bus_name": "resource_graph:gateway_inventory",
+      "description": "ExpressRoute and VPN gateway inventory"
+    },
+    "bastion_hosts": {
+      "provider": "resource_graph",
+      "query": "bastion_hosts",
+      "signal_bus_name": "resource_graph:bastion_hosts",
+      "description": "Azure Bastion host presence"
+    },
+    "waf_frontdoor": {
+      "provider": "resource_graph",
+      "query": "waf_frontdoor",
+      "signal_bus_name": "resource_graph:waf_frontdoor",
+      "description": "WAF, Front Door, and Application Gateway presence"
+    },
+    "private_dns_zones": {
+      "provider": "resource_graph",
+      "query": "private_dns_zones",
+      "signal_bus_name": "resource_graph:private_dns_zones",
+      "description": "Private DNS Zone coverage and auto-registration"
+    },
+    "tag_compliance": {
+      "provider": "resource_graph",
+      "query": "tag_compliance",
+      "signal_bus_name": "resource_graph:tag_compliance",
+      "description": "Resource tagging compliance coverage"
+    },
+    "policy_exemptions": {
+      "provider": "resource_graph",
+      "query": "policy_exemptions",
+      "signal_bus_name": "resource_graph:policy_exemptions",
+      "description": "Azure Policy exemption inventory"
+    },
+    "custom_roles": {
+      "provider": "resource_graph",
+      "query": "custom_roles",
+      "signal_bus_name": "resource_graph:custom_roles",
+      "description": "Custom RBAC role definitions with wildcard detection"
+    },
+    "disk_encryption": {
+      "provider": "resource_graph",
+      "query": "disk_encryption",
+      "signal_bus_name": "resource_graph:disk_encryption",
+      "description": "Managed disk encryption status"
+    },
+    "advisor_recommendations": {
+      "provider": "advisor",
+      "query": "recommendations",
+      "signal_bus_name": "advisor:recommendations",
+      "description": "Azure Advisor cross-pillar recommendations"
+    },
+    "defender_assessments": {
+      "provider": "defender",
+      "query": "assessments",
+      "signal_bus_name": "defender:assessments",
+      "description": "Microsoft Defender for Cloud security assessments"
     }
   }
 }

@@ -37,7 +37,7 @@ _log = logging.getLogger(__name__)
 # If a pack is listed here, any content change requires an explicit
 # version bump (new directory under control_packs/<family>/).
 _FROZEN_CHECKSUMS: dict[str, str] = {
-    "alz/v1.0": "03eb5c86e10c5203",  # 48 controls, 8 design areas
+    "alz/v1.0": "52aca64690261eed",  # 59 controls, 8 design areas (v1.4.0)
 }
 
 

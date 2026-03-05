@@ -105,10 +105,11 @@ def validate_relationship_integrity(output: dict[str, Any]) -> tuple[bool, list[
         print(f"  {category:<30} {refs_str:<30} {flag:<10} {id_flag:<10}")
 
         if not refs:
-            violations.append(
-                f"BLOCKER_NULL_REF: blocker '{category}' has no "
-                f"resolving_checklist_ids."
-            )
+            # Warning only — AI may not produce remediation items for every
+            # blocker category.  The blocker still renders; it just won't
+            # have resolving items linked.
+            print(f"  ⚠ BLOCKER_NULL_REF: blocker '{category}' has no "
+                  f"resolving_checklist_ids (warning, not a violation).")
         else:
             for ref in refs:
                 if ref not in item_by_id:

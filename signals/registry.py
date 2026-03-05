@@ -21,6 +21,15 @@ from signals.providers.resource_graph import (
     fetch_public_ips,
     fetch_route_tables,
     fetch_nsg_list,
+    fetch_vnet_peerings,
+    fetch_gateway_inventory,
+    fetch_bastion_hosts,
+    fetch_waf_frontdoor,
+    fetch_private_dns_zones,
+    fetch_tag_compliance,
+    fetch_disk_encryption,
+    fetch_custom_roles,
+    fetch_policy_exemptions,
 )
 from signals.providers.management_groups import fetch_mg_hierarchy
 from signals.providers.policy import fetch_policy_assignments, fetch_policy_compliance
@@ -58,6 +67,7 @@ from signals.providers.cost_management import (
 )
 from signals.providers.network_watcher import fetch_network_watcher_posture
 from signals.providers.update_manager import fetch_update_manager_posture
+from signals.providers.advisor import fetch_advisor_recommendations, fetch_defender_assessments
 
 
 # Type: (scope) -> SignalResult
@@ -560,6 +570,25 @@ SIGNAL_PROVIDERS: dict[str, ProviderFn] = {
 
     # Update Manager (multi-sub aggregation)
     "manage:update_manager":              _multi_sub_provider(fetch_update_manager_posture),
+
+    # ── New signals: Network topology depth ───────────────────────
+    "resource_graph:vnet_peerings":        _rg_provider(fetch_vnet_peerings),
+    "resource_graph:gateway_inventory":    _rg_provider(fetch_gateway_inventory),
+    "resource_graph:bastion_hosts":        _rg_provider(fetch_bastion_hosts),
+    "resource_graph:waf_frontdoor":        _rg_provider(fetch_waf_frontdoor),
+    "resource_graph:private_dns_zones":    _rg_provider(fetch_private_dns_zones),
+
+    # ── New signals: Governance depth ─────────────────────────────
+    "resource_graph:tag_compliance":       _rg_provider(fetch_tag_compliance),
+    "resource_graph:policy_exemptions":    _rg_provider(fetch_policy_exemptions),
+    "resource_graph:custom_roles":         _rg_provider(fetch_custom_roles),
+
+    # ── New signals: Security depth ──────────────────────────────
+    "resource_graph:disk_encryption":      _rg_provider(fetch_disk_encryption),
+
+    # ── New signals: Cross-pillar insights ────────────────────────
+    "advisor:recommendations":             _multi_sub_provider(fetch_advisor_recommendations),
+    "defender:assessments":                _multi_sub_provider(fetch_defender_assessments),
 }
 
 

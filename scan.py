@@ -58,6 +58,8 @@ import evaluators.identity         # noqa: F401
 import evaluators.network_coverage # noqa: F401
 import evaluators.management       # noqa: F401
 import evaluators.cost             # noqa: F401
+import evaluators.network_depth    # noqa: F401
+import evaluators.governance_depth # noqa: F401
 
 OUT_DIR = os.path.join(os.path.dirname(__file__), "out")
 

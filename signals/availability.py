@@ -25,6 +25,15 @@ SIGNAL_SOURCES: dict[str, list[str]] = {
         "resource_graph:nsg_coverage",
         "resource_graph:resource_locks",
         "resource_graph:backup_coverage",
+        "resource_graph:vnet_peerings",
+        "resource_graph:gateway_inventory",
+        "resource_graph:bastion_hosts",
+        "resource_graph:waf_frontdoor",
+        "resource_graph:private_dns_zones",
+        "resource_graph:tag_compliance",
+        "resource_graph:disk_encryption",
+        "resource_graph:custom_roles",
+        "resource_graph:policy_exemptions",
     ],
     "ARM / Management": [
         "arm:mg_hierarchy",
@@ -36,6 +45,10 @@ SIGNAL_SOURCES: dict[str, list[str]] = {
     "Defender": [
         "defender:pricings",
         "defender:secure_score",
+        "defender:assessments",
+    ],
+    "Advisor": [
+        "advisor:recommendations",
     ],
     "Monitoring": [
         "monitor:diag_coverage_sample",
@@ -53,17 +66,41 @@ def probe_signal_availability(
     """
     Probe each registered signal and return availability matrix.
     Returns {source: [{signal, status_icon, status, ms}]}.
+
+    Uses bus.fetch_many() to probe all signals in parallel rather
+    than sequentially, significantly reducing wall-clock time.
     """
     matrix: dict[str, list[dict]] = {}
 
+    # Collect all registered signal names for a single parallel fetch
+    all_registered: list[str] = []
+    unregistered: dict[str, list[str]] = {}  # source -> [names]
+    for source, signal_names in SIGNAL_SOURCES.items():
+        unreg = []
+        for name in signal_names:
+            if name not in SIGNAL_PROVIDERS:
+                unreg.append(name)
+            else:
+                all_registered.append(name)
+        if unreg:
+            unregistered[source] = unreg
+
+    # Fetch all registered signals in parallel
+    fetched = bus.fetch_many(all_registered, scope) if all_registered else {}
+
+    # Build matrix from results
     for source, signal_names in SIGNAL_SOURCES.items():
         entries = []
         for name in signal_names:
-            if name not in SIGNAL_PROVIDERS:
+            if name in unregistered.get(source, []):
                 entries.append({"signal": name, "icon": "⊘", "status": "unregistered", "ms": 0})
                 continue
 
-            result = bus.fetch(name, scope)
+            result = fetched.get(name)
+            if result is None:
+                entries.append({"signal": name, "icon": "❌", "status": "error: not fetched", "ms": 0})
+                continue
+
             if result.status == SignalStatus.OK:
                 icon = "✅"
                 status = "OK"

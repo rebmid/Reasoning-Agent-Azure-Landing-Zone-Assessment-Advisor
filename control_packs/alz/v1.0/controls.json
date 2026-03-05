@@ -1,7 +1,7 @@
 {
   "pack_id": "alz-v1.0",
   "name": "Azure Landing Zone â€” V1 Starter",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "52+ automated control evaluators covering Networking, Governance, Security, Data Protection, Resilience, Identity, Management, and Cost design areas.",
   "design_areas": {
     "network": {
@@ -14,7 +14,12 @@
         "088137f5",
         "nsg-cove",
         "aks-post",
-        "netwatch"
+        "netwatch",
+        "vnet-peering-001",
+        "gateway-presence-001",
+        "bastion-presence-001",
+        "waf-frontdoor-001",
+        "private-dns-001"
       ]
     },
     "governance": {
@@ -28,7 +33,9 @@
         "3829e7e3",
         "d8a2adb1",
         "49b82111",
-        "resource"
+        "resource",
+        "tag-compliance-001",
+        "policy-exemptions-001"
       ]
     },
     "security": {
@@ -40,7 +47,9 @@
         "15833ee7",
         "a56888b2",
         "67e7a8ed",
-        "1cf0b8da"
+        "1cf0b8da",
+        "disk-encryption-001",
+        "defender-assessments-001"
       ]
     },
     "data_protection": {
@@ -69,7 +78,8 @@
         "pim-matu",
         "breakgla",
         "sp-owner",
-        "admin-ca"
+        "admin-ca",
+        "custom-roles-001"
       ]
     },
     "management": {
@@ -81,7 +91,8 @@
         "alert-ac",
         "action-g",
         "availabi",
-        "change-t"
+        "change-t",
+        "advisor-posture-001"
       ]
     },
     "cost": {
@@ -1157,6 +1168,226 @@
       "checklist_guids": [
         "5cf9f485-2784-49b3-9824-75d9b8bdb57b"
       ]
+    },
+    "vnet-peering-001": {
+      "name": "VNet Peering Connectivity",
+      "full_id": "vnet-peering-001",
+      "design_area": "network",
+      "sub_area": "Hub-Spoke Connectivity",
+      "waf_pillar": "Reliability",
+      "control_type": "Derived",
+      "severity": "High",
+      "evaluation_logic": "automated",
+      "evaluator_module": "evaluators.network_depth",
+      "required_signals": [
+        "vnet_peerings"
+      ],
+      "caf_guidance": "Use global virtual network peerings between hub VNets",
+      "caf_url": "https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/define-an-azure-network-topology",
+      "checklist_ids": [
+        "D01.09"
+      ],
+      "checklist_guids": []
+    },
+    "gateway-presence-001": {
+      "name": "ExpressRoute / VPN Gateway Presence",
+      "full_id": "gateway-presence-001",
+      "design_area": "network",
+      "sub_area": "Hybrid Connectivity",
+      "waf_pillar": "Reliability",
+      "control_type": "Derived",
+      "severity": "Medium",
+      "evaluation_logic": "automated",
+      "evaluator_module": "evaluators.network_depth",
+      "required_signals": [
+        "gateway_inventory"
+      ],
+      "caf_guidance": "Deploy shared networking services including ExpressRoute and VPN gateways",
+      "caf_url": "https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/define-an-azure-network-topology",
+      "checklist_ids": [
+        "D06.01"
+      ],
+      "checklist_guids": []
+    },
+    "bastion-presence-001": {
+      "name": "Azure Bastion Presence",
+      "full_id": "bastion-presence-001",
+      "design_area": "network",
+      "sub_area": "Secure Admin Access",
+      "waf_pillar": "Security",
+      "control_type": "Derived",
+      "severity": "Medium",
+      "evaluation_logic": "automated",
+      "evaluator_module": "evaluators.network_depth",
+      "required_signals": [
+        "bastion_hosts"
+      ],
+      "caf_guidance": "Use Azure Bastion to securely connect to your network",
+      "caf_url": "https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/plan-for-inbound-and-outbound-internet-connectivity",
+      "checklist_ids": [
+        "D05.01"
+      ],
+      "checklist_guids": []
+    },
+    "waf-frontdoor-001": {
+      "name": "WAF / Front Door Presence",
+      "full_id": "waf-frontdoor-001",
+      "design_area": "network",
+      "sub_area": "Application Delivery",
+      "waf_pillar": "Security",
+      "control_type": "Derived",
+      "severity": "Medium",
+      "evaluation_logic": "automated",
+      "evaluator_module": "evaluators.network_depth",
+      "required_signals": [
+        "waf_frontdoor"
+      ],
+      "caf_guidance": "Use Azure Front Door and WAF policies for HTTP/S protection",
+      "caf_url": "https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/plan-for-inbound-and-outbound-internet-connectivity",
+      "checklist_ids": [
+        "D05.03"
+      ],
+      "checklist_guids": []
+    },
+    "private-dns-001": {
+      "name": "Private DNS Zone Coverage",
+      "full_id": "private-dns-001",
+      "design_area": "network",
+      "sub_area": "DNS Resolution",
+      "waf_pillar": "Operational Excellence",
+      "control_type": "Derived",
+      "severity": "Medium",
+      "evaluation_logic": "automated",
+      "evaluator_module": "evaluators.network_depth",
+      "required_signals": [
+        "private_dns_zones"
+      ],
+      "caf_guidance": "Use Azure Private DNS for resolution with a delegated zone",
+      "caf_url": "https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/private-link-and-dns-integration-at-scale",
+      "checklist_ids": [
+        "D03.06"
+      ],
+      "checklist_guids": []
+    },
+    "tag-compliance-001": {
+      "name": "Tag Compliance",
+      "full_id": "tag-compliance-001",
+      "design_area": "governance",
+      "sub_area": "Resource Tagging",
+      "waf_pillar": "Operational Excellence",
+      "control_type": "Derived",
+      "severity": "Medium",
+      "evaluation_logic": "automated",
+      "evaluator_module": "evaluators.governance_depth",
+      "required_signals": [
+        "tag_compliance"
+      ],
+      "caf_guidance": "Define your tagging strategy",
+      "caf_url": "https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-tagging",
+      "checklist_ids": [
+        "C04.01"
+      ],
+      "checklist_guids": []
+    },
+    "policy-exemptions-001": {
+      "name": "Policy Exemption Hygiene",
+      "full_id": "policy-exemptions-001",
+      "design_area": "governance",
+      "sub_area": "Policy Enforcement",
+      "waf_pillar": "Security",
+      "control_type": "Derived",
+      "severity": "Medium",
+      "evaluation_logic": "automated",
+      "evaluator_module": "evaluators.governance_depth",
+      "required_signals": [
+        "policy_exemptions"
+      ],
+      "caf_guidance": "Use Azure Policy to audit and enforce governance policies",
+      "caf_url": "https://learn.microsoft.com/azure/cloud-adoption-framework/ready/enterprise-scale/governance",
+      "checklist_ids": [
+        "E01.04"
+      ],
+      "checklist_guids": []
+    },
+    "custom-roles-001": {
+      "name": "Custom RBAC Role Hygiene",
+      "full_id": "custom-roles-001",
+      "design_area": "identity",
+      "sub_area": "Role Definitions",
+      "waf_pillar": "Security",
+      "control_type": "Derived",
+      "severity": "High",
+      "evaluation_logic": "automated",
+      "evaluator_module": "evaluators.governance_depth",
+      "required_signals": [
+        "custom_roles"
+      ],
+      "caf_guidance": "Use built-in roles instead of custom roles where possible",
+      "caf_url": "https://learn.microsoft.com/azure/cloud-adoption-framework/ready/enterprise-scale/identity-and-access-management",
+      "checklist_ids": [
+        "B03.06"
+      ],
+      "checklist_guids": []
+    },
+    "disk-encryption-001": {
+      "name": "Disk Encryption Posture",
+      "full_id": "disk-encryption-001",
+      "design_area": "security",
+      "sub_area": "Data Encryption",
+      "waf_pillar": "Security",
+      "control_type": "Derived",
+      "severity": "Medium",
+      "evaluation_logic": "automated",
+      "evaluator_module": "evaluators.governance_depth",
+      "required_signals": [
+        "disk_encryption"
+      ],
+      "caf_guidance": "Default to Microsoft-managed keys for principal encryption",
+      "caf_url": "https://learn.microsoft.com/azure/cloud-adoption-framework/ready/enterprise-scale/security-governance-and-compliance",
+      "checklist_ids": [
+        "G02.10"
+      ],
+      "checklist_guids": []
+    },
+    "advisor-posture-001": {
+      "name": "Azure Advisor Posture",
+      "full_id": "advisor-posture-001",
+      "design_area": "management",
+      "sub_area": "Platform Health",
+      "waf_pillar": "Operational Excellence",
+      "control_type": "Derived",
+      "severity": "Medium",
+      "evaluation_logic": "automated",
+      "evaluator_module": "evaluators.governance_depth",
+      "required_signals": [
+        "advisor_recommendations"
+      ],
+      "caf_guidance": "Review Azure Advisor recommendations regularly",
+      "caf_url": "https://learn.microsoft.com/azure/advisor/advisor-overview",
+      "checklist_ids": [
+        "F01.02"
+      ],
+      "checklist_guids": []
+    },
+    "defender-assessments-001": {
+      "name": "Defender Security Assessment Health",
+      "full_id": "defender-assessments-001",
+      "design_area": "security",
+      "sub_area": "Security Posture",
+      "waf_pillar": "Security",
+      "control_type": "Derived",
+      "severity": "High",
+      "evaluation_logic": "automated",
+      "evaluator_module": "evaluators.governance_depth",
+      "required_signals": [
+        "defender_assessments"
+      ],
+      "caf_guidance": "Use Microsoft Defender for Cloud security assessments",
+      "caf_url": "https://learn.microsoft.com/azure/defender-for-cloud/security-policy-concept",
+      "checklist_ids": [
+        "G03.07"
+      ],
+      "checklist_guids": []
     }
   }
 }

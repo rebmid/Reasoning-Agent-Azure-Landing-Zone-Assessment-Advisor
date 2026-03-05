@@ -442,6 +442,17 @@
       "training": "https://learn.microsoft.com/training/paths/configure-manage-entitlement-microsoft-entra-id/?source=recommendations"
     },
     {
+      "category": "Identity and Access Management",
+      "subcategory": "Sovereign Cloud",
+      "text": "Identify and restrict platform administrators in line with sovereignty requirements (for example, EU\u2011only, UK\u2011only, or country\u2011specific privileged roles).",
+      "waf": "Security",
+      "guid": "1770a2ac-c194-4e5c-ade4-82939d38a510",
+      "id": "B05.01",
+      "severity": "Medium",
+      "link": "https://learn.microsoft.com/en-us/industry/financial-services/architecture/location-based-access-content",
+      "training": "https://learn.microsoft.com/training/paths/configure-manage-entitlement-microsoft-entra-id/?source=recommendations"
+    },
+    {
       "category": "Resource Organization",
       "subcategory": "Naming and tagging",
       "text": "Use a well defined naming scheme for resources, such as Microsoft Best Practice Naming Standards.",
@@ -655,6 +666,39 @@
       "link": "https://azure.microsoft.com/explore/global-infrastructure/products-by-region/"
     },
     {
+      "category": "Resource Organization",
+      "subcategory": "Sovereign Cloud",
+      "text": "For Sovereign Landing Zone, use the management group structure for Public, Confidential Corp, and Confidential Online.",
+      "waf": "Security",
+      "guid": "914b8cb7-c2f6-40fa-ae18-81c049e0cb5a",
+      "id": "C04.01",
+      "severity": "Medium",
+      "training": "https://learn.microsoft.com/en-us/industry/sovereign-cloud/sovereign-public-cloud/sovereign-landing-zone/overview-slz?tabs=mgonly",
+      "link": "https://learn.microsoft.com/en-us/azure/governance/management-groups/overview"
+    },
+    {
+      "category": "Resource Organization",
+      "subcategory": "Sovereign Cloud",
+      "text": "Define data classification levels used in your organization.",
+      "waf": "Security",
+      "guid": "51a1e9e9-a49a-40b2-87b9-ff753bc6de86",
+      "id": "C04.02",
+      "severity": "Medium",
+      "training": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-tagging",
+      "link": "https://learn.microsoft.com/en-us/azure/well-architected/security/data-classification"
+    },
+    {
+      "category": "Resource Organization",
+      "subcategory": "Sovereign Cloud",
+      "text": "Use tags to capture sovereign workload metadata such as data classification.",
+      "waf": "Security",
+      "guid": "a89153d8-18b2-4caf-bc19-850fc8fba00f",
+      "id": "C04.03",
+      "severity": "Medium",
+      "training": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-tagging",
+      "link": "https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources"
+    },
+    {
       "category": "Network Topology and Connectivity",
       "subcategory": "App delivery",
       "text": "Document a standard for securing the delivery application content from your Workload spokes using Application Gateway and Azure Front Door.  You can use the Application Delivery checklist to for recommendations.",
@@ -825,12 +869,24 @@
     },
     {
       "category": "Network Topology and Connectivity",
+      "subcategory": "Sovereign Cloud",
+      "text": "Is there a requirement to encrypt traffic over the ExpressRoute?",
+      "waf": "Security",
+      "service": "ExpressRoute",
+      "guid": "821a568d-c632-4693-ba76-e2751de35050",
+      "id": "D02.01",
+      "severity": "Medium",
+      "link": "https://learn.microsoft.com/azure/expressroute/expressroute-howto-macsec",
+      "training": "https://learn.microsoft.com/training/modules/design-implement-azure-expressroute/"
+    },
+    {
+      "category": "Network Topology and Connectivity",
       "subcategory": "Encryption",
       "text": "When you're using ExpressRoute Direct, configure MACsec in order to encrypt traffic at the layer-two level between the organization's routers and MSEE. The diagram shows this encryption in flow.",
       "waf": "Security",
       "service": "ExpressRoute",
       "guid": "de0d5973-cd4c-4d21-a088-137f5e6c4cfd",
-      "id": "D02.01",
+      "id": "D02.02",
       "severity": "Medium",
       "link": "https://learn.microsoft.com/azure/expressroute/expressroute-howto-macsec",
       "training": "https://learn.microsoft.com/training/modules/design-implement-azure-expressroute/"
@@ -842,7 +898,7 @@
       "waf": "Security",
       "service": "ExpressRoute",
       "guid": "ed301d6e-872e-452e-9611-cc58b5a4b151",
-      "id": "D02.02",
+      "id": "D02.03",
       "severity": "Medium",
       "training": "https://learn.microsoft.com/learn/paths/implement-network-security/",
       "link": "https://learn.microsoft.com/azure/vpn-gateway/site-to-site-vpn-private-peering"
@@ -1384,6 +1440,26 @@
       "id": "D06.25",
       "severity": "Low",
       "link": "https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity"
+    },
+    {
+      "category": "Network Topology and Connectivity",
+      "subcategory": "Sovereign Cloud",
+      "text": "Do any interconnects (ExpressRoute, MPLS etc) traverse borders or different countries?",
+      "waf": "Security",
+      "guid": "4cc8ca4e-a503-4bac-9b1e-82283a711043",
+      "id": "D06.26",
+      "severity": "Medium",
+      "link": "https://learn.microsoft.com/en-us/azure/expressroute/expressroute-locations-providers?tabs=america%2Ca-c%2Ca-k"
+    },
+    {
+      "category": "Network Topology and Connectivity",
+      "subcategory": "Sovereign Cloud",
+      "text": "Ensure VNet peering's do not enable traffic to leave approved regions.",
+      "waf": "Security",
+      "guid": "8b517d94-c9d0-42c4-9803-d93ed0a46bc0",
+      "id": "D06.27",
+      "severity": "Medium",
+      "link": "https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview"
     },
     {
       "category": "Network Topology and Connectivity",
@@ -2009,59 +2085,92 @@
     },
     {
       "category": "Governance",
-      "subcategory": "Governance",
+      "subcategory": "Optimize your cloud investment",
+      "text": "Configure 'Actual' and 'Forecasted' Budget Alerts.",
+      "waf": "Cost",
+      "guid": "29fd366b-a180-452b-9bd7-954b7700c667",
+      "id": "E02.01",
+      "severity": "Medium",
+      "link": "https://learn.microsoft.com/azure/cost-management-billing/costs/tutorial-acm-create-budgets?bc=%2Fazure%2Fcloud-adoption-framework%2F_bread%2Ftoc.json&toc=%2Fazure%2Fcloud-adoption-framework%2Ftoc.json",
+      "training": "https://learn.microsoft.com/training/modules/analyze-costs-create-budgets-azure-cost-management/"
+    },
+    {
+      "category": "Governance",
+      "subcategory": "Sovereign Cloud",
       "text": "If any data sovereignty requirements exist, Azure Policies should be deployed to enforce them.",
       "waf": "Security",
       "service": "Policy",
       "guid": "5a917e1f-348e-4f25-9c27-d42e8bbac757",
-      "id": "E01.10",
+      "id": "E03.01",
       "severity": "Medium",
       "training": "https://learn.microsoft.com/learn/paths/secure-your-cloud-data/",
       "link": "https://learn.microsoft.com/industry/release-plan/2023wave2/cloud-sovereignty/enable-data-sovereignty-policy-baseline"
     },
     {
       "category": "Governance",
-      "subcategory": "Governance",
-      "text": "For Sovereign Landing Zone, deploy sovereignty policy baseline and assign at correct management group level.",
+      "subcategory": "Sovereign Cloud",
+      "text": "For Sovereign Landing Zone, deploy the global and confidential policies and assign them at the correct management group level.",
       "waf": "Security",
       "service": "Policy",
       "guid": "78b22132-b41c-460b-a4d3-df8f73a67dc2",
-      "id": "E01.11",
+      "id": "E03.02",
       "severity": "Medium",
-      "link": "https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/sovereign-landing-zone"
+      "link": "https://learn.microsoft.com/en-us/industry/sovereign-cloud/sovereign-public-cloud/implementing-workloads/design-sovereign-policies#sovereign-policy-initiatives"
     },
     {
       "category": "Governance",
-      "subcategory": "Governance",
-      "text": "For Sovereign Landing Zone, document Sovereign Control objectives to policy mapping.",
+      "subcategory": "Sovereign Cloud",
+      "text": "For Sovereign Landing Zone, document your sovereign control objectives and align them to policy.",
       "waf": "Security",
       "service": "Policy",
       "guid": "caeea0e9-1024-41df-a52e-d99c3f22a6f4",
-      "id": "E01.12",
+      "id": "E03.03",
       "severity": "Medium",
-      "link": "https://learn.microsoft.com/industry/sovereignty/policy-portfolio-baseline"
+      "link": "https://learn.microsoft.com/en-us/industry/sovereign-cloud/sovereign-public-cloud/sovereign-landing-zone/implement-controls-principles"
     },
     {
       "category": "Governance",
-      "subcategory": "Governance",
-      "text": "For Sovereign Landing Zone, ensure process is in place for management of 'Sovereign Control objectives to policy mapping'.",
+      "subcategory": "Sovereign Cloud",
+      "text": "Ensure primary and DR regions are inside the allowed jurisdiction (including paired region behavior, ZRS/GZRS constraints).",
       "waf": "Security",
       "service": "Policy",
       "guid": "9b461617-db7b-4399-8ac6-d4eb7153893a",
-      "id": "E01.13",
+      "id": "E03.04",
       "severity": "Medium",
-      "link": "https://learn.microsoft.com/industry/sovereignty/policy-portfolio-baseline#sovereignty-baseline-policy-initiatives"
+      "link": "https://learn.microsoft.com/en-us/azure/reliability/regions-paired"
     },
     {
       "category": "Governance",
-      "subcategory": "Optimize your cloud investment",
-      "text": "Configure 'Actual' and 'Forecasted' Budget Alerts.",
-      "waf": "Cost",
-      "guid": "29fd366b-a180-452b-9bd7-954b7700c667",
-      "id": "E02.02",
+      "subcategory": "Sovereign Cloud",
+      "text": "For landing zone services (Databases, Storage, Containers, Analytics, AI), ensure the data\u2011processing locations and feature availabilities are acceptable within permitted regions or sovereignty constraints.",
+      "waf": "Security",
+      "service": "Policy",
+      "guid": "bfaf7b7a-9e6c-4840-a2bd-2c524326bdf6",
+      "id": "E03.05",
       "severity": "Medium",
-      "link": "https://learn.microsoft.com/azure/cost-management-billing/costs/tutorial-acm-create-budgets?bc=%2Fazure%2Fcloud-adoption-framework%2F_bread%2Ftoc.json&toc=%2Fazure%2Fcloud-adoption-framework%2Ftoc.json",
-      "training": "https://learn.microsoft.com/training/modules/analyze-costs-create-budgets-azure-cost-management/"
+      "link": "https://azure.microsoft.com/en-us/explore/global-infrastructure/data-residency"
+    },
+    {
+      "category": "Governance",
+      "subcategory": "Sovereign Cloud",
+      "text": "Have jurisdiction constraints been established for vendor remote access and managed services personnel?",
+      "waf": "Security",
+      "service": "Policy",
+      "guid": "3105633e-b168-4ce0-a016-5f10e7cdea5a",
+      "id": "E03.06",
+      "severity": "Medium",
+      "link": "https://learn.microsoft.com/en-us/azure/defender-for-cloud/recommendations-reference-identity-access"
+    },
+    {
+      "category": "Governance",
+      "subcategory": "Sovereign Cloud",
+      "text": "Do you require Azure confidential computing for sensitive workloads?",
+      "waf": "Security",
+      "service": "VM",
+      "guid": "77cf1acd-16b4-4092-8d30-6ec9579854ce",
+      "id": "E03.07",
+      "severity": "Medium",
+      "link": "https://learn.microsoft.com/en-us/azure/confidential-computing/"
     },
     {
       "category": "Management",
@@ -2509,26 +2618,37 @@
     },
     {
       "category": "Security",
-      "subcategory": "Encryption and keys",
-      "text": "If you want to bring your own keys, this might not be supported across all considered services. Implement relevant mitigation so that inconsistencies don't hinder desired outcomes. Choose appropriate region pairs and disaster recovery regions that minimize latency.",
+      "subcategory": "Sovereign Cloud",
+      "text": "Do you have a sovereignty requirement to use customer-managed keys?",
+      "waf": "Security",
+      "guid": "b48ade7f-50be-4d2e-9866-d57b17942fc2",
+      "id": "G02.11",
+      "severity": "Medium",
+      "link": "https://learn.microsoft.com/azure/security/fundamentals/encryption-atrest",
+      "training": "https://learn.microsoft.com/training/modules/implement-azure-key-vault/"
+    },
+    {
+      "category": "Security",
+      "subcategory": "Sovereign Cloud",
+      "text": "If you bring your own keys, ensure they are supported across all required services.",
       "waf": "Security",
       "service": "Key Vault",
       "guid": "25d62688-6d70-4ba6-a97b-e99519048384",
       "id": "G02.12",
       "severity": "Medium",
-      "link": "https://learn.microsoft.com/azure/key-vault/general/best-practices",
+      "link": "https://learn.microsoft.com/en-us/azure/security/fundamentals/encryption-customer-managed-keys-support",
       "training": "https://learn.microsoft.com/training/modules/configure-and-manage-azure-key-vault/"
     },
     {
       "category": "Security",
-      "subcategory": "Encryption and keys",
+      "subcategory": "Sovereign Cloud",
       "text": "For Sovereign Landing Zone, use Azure Key Vault managed HSM to store your secrets and credentials.",
       "waf": "Security",
       "service": "Key Vault",
       "guid": "4ac6b67c-b3a4-4ff9-8e87-b07a7ce7bbdb",
       "id": "G02.13",
       "severity": "Medium",
-      "link": "https://learn.microsoft.com/industry/sovereignty/key-management",
+      "link": "https://learn.microsoft.com/en-us/industry/sovereign-cloud/sovereign-public-cloud/capabilities/external-key-management",
       "training": "https://learn.microsoft.com/training/modules/configure-and-manage-azure-key-vault/"
     },
     {
@@ -2640,25 +2760,13 @@
     },
     {
       "category": "Security",
-      "subcategory": "Operations",
-      "text": "For Sovereign Landing Zone, enable transparancy logs on the Entra ID tenant.",
+      "subcategory": "Sovereign Cloud",
+      "text": "For Sovereign Landing Zone, enforce customer\u2011controlled access to Microsoft support operations by enabling Customer Lockbox for all supported Azure and Microsoft 365 services.",
       "waf": "Security",
-      "service": "Entra",
-      "guid": "1761e147-f65e-4d09-bbc2-f464f23e2eba",
+      "guid": "d21a922d-5ca7-427a-82a6-35f7b21f1bfc",
       "id": "G03.10",
       "severity": "Medium",
-      "link": "https://learn.microsoft.com/industry/sovereignty/transparency-logs"
-    },
-    {
-      "category": "Security",
-      "subcategory": "Operations",
-      "text": "For Sovereign Landing Zone, enable customer Lockbox on the Entra ID tenant.",
-      "waf": "Security",
-      "service": "Entra",
-      "guid": "d21a922d-5ca7-427a-82a6-35f7b21f1bfc",
-      "id": "G03.11",
-      "severity": "Medium",
-      "link": "https://learn.microsoft.com/azure/security/fundamentals/customer-lockbox-overview"
+      "link": "https://learn.microsoft.com/en-gb/azure/security/fundamentals/customer-lockbox-overview"
     },
     {
       "category": "Security",
@@ -2666,7 +2774,7 @@
       "text": "Use an Azure Event Grid-based solution for log-oriented, real-time alerts.",
       "waf": "Security",
       "guid": "874a748b-662d-46d1-9051-2a66498f6dfe",
-      "id": "G03.12",
+      "id": "G03.11",
       "severity": "Low",
       "link": "https://learn.microsoft.com/azure/event-grid/set-alerts",
       "training": "https://learn.microsoft.com/training/modules/azure-event-grid/"
@@ -2696,8 +2804,18 @@
     },
     {
       "category": "Security",
+      "subcategory": "Sovereign Cloud",
+      "text": "Are TLS version requirements enforced through Azure Policy?",
+      "waf": "Security",
+      "guid": "31e77d70-f001-455b-93aa-6d05eea10968",
+      "id": "G04.03",
+      "severity": "Medium",
+      "link": "https://learn.microsoft.com/azure/storage/blobs/data-protection-overview#recommendations-for-basic-data-protection"
+    },
+    {
+      "category": "Security",
       "subcategory": "Secure privileged access",
-      "text": "Separate privileged admin accounts for Azure administrative tasks.",
+      "text": "Use separate privileged administrator accounts for Azure administrative tasks.",
       "waf": "Security",
       "guid": "6f704104-85c1-441f-96d3-c9819911645e",
       "id": "G05.01",
@@ -2708,7 +2826,7 @@
     {
       "category": "Security",
       "subcategory": "Service enablement framework",
-      "text": "Plan how new azure services will be implemented.",
+      "text": "Plan how new Azure services will be implemented.",
       "waf": "Security",
       "guid": "9a19bf39-c95d-444c-9c89-19ca1f6d5215",
       "id": "G06.01",
@@ -2867,6 +2985,16 @@
       "severity": "High",
       "link": "https://learn.microsoft.com/azure/cloud-adoption-framework/ready/considerations/landing-zone-security#secure",
       "training": "https://learn.microsoft.com/training/paths/az-400-implement-security-validate-code-bases-compliance/"
+    },
+    {
+      "category": "Platform Automation and DevOps",
+      "subcategory": "Sovereign Cloud",
+      "text": "Ensure build agents, package registries and image bases reside within your data sovereignty region.",
+      "waf": "Operations",
+      "guid": "047c91e2-6bb4-4a42-a0ef-ab06ad0062c9",
+      "id": "H05.01",
+      "severity": "Medium",
+      "link": "https://azure.microsoft.com/en-us/explore/global-infrastructure/data-residency"
     }
   ],
   "categories": [
@@ -2957,6 +3085,6 @@
     "name": "Azure Landing Zone Review",
     "state": "GA",
     "waf": "all",
-    "timestamp": "October 24, 2024"
+    "timestamp": "February 25, 2026"
   }
 }
