@@ -16,6 +16,7 @@ Scoring-compatible shape per result:
 """
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 from signals.types import EvalScope
@@ -165,7 +166,9 @@ def run_evaluators_for_scoring(
         Full ALZ checklist — non-automated items are included as Manual
         so that automation_coverage stays correct.
     """
-    # ── Run all evaluators via the new architecture ───────────────
+    # ── Run all evaluators in parallel ─────────────────────────────
+    # Signal bus is thread-safe (cache uses a lock) and each evaluator
+    # is a pure function that reads signals and returns a result dict.
     # Reset the full_id index so it rebuilds for this pack_controls
     global _FULLID_INDEX  # noqa: PLW0603
     _FULLID_INDEX.clear()
@@ -173,11 +176,24 @@ def run_evaluators_for_scoring(
     automated_results: list[dict[str, Any]] = []
     automated_ids: set[str] = set()
 
-    for cid in EVALUATORS:
-        raw = evaluate_control(cid, scope, bus, run_id=run_id)
-        adapted = adapt_evaluator_result(raw, pack_controls)
-        automated_results.append(adapted)
-        automated_ids.add(adapted["control_id"])
+    max_workers = min(len(EVALUATORS), 8)
+    if max_workers <= 1:
+        for cid in EVALUATORS:
+            raw = evaluate_control(cid, scope, bus, run_id=run_id)
+            adapted = adapt_evaluator_result(raw, pack_controls)
+            automated_results.append(adapted)
+            automated_ids.add(adapted["control_id"])
+    else:
+        with ThreadPoolExecutor(max_workers=max_workers) as pool:
+            futures = {
+                pool.submit(evaluate_control, cid, scope, bus, run_id=run_id): cid
+                for cid in EVALUATORS
+            }
+            for future in as_completed(futures):
+                raw = future.result()
+                adapted = adapt_evaluator_result(raw, pack_controls)
+                automated_results.append(adapted)
+                automated_ids.add(adapted["control_id"])
 
     # ── Backfill manual items from checklist ──────────────────────
     # Manual items come from the ALZ checklist and are NOT taxonomy-validated.

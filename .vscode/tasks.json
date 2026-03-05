@@ -1,0 +1,33 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Regenerate Report",
+			"type": "shell",
+			"command": "python _regen.py",
+			"isBackground": false,
+			"group": "test"
+		},
+		{
+			"label": "Cleanup",
+			"type": "shell",
+			"command": "Remove-Item _regen.py, _diag.py -ErrorAction SilentlyContinue; Write-Host 'Cleaned up'",
+			"isBackground": false,
+			"group": "test"
+		},
+		{
+			"label": "Demo Scan E2E",
+			"type": "shell",
+			"command": "python scan.py --demo --no-ai",
+			"isBackground": false,
+			"group": "test"
+		},
+		{
+			"label": "Git Status",
+			"type": "shell",
+			"command": "Remove-Item _test_pack.py, _test_output.txt -ErrorAction SilentlyContinue; git add -A; git status",
+			"isBackground": false,
+			"group": "test"
+		}
+	]
+}

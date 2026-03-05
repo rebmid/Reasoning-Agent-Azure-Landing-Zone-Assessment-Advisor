@@ -2,6 +2,13 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import os, re
 
 from schemas.taxonomy import bucket_domain as _bucket_domain
+from schemas.taxonomy import (
+    SECTION_TO_DESIGN_AREA,
+    OFFICIAL_ALZ_DESIGN_AREAS,
+    CHECKLIST_LETTER_TO_DESIGN_AREA,
+    DESIGN_AREA_TO_CHECKLIST_LETTER,
+    DESIGN_AREA_OBJECTIVES,
+)
 from engine.scoring import section_scores as _compute_section_scores
 
 
@@ -125,6 +132,16 @@ def _build_report_context(output: dict) -> dict:
 
     # Deterministic blocker→item mapping (from decision_impact)
     blocker_mapping = ai.get("blocker_item_mapping", ai.get("blocker_initiative_mapping", {}))
+
+    # Re-resolve any empty mapping entries using the latest resolver logic
+    # (handles stale cached mappings from before bug fixes)
+    empty_keys = [k for k, v in blocker_mapping.items() if not v]
+    if empty_keys and blockers_raw and rem_items:
+        from engine.decision_impact import resolve_blockers_to_items
+        fresh = resolve_blockers_to_items(blockers_raw, rem_items, results)
+        for k in empty_keys:
+            if fresh.get(k):
+                blocker_mapping[k] = fresh[k]
 
     gate_blockers = []
     for b in blockers_raw:
@@ -366,7 +383,8 @@ def _build_report_context(output: dict) -> dict:
         sec = r.get("section", "Other")
         controls_by_section.setdefault(sec, []).append(r)
 
-    design_areas = []
+    # Build per-section data, then consolidate into official ALZ areas
+    _section_data: dict[str, dict] = {}
     for ss in section_scores:
         sec_name = ss["section"]
         sec_controls = controls_by_section.get(sec_name, [])
@@ -406,11 +424,7 @@ def _build_report_context(output: dict) -> dict:
                 "confidence": _confidence_badge(conf_val),
             })
 
-        # Section-level confidence: average of control confidences
-        avg_section_conf = sum(conf_values) / len(conf_values) if conf_values else None
-
-        design_areas.append({
-            "section": sec_name,
+        _section_data[sec_name] = {
             "maturity_percent": ss.get("maturity_percent"),
             "counts": ss.get("counts", {}),
             "automated_controls": ss.get("automated_controls", 0),
@@ -418,8 +432,93 @@ def _build_report_context(output: dict) -> dict:
             "automation_percent": ss.get("automation_percent", 0),
             "critical_fail_count": ss.get("critical_fail_count", 0),
             "critical_partial_count": ss.get("critical_partial_count", 0),
-            "confidence": _confidence_badge(avg_section_conf),
+            "conf_values": conf_values,
             "controls": enriched_controls,
+        }
+
+    # ── Consolidate sections into official 8 ALZ design areas ─────
+    _alz_merged: dict[str, dict] = {}
+    for sec_name, data in _section_data.items():
+        alz_area = SECTION_TO_DESIGN_AREA.get(sec_name, sec_name)
+        if alz_area not in _alz_merged:
+            _alz_merged[alz_area] = {
+                "section": alz_area,
+                "maturity_percents": [],
+                "total_controls_sum": 0,
+                "automated_controls_sum": 0,
+                "critical_fail_count": 0,
+                "critical_partial_count": 0,
+                "counts": {},
+                "conf_values": [],
+                "controls": [],
+            }
+        m = _alz_merged[alz_area]
+        if data["maturity_percent"] is not None:
+            m["maturity_percents"].append(
+                (data["maturity_percent"], data["total_controls"])
+            )
+        m["total_controls_sum"] += data["total_controls"]
+        m["automated_controls_sum"] += data["automated_controls"]
+        m["critical_fail_count"] += data["critical_fail_count"]
+        m["critical_partial_count"] += data["critical_partial_count"]
+        for k, v in data["counts"].items():
+            m["counts"][k] = m["counts"].get(k, 0) + v
+        m["conf_values"].extend(data["conf_values"])
+        m["controls"].extend(data["controls"])
+
+    # Ensure all 8 official areas are present (empty rows for gaps)
+    for official in OFFICIAL_ALZ_DESIGN_AREAS:
+        if official not in _alz_merged:
+            _alz_merged[official] = {
+                "section": official,
+                "maturity_percents": [],
+                "total_controls_sum": 0,
+                "automated_controls_sum": 0,
+                "critical_fail_count": 0,
+                "critical_partial_count": 0,
+                "counts": {},
+                "conf_values": [],
+                "controls": [],
+            }
+
+    # Flatten into final design_areas list
+    design_areas = []
+    for alz_area, m in _alz_merged.items():
+        # Weighted-average maturity (by control count)
+        if m["maturity_percents"]:
+            total_w = sum(w for _, w in m["maturity_percents"])
+            if total_w > 0:
+                mat_pct = round(
+                    sum(p * w for p, w in m["maturity_percents"]) / total_w
+                )
+            else:
+                mat_pct = round(
+                    sum(p for p, _ in m["maturity_percents"])
+                    / len(m["maturity_percents"])
+                )
+        else:
+            mat_pct = None
+
+        avg_conf = (
+            sum(m["conf_values"]) / len(m["conf_values"])
+            if m["conf_values"]
+            else None
+        )
+
+        tc = m["total_controls_sum"]
+        ac = m["automated_controls_sum"]
+        design_areas.append({
+            "section": alz_area,
+            "legend_letter": DESIGN_AREA_TO_CHECKLIST_LETTER.get(alz_area, ""),
+            "maturity_percent": mat_pct,
+            "counts": m["counts"],
+            "automated_controls": ac,
+            "total_controls": tc,
+            "automation_percent": round(ac / tc * 100) if tc else 0,
+            "critical_fail_count": m["critical_fail_count"],
+            "critical_partial_count": m["critical_partial_count"],
+            "confidence": _confidence_badge(avg_conf),
+            "controls": m["controls"],
         })
 
     # Sort by risk: critical fails desc, maturity asc
@@ -495,11 +594,33 @@ def _build_report_context(output: dict) -> dict:
         "roadmap_sections": roadmap_sections,
         "trajectory": trajectory if isinstance(trajectory, dict) else {},
         "design_areas": design_areas,
+        "checklist_legend": CHECKLIST_LETTER_TO_DESIGN_AREA,
+        "design_area_objectives": DESIGN_AREA_OBJECTIVES,
         "workshop_funnel": workshop_funnel,
     }
 
 
 def generate_report(output: dict, template_name: str = "report_template.html", out_path: str = None):
+    # ── Patch stale blocker mappings before integrity check ───────
+    # If any blocker has an empty resolving_checklist_ids, re-resolve
+    # using the latest decision_impact logic (Strategy 4 fix).
+    ai = output.get("ai", {})
+    mapping = ai.get("blocker_item_mapping", ai.get("blocker_initiative_mapping", {}))
+    esr = ai.get("enterprise_scale_readiness", {})
+    blockers = esr.get("blockers", [])
+    items = ai.get("remediation_items", ai.get("initiatives", []))
+    results = output.get("results", [])
+    empty_keys = [k for k, v in mapping.items() if not v]
+    if empty_keys and blockers and items:
+        from engine.decision_impact import resolve_blockers_to_items
+        fresh = resolve_blockers_to_items(blockers, items, results)
+        for k in empty_keys:
+            if fresh.get(k):
+                mapping[k] = fresh[k]
+        # Also patch the blocker objects so integrity check sees them
+        from engine.id_rewriter import patch_blocker_items
+        patch_blocker_items(esr, mapping)
+
     # ── Relationship integrity gate (Rule F) ──────────────────
     # Abort rendering if structural violations exist.
     from engine.relationship_integrity import validate_relationship_integrity

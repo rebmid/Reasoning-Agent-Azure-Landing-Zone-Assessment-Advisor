@@ -90,22 +90,48 @@ def _resolve_control_id(raw_id: str, canonical_keys: set[str]) -> tuple[str, str
     tuple[str, str]
         (resolved_id, status) where status is one of:
         - "exact"    — already canonical
-        - "prefix"   — resolved via 8-char prefix
+        - "prefix"   — resolved via prefix match
         - "reject"   — no match or ambiguous match
     """
     # 1. Exact match
     if raw_id in canonical_keys:
         return raw_id, "exact"
 
-    # 2. Prefix match — the canonical keys are 8-char truncated.
-    #    Take the first 8 characters of the raw ID and check for a
-    #    unique match among canonical keys.
+    # 2. Prefix match — the canonical keys may be 8-char truncated GUIDs
+    #    or longer names like "vnet-peering-001".
+    #    Strategy A: raw_id[:8] matches a canonical key exactly.
     prefix = raw_id[:8]
     matches = [k for k in canonical_keys if k == prefix]
     if len(matches) == 1:
         return matches[0], "prefix"
 
-    # 3. No match
+    # 3. Substring prefix — a canonical key starts with the raw_id
+    #    (e.g., raw_id="vnet-peer" → canonical "vnet-peering-001")
+    starts_matches = [k for k in canonical_keys if k.startswith(raw_id)]
+    if len(starts_matches) == 1:
+        return starts_matches[0], "prefix"
+
+    # 4. Reverse prefix — the raw_id starts with a canonical key
+    #    (e.g., raw_id="defender-assessments-001-extra" → "defender-assessments-001")
+    reverse_matches = [k for k in canonical_keys if raw_id.startswith(k)]
+    if len(reverse_matches) == 1:
+        return reverse_matches[0], "prefix"
+
+    # 5. Fuzzy: canonical key starts with raw_id[:8]
+    #    (e.g., raw_id="policy-e" → match "policy-exemptions-001")
+    fuzzy_matches = [k for k in canonical_keys if k.startswith(prefix)]
+    if len(fuzzy_matches) == 1:
+        return fuzzy_matches[0], "prefix"
+
+    # 6. Name-based: match by common word fragments for short partial IDs
+    #    (e.g., raw_id="ddos-prot" → match control with "ddos" in key)
+    if len(raw_id) >= 4:
+        word = raw_id.split("-")[0].lower()
+        word_matches = [k for k in canonical_keys if word in k.lower()]
+        if len(word_matches) == 1:
+            return word_matches[0], "prefix"
+
+    # 7. No match
     return raw_id, "reject"
 
 

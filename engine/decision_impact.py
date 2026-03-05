@@ -221,6 +221,27 @@ def resolve_blockers_to_items(
             blocker_item_map[blocker_key] = valid_refs
             continue
 
+        # Strategy 4: Match by checklist_id prefix letter.
+        # The ALZ checklist uses letter prefixes (A-H) that map to
+        # design areas.  If all prior strategies failed, find items
+        # whose checklist_id prefix corresponds to the blocker's area.
+        from schemas.taxonomy import DESIGN_AREA_TO_CHECKLIST_LETTER
+        area_name = None
+        for official, letter in DESIGN_AREA_TO_CHECKLIST_LETTER.items():
+            if official.lower() == blocker_key or blocker_key in official.lower():
+                area_name = official
+                break
+        if area_name:
+            target_letter = DESIGN_AREA_TO_CHECKLIST_LETTER.get(area_name, "")
+            if target_letter:
+                prefix_matched = [
+                    cid for cid in valid_item_ids
+                    if cid.startswith(target_letter)
+                ]
+                if prefix_matched:
+                    blocker_item_map[blocker_key] = prefix_matched
+                    continue
+
         # No deterministic match — empty list
         blocker_item_map[blocker_key] = []
 
