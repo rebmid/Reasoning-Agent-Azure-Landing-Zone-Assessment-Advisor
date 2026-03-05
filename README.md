@@ -59,7 +59,7 @@ A deterministic readiness gate determines whether the platform foundation is pre
 
 This gate aggregates critical control failures and platform maturity indicators.
 
-![Foundation Gate](docs/demo/Foundation gate.png)
+![Foundation Gate](docs/demo/001_foundation_gate.png)
 
 ---
 
@@ -114,13 +114,13 @@ CSA workshop facilitation view that connects:
 ### 9. CSA Workbook Deliverables
 Customer-ready Excel outputs automatically generated from the assessment.
 
-#### 30-60-90 Transformation Plan
-
-![Excel Roadmap](docs/demo/05_excel_30_60_90_roadmap.png)
-
 #### Executive Summary
 
 ![Excel Executive Summary](docs/demo/05_excel_executive_summary.png)
+
+#### 30-60-90 Transformation Plan
+
+![Excel Roadmap](docs/demo/05_excel_30_60_90_roadmap.png)
 
 #### Full Control Traceability
 
