@@ -93,14 +93,6 @@ Each initiative resolves multiple failing controls and unlocks platform capabili
 
 ---
 
-### Roadmap Traceability
-
-Every remediation initiative is mapped back to the failing controls and checklist IDs that caused it.
-
-![Roadmap Traceability](docs/demo/03_roadmap-traceability.png)
-
----
-
 ### ALZ Design Area Breakdown
 
 Detailed maturity scoring across governance, networking, identity, security, and platform design areas.
@@ -119,6 +111,14 @@ CSA workshop facilitation view that connects:
 
 ---
 
+### Critical Issues & Course of Action
+
+The reasoning engine identifies the most critical platform risks and provides architecture-aligned remediation guidance.
+
+![Critical Issues](docs/demo/05_critical_issues.png)
+
+---
+
 ### CSA Workbook Deliverables
 
 Customer-ready Excel outputs automatically generated from the assessment.
@@ -134,14 +134,6 @@ Customer-ready Excel outputs automatically generated from the assessment.
 #### Full Control Traceability
 
 ![Excel Control Details](docs/demo/05_excel_landing_zone_checklist_control_details.png)
-
----
-
-### Critical Issues & Course of Action
-
-The reasoning engine identifies the most critical platform risks and provides architecture-aligned remediation guidance.
-
-![Critical Issues](docs/demo/05_critical_issues.png)
 
 ---
 
