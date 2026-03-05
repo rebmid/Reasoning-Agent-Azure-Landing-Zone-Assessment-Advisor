@@ -10,7 +10,7 @@ This project is a **deterministic Azure Landing Zone assessment engine** with a 
 The platform operates in two layers:
 
 ### Deterministic Assessment Engine
-Evaluates Azure Landing Zone posture using live Azure telemetry and the official [Azure Landing Zone Review Checklist](https://github.com/Azure/review-checklists). Scores controls, computes maturity, and produces customer-ready deliverables -- all without AI.
+Evaluates Azure Landing Zone posture using live Azure telemetry and the official [Azure Landing Zone Review Checklist](https://github.com/Azure/review-checklists). Scores controls, computes maturity, and produces customer-ready deliverables -- all without AI. 
 
 ### AI Reasoning Layer
 Consumes the deterministic output and performs structured multi-step reasoning:
@@ -23,6 +23,8 @@ Consumes the deterministic output and performs structured multi-step reasoning:
 **The AI does not score. It reasons over scored evidence.**
 
 The result is a **repeatable, evidence-driven governance assessment powered by real Azure telemetry.**
+
+> **This tool uses read-only access only.** It requires Azure Reader role (RBAC) and makes no changes to your environment -- no writes, no deployments, no configuration modifications. Safe to run in production tenants.
 
 > **Run one command -- get a scored assessment, executive briefing, and a traceable 30-60-90 transformation plan.**
 
@@ -193,9 +195,12 @@ Control Scoring Engine
 
 ### Data Collection
 
-- Azure Resource Graph
+- Azure Resource Graph (28 batched queries)
 - Policy + Compliance
-- Defender for Cloud
+- Defender for Cloud + Security Assessments
+- Identity + RBAC (via Microsoft Graph)
+- Cost Management + Advisor
+- Monitoring + Diagnostics
 - Management Group hierarchy
 
 ### Evaluation Engine
@@ -403,11 +408,15 @@ Additionally, `assessment.json` is written to the project root as a convenience 
 
 ### 1. Data Collection
 
-The **collectors** module queries Azure APIs via Resource Graph, Defender, Policy, and Management Group endpoints:
+The **collectors** module queries Azure APIs via Resource Graph, Defender, Policy, Identity, Cost Management, Monitoring, and Management Group endpoints:
 
-- **Resource Graph** -- VNets, firewalls, public IPs, NSGs, route tables, storage accounts, Key Vaults, private endpoints, diagnostic settings
-- **Defender** -- security score, coverage tier, recommendations
-- **Policy** -- policy definitions, assignments, and compliance state
+- **Resource Graph** -- VNets, firewalls, public IPs, NSGs, route tables, storage accounts, Key Vaults, private endpoints, diagnostic settings, VNet peerings, gateways, Bastion, WAF/Front Door, Private DNS zones, disk encryption, tags, custom roles, policy exemptions
+- **Defender** -- security plans, secure score, security assessments
+- **Policy** -- policy definitions, assignments, compliance state, exemptions
+- **Identity** -- RBAC hygiene, PIM usage and maturity, break-glass accounts, conditional access, Entra ID logs, service principal risk
+- **Cost Management** -- budgets, cost alerts, forecast accuracy, idle resources
+- **Monitoring** -- workspace topology, alert action mapping, action groups, availability signals, change tracking, update manager
+- **Advisor** -- cross-pillar recommendations (security, cost, reliability, performance)
 - **Management Groups** -- full hierarchy tree
 
 All queries use `AzureCliCredential` -- the same identity you authenticated with via `az login`.
