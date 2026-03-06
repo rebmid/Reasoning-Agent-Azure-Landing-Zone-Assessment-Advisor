@@ -5,7 +5,7 @@
 Azure Landing Zone governance reviews are typically delivered through manual workshops, slide decks, and checklist interviews.
 These engagements are difficult to scale, inconsistent across architects, and rarely produce repeatable governance insights.
 
-This project is a **deterministic Azure Landing Zone assessment engine** with a multi-stage AI reasoning layer.
+This project is a deterministic Azure Landing Zone assessment engine with a multi-stage AI reasoning layer. It is designed as a field-ready architecture assessment tool, not an experimental AI assistant. The engine evaluates enterprise Azure environments using live platform telemetry and produces deterministic governance results that can be repeated, audited, and trusted. AI is used only as a reasoning and orchestration layer on top of authoritative platform evidence, enabling scalable and consistent Azure Landing Zone governance reviews for real-world environments.
 
 The platform operates in two layers:
 
